@@ -1,5 +1,4 @@
-import React, { useState, useEffect ,useContext} from 'react'
-import banner from '../assets/banner.png'
+import React, { useState, useEffect, useContext } from 'react'
 import './navbar.css'
 import { NavLink } from 'react-router-dom'
 import axios from 'axios'
@@ -8,17 +7,18 @@ import './home.css'
 import shipping from '../assets/freeshipping.png'
 import refund from '../assets/tick-home.png'
 import wallet from '../assets/wallet.png'
-import technical from '../assets/headphones.png'
-import { CartContext } from "../component/cartcouter";
+import technical from '../assets/admin.png' 
+import { CartContext } from "../component/cartcouter.jsx"; // Corrected extension and path
 
 
 function Home() {
 
   const [products, setProducts] = useState([])
   const userId = (localStorage.getItem("id"))
-  const {updateCartCount} = useContext(CartContext)
+  const { updateCartCount } = useContext(CartContext)
 
   useEffect(() => {
+    // Using import.meta.env for Vite environment variables
     axios
       .get(`${import.meta.env.VITE_API_URL}/products`)
       .then((res) => setProducts(res.data))
@@ -29,7 +29,7 @@ function Home() {
     if (!userId) {
       toast.error("Please log in to add to cart ",
         {
-          positon: 'top-center',
+          position: 'top-center',
           autoClose: 1300,
           style: { marginTop: '60px' }
         })
@@ -45,7 +45,7 @@ function Home() {
 
     if (existingItem !== -1) {
       toast.warn('Product already in cart', {
-        positon: 'top-center',
+        position: 'top-center',
         autoClose: 1300,
         style: { marginTop: '60px' }
       })
@@ -61,7 +61,7 @@ function Home() {
         },
       ]
       toast.success('Item added to Cart', {
-        positon: 'top-center',
+        position: 'top-center',
         autoClose: 1300,
         style: { marginTop: '60px' }
       })
@@ -76,149 +76,177 @@ function Home() {
 
   }
 
-
-
-  const trendingProducts = products.filter((item) => {
-    return (item.id === 3 || item.id === 17 || item.id === 6 || item.id === 12)
-  })
-
-  const hotDealsProducts = products.filter((item) => {
-    return (item.id === 7 || item.id === 15 || item.id === 2 || item.id === 18)
-  })
+  // Filter for "Trending" - First 4 products (T-shirts 1-4)
+  const trendingProducts = products.slice(0, 4) 
+  
+  // Filter for "Hot Deals" - Next 4 products (T-shirts 5-8)
+  const hotDealsProducts = products.slice(4, 8) 
 
   return (
     <>
-      <div className="banner-container">
-        <img src={banner}
-          className="banner-img"
-        />
-        <NavLink to={'/shop'}>
-          <button className="banner-btn">
-            Explore Collection
-          </button>
+      {/* Hero Section */}
+      <div className="hero-section">
+        <div className="hero-content">
+          <h1>XENFIT <br /> COLLECTION.</h1>
+          <p>Premium oversized tees & polos for the modern generation.</p>
+          <NavLink to={'/shop'}>
+            <button className="hero-btn">SHOP NOW</button>
+          </NavLink>
+        </div>
+      </div>
+
+      {/* Categories Grid */}
+      <div className="category-section">
+        <NavLink to={'/shop'} className="cat-card">
+           <div className="overlay">
+             <h2>OVERSIZED</h2>
+           </div>
         </NavLink>
-
+        <NavLink to={'/shop'} className="cat-card cat-polo">
+           <div className="overlay">
+             <h2>POLOS</h2>
+           </div>
+        </NavLink>
+        <NavLink to={'/shop'} className="cat-card cat-women">
+           <div className="overlay">
+             <h2>FOR HER</h2>
+           </div>
+        </NavLink>
       </div>
-      <div className='trending-container'>
-        <h1>Trending🚀</h1>
-        <div className="main-shop-container">
-          {hotDealsProducts.map((product, index) => (
-            <div className="shop-container" key={index}>
-              <NavLink to={`/${product.id}`} style={{ textDecoration: 'none' }}>
-                <div >
-                  <img src={product.image} alt="" />
-                  <h3>{product.title}</h3>
-                  <h4>{product.brand}</h4>
-                  <p className="description"> {product.description}</p>
-                  <p className="price">₹{product.price}</p>
+
+      {/* Fresh Drops Section */}
+      <div className='section-title'>
+        <h1>FRESH DROPS 🔥</h1>
+        <div className="underline"></div>
+      </div>
+
+      <div className="main-shop-container">
+        {trendingProducts.map((product, index) => (
+          <div className="product-card" key={index}>
+            <NavLink to={`/${product.id}`} style={{ textDecoration: 'none' }}>
+              <div className="image-wrapper">
+                <img src={product.image} alt={product.title} />
+                {/* Discount Badge Calculation */}
+                {product.mrp && product.price && (
+                  <span className="discount-badge">
+                    {Math.round(((product.mrp - product.price) / product.mrp) * 100)}% OFF
+                  </span>
+                )}
+              </div>
+              <div className="product-details">
+                <h3>{product.title}</h3>
+                <p className="brand-name">{product.brand}</p>
+                <div className="price-row">
+                  <span className="selling-price">₹{product.price}</span>
+                  {product.mrp && <span className="mrp">₹{product.mrp}</span>}
                 </div>
-              </NavLink>
-              <button className="addtocart" onClick={() => CartHandleChange(product)}>Add to Cart</button>
-
-
-            </div>
-          ))}
-        </div>
+              </div>
+            </NavLink>
+            <button className="add-btn" onClick={() => CartHandleChange(product)}>ADD TO BAG</button>
+          </div>
+        ))}
       </div>
-      <div className='hot-deals'>
-        <h1>Hot Deals🔥</h1>
-        <div className="main-shop-container" >
-          {trendingProducts.map((product, index) => (
-            <div className="shop-container" key={index}>
-              <NavLink to={`/${product.id}`} style={{ textDecoration: 'none' }}>
-                <div >
-                  <img src={product.image} alt="" />
-                  <h3>{product.title}</h3>
-                  <h4>{product.brand}</h4>
-                  <p className="description"> {product.description}</p>
-                  <p className="price">₹{product.price}</p>
+
+      {/* Promo Banner */}
+      <div className='banner-break'>
+         <h2>LEVEL UP YOUR FIT</h2>
+         <p>Use Code <strong>XENFIT20</strong> for 20% Off</p>
+      </div>
+
+      {/* Best Sellers Section */}
+      <div className='section-title'>
+        <h1>BEST SELLERS ⚡</h1>
+        <div className="underline"></div>
+      </div>
+
+      <div className="main-shop-container">
+        {hotDealsProducts.map((product, index) => (
+          <div className="product-card" key={index}>
+            <NavLink to={`/${product.id}`} style={{ textDecoration: 'none' }}>
+              <div className="image-wrapper">
+                <img src={product.image} alt={product.title} />
+                 {product.mrp && product.price && (
+                  <span className="discount-badge">
+                    {Math.round(((product.mrp - product.price) / product.mrp) * 100)}% OFF
+                  </span>
+                )}
+              </div>
+              <div className="product-details">
+                <h3>{product.title}</h3>
+                <p className="brand-name">{product.brand}</p>
+                <div className="price-row">
+                  <span className="selling-price">₹{product.price}</span>
+                  {product.mrp && <span className="mrp">₹{product.mrp}</span>}
                 </div>
-              </NavLink>
-              <button className="addtocart" onClick={() => CartHandleChange(product)}>Add to Cart</button>
+              </div>
+            </NavLink>
+            <button className="add-btn" onClick={() => CartHandleChange(product)}>ADD TO BAG</button>
+          </div>
+        ))}
+      </div>
 
+      {/* Features Grid */}
+      <div className="features-grid">
+        <div className="feature-item">
+          <img src={shipping} alt="Free Shipping" />
+          <h3>Free Shipping</h3>
+          <p>On orders above ₹999</p>
+        </div>
+        <div className="feature-item">
+          <img src={refund} alt="Easy Returns" />
+          <h3>Easy Returns</h3>
+          <p>7 Days replacement</p>
+        </div>
+        <div className="feature-item">
+          <img src={wallet} alt="Secure Payment" />
+          <h3>Secure Payment</h3>
+          <p>100% Secure Transaction</p>
+        </div>
+        <div className="feature-item">
+          <img src={technical} alt="Support" />
+          <h3>24/7 Support</h3>
+          <p>We are here to help</p>
+        </div>
+      </div>
 
+      {/* Footer */}
+      <footer className="modern-footer">
+        <div className="footer-content">
+          <div className="footer-brand">
+            <h2>Xenfit.</h2>
+            <p>Streetwear for the bold. Designed in India.</p>
+            <div className="socials">
+               <span>IG</span>
+               <span>FB</span>
+               <span>TW</span>
             </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="services-container">
-        <div className="service-box">
-          <img src={shipping} alt="" />
-          <div>
-            <h2>Free Shipping</h2>
-            <p>Free Shipping On All Order</p>
           </div>
-        </div>
-
-        <div className="service-box">
-          <img src={refund} alt="" />
-          <div>
-            <h2>Safe Refund</h2>
-            <p>7 Days Money Back</p>
-          </div>
-        </div>
-
-        <div className="service-box">
-          <img src={wallet} alt="" />
-          <div>
-            <h2>Secure Payment</h2>
-            <p>All Payment Secure</p>
-          </div>
-        </div>
-
-        <div className="service-box">
-          <img src={technical} alt="" />
-          <div>
-            <h2>Online Support 24/7</h2>
-            <p>Technical Support 24/7</p>
-          </div>
-        </div>
-      </div>
-
-
-      <footer className="footer">
-      <div className="footer-container">
-
-        <div className="footer-about">
-          <h2 className="logo">Bassify</h2>
-          <p className="made-with">Made with React💖 by The Coding Journey</p>
-          <a href="https://www.linkedin.com/in/mhdshibil/">
-          <button className="yt-btn" >Visit My Linkdin</button>
-          </a>
           
-        </div>
+          <div className="footer-col">
+            <h4>SHOP</h4>
+            <NavLink to={'/shop'}>Men</NavLink>
+            <NavLink to={'/shop'}>Women</NavLink>
+            <NavLink to={'/shop'}>New Arrivals</NavLink>
+          </div>
 
-        <div className="footer-links">
-          <h3>Important Links</h3>
-          <ul>
-            <NavLink to={'/'}><li>Home</li></NavLink>
-             <NavLink to={'/shop'}><li>Shop</li></NavLink>
-             <NavLink to={'/myorders'}><li>My Orders</li></NavLink>
-             <NavLink to={'/about'}><li>About</li></NavLink>
-       
-          </ul>
-        </div>
+          <div className="footer-col">
+            <h4>COMPANY</h4>
+            <NavLink to={'/about'}>Our Story</NavLink>
+            <NavLink to={'/about'}>Careers</NavLink>
+            <NavLink to={'/about'}>Terms</NavLink>
+          </div>
 
-
-        <div className="footer-links">
-          <h3>Quick Links</h3>
-          <ul>
-            <NavLink to={'/'}><li>Home</li></NavLink>
-             <NavLink to={'/shop'}><li>Shop</li></NavLink>
-             <NavLink to={'/myorders'}><li>My Orders</li></NavLink>
-             <NavLink to={'/about'}><li>About</li></NavLink>
-          </ul>
+          <div className="footer-col">
+            <h4>SUPPORT</h4>
+            <NavLink to={'/myorders'}>Track Order</NavLink>
+            <NavLink to={'/about'}>Contact Us</NavLink>
+            <NavLink to={'/about'}>Shipping</NavLink>
+          </div>
         </div>
-
-        <div className="footer-address">
-          <h3>Address</h3>
-          <p> Bridgeon , Manjeri Hub</p>
-          <p> +91 1234567890</p>
-          
+        <div className="footer-bottom">
+           <p>© 2024 Xenfit Clothing. All rights reserved.</p>
         </div>
-      </div>
-    </footer>
+      </footer>
 
     </>
   )
