@@ -1,0 +1,100 @@
+.main-details-container {
+    background-color: #ffffff;;
+    padding: 20px;
+    box-sizing: border-box;
+    height: auto;
+}
+
+.main-details-container .backbutton {
+    position: absolute;
+    top: 110px;
+    left: 240px;
+    background-color: white;
+   
+    border-radius: 50%;
+    z-index: 10;
+    width: 35px;
+    height: 35px;
+    
+}
+
+.main-details-container .backbutton:hover {
+    transform: scale(1.1);
+}
+
+
+.main-details-container .details-container {
+    display: flex;
+    gap: 40px;
+    max-width: 1000px;
+    max-height: 950px;
+    overflow: hidden;
+    margin: auto;
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1)
+}
+
+.main-details-container .details-container img {
+    max-width: 400px;
+    max-height: 500px;
+    width: 100%;
+   
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+.main-details-container .product-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.main-details-container .product-info h1 {
+    font-size: 40px;
+    margin-bottom: 15px;
+    color: #1a1a1a;
+}
+
+.main-details-container .product-info .description {
+    font-size: 16px;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.main-details-container .product-info .brand,
+.product-info .type,
+.product-info .connectivity {
+    font-size: 16px;
+    color: #444;
+    margin-bottom: 8px;
+    background-color: #f9f9f9;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.main-details-container .product-info .price {
+    font-size: 32px;
+    font-weight: bold;
+    color: black;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.main-details-container .addcart {
+    background-color: #e63946;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.main-details-container .addcart:hover {
+    background-color: #c7323f;
+    transform: translateY(-2px);
+}

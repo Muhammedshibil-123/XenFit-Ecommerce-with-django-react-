@@ -1,0 +1,152 @@
+
+.main-login-container {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  background: #f9f9f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+
+.login-container {
+  background: #fff;
+  padding: 40px;
+    padding-right: 60px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  width: 400px;
+  text-align: center;
+}
+
+
+.login-container > div {
+  font-size: 26px;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 20px;
+}
+
+.login-container form label {
+  display: block;
+  text-align: left;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #333;
+}
+
+
+.login-container form input {
+
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 18px;
+  
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+  transition: 0.3s;
+  font-size: 14px;
+}
+
+.login-container form input:focus {
+  border-color: #e63946; 
+  box-shadow: 0 0 6px rgba(230,57,70,0.4);
+}
+
+
+.login-container form button {
+    margin-left: 15px;
+  width: 100%;
+  padding: 10px;
+  background: #e63946;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 14px; 
+}
+
+.login-container form button:hover {
+  background: #d62839;
+}
+
+.login-container form p {
+  color: red;
+  font-size: 12px;
+  margin: -12px 0 12px 0; 
+  text-align: left;     
+}
+
+/* profile */
+
+.profile-container {
+  width: 350px;
+  margin: 50px auto;
+  padding: 30px 20px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+
+}
+
+.profile-container img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  margin-bottom: 20px;
+  border: 4px solid #e63946; /* nice accent color */
+  object-fit: cover;
+}
+
+.profile-container p {
+  margin: 10px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.profile-container .username {
+  font-size: 20px;
+  font-weight: 600;
+  color: #222;
+}
+
+.profile-container .age,
+.profile-container .email,
+.profile-container .mobile {
+  font-size: 15px;
+  color: #555;
+}
+
+.profile-container:hover {
+  transform: translateY(-5px);
+  transition: 0.3s ease-in-out;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+}
+
+.profile-container button {
+  width: 110px;
+  height: 40px;
+  background: #e63946;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 20px;
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+  
+}
+
+.profile-container button:hover {
+  background: #cc2d3a;
+}
+
+.profile-container  button span{
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}

@@ -1,0 +1,65 @@
+.main-dashboard-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40px; 
+}
+
+.dashboard-container {
+  display: flex;
+  gap:80px;
+}
+
+.dashboard-container .users,
+.dashboard-container .products,
+.dashboard-container .income {
+  width: 180px;
+  height: 180px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  text-align: center;
+}
+
+.dashboard-container .users:hover,
+.dashboard-container .products:hover,
+.dashboard-container .income:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-container h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+.dashboard-container p {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111;
+}
+
+
+.dashboard-container .users {
+  background: #eaf4ff;
+  border: 2px solid #b3d8ff;
+}
+
+.dashboard-container .products {
+  background: #eafff3;
+  border: 2px solid #b3ffd2;
+}
+
+.dashboard-container .income {
+  background: #fff6e5;
+  border: 2px solid #ffdca3;
+  color: #b45d00;
+}

@@ -1,0 +1,164 @@
+.trending-container , .hot-deals > h1{
+  margin-left: 30px;
+}
+.services-container {
+  display: flex;
+  gap: 140px; 
+  margin: 60px auto;
+  flex-wrap: wrap; 
+  max-width: 1300px;
+}
+
+.services-container .service-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 220px;
+}
+
+.services-container .service-box img {
+  width: 35px;
+  height: 35px;
+}
+
+.services-container .service-box h2 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+  color: #111;
+}
+
+.services-container .service-box p {
+  font-size: 13px;
+  margin: 2px 0 0;
+  color: #888;
+}
+
+.footer {
+  background: #fff;
+  padding: 50px 20px;
+  border-top: 1px solid #eee;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 1300px;
+  margin: 0 auto;
+  gap: 90px;
+}
+
+.footer-about {
+  flex: 250px;
+
+}
+
+.footer-about .logo {
+  font-size: 22px;
+  font-weight: 700;
+  color: #e63946;
+  margin-bottom: 12px;
+}
+
+
+
+.footer-about .made-with {
+  font-size: 13px;
+  color: #777;
+  margin: 6px 0;
+  
+}
+
+.footer-about .yt-btn {
+  margin-top: 12px;
+  background: #e63946;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 25px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.footer-about .yt-btn:hover {
+  background: #c92a36;
+}
+
+.footer-links {
+  flex:150px;
+}
+
+.footer-links h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.footer-links ul {
+  list-style: none;
+  padding: 0;
+  
+}
+
+.footer-links ul li {
+  margin: 6px 0;
+  font-size: 14px;
+  color: #444;
+  cursor: pointer;
+
+}
+
+.footer-links ul li:hover {
+  color: #e63946;
+}
+
+.footer-address {
+  flex:200px;
+}
+
+.footer-address h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.footer-address p {
+  font-size: 14px;
+  color: #444;
+  margin: 8px 0;
+  gap: 8px;
+}
+
+@media (max-width: 768px){
+  .banner-img{
+    width: 380px;
+    height: 300px;
+    border-radius: 40px;
+  }
+  
+ .banner-btn{
+  font-size: 8px;
+  width: 100px;
+  padding: 9px 9px;
+  display: flex;
+  justify-content: center;
+  bottom: 63px;
+  left: 7px;
+ }
+ .footer-container{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+ }
+  .footer{
+    padding-top: 10px;
+  }
+ .services-container{
+  display: flex;
+  gap: 50px;
+  justify-content: center;
+ }
+
+}

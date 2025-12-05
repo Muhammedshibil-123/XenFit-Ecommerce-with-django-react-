@@ -1,0 +1,160 @@
+
+.main-cart-conatainer {
+  width: 100%;
+  min-height: 100vh;
+  background: #f8f9fa;
+  display: flex;
+  justify-content: center;
+  padding: 30px;
+  box-sizing: border-box;
+}
+
+
+.cart-container {
+  width: 100%;
+  max-width: 1200px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+
+.cart-container h1 {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 28px;
+  color: #333;
+}
+
+.cart-container .cartdiv {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #eee;
+  padding: 15px 0;
+  gap: 15px;
+}
+
+.cart-container .cartdiv img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.cart-container .cartdiv h3 {
+  flex: 1;
+  font-size: 18px;
+  color: #444;
+}
+
+.cart-container .cartdiv p {
+  font-size: 14px;
+  margin: 4px 0;
+  color: #555;
+}
+
+
+.cart-container .cartdiv .increment {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+ 
+}
+
+.cart-container .cartdiv .increment:hover {
+  background: #0056b3;
+}
+
+
+
+#decrement{
+  display: flex;
+  position: relative;
+  left: 20px;
+}
+#increment{
+  display: flex;
+  position: relative;
+  right: 8px;
+ 
+}
+
+.cart-container .cartdiv span {
+  margin: 0 10px;
+  font-weight: bold;
+  font-size: 16px;
+  width: 1px;
+}
+
+
+
+.cart-container .cartdiv button {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.cart-container .cartdiv button:hover {
+  background: #a71d2a;
+}
+
+.cart-container .cartdiv .remove-btn{
+  background-color: #007bff;
+}
+
+.cart-container .cartdiv .remove-btn:hover{
+  background-color: #0056b3;
+}
+
+
+.cart-container .pay {
+  margin-top: 25px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 20px;
+}
+
+.cart-container .pay h1 {
+  font-size: 22px;
+  margin: 0;
+  color: #333;
+ 
+}
+
+.cart-container .pay button {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.2s ease-in-out;
+  display: flex;
+  position: static;
+}
+
+.cart-container .pay button:hover {
+  background: #1e7e34;
+}
+
+@media (max-width: 768px){
+  .cartdiv{
+    display: flex;
+    flex-direction: column;
+
+  }
+}
+
