@@ -1,42 +1,78 @@
-import React from 'react'
+import React from 'react';
+import './about.css';
+import { NavLink } from 'react-router-dom';
 
 function About() {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "100vh",
-        textAlign: "center",
-        flexDirection: "column",
-        padding: "20px",
-        fontFamily: "Arial, sans-serif",
-        lineHeight: "1.6",
-        fontSize: "18px"
-      }}
-    >
-      <h1>About Us</h1>
-      <p>
-        Welcome to <strong>Bassify</strong>, the home of premium sound.
-        We believe that great sound is more than just listening—it’s an
-        experience. That’s why we focus only on audio products, from powerful
-        headphones and wireless earbuds to smart speakers and sound accessories.
-      </p>
-      <p>
-        Our mission is simple: to bring you closer to the music, movies, and
-        moments you love through crystal-clear, immersive sound. Whether you’re
-        a casual listener, a music lover, or a hardcore audiophile, we’ve got
-        something that matches your vibe.
-      </p>
-      <p>
-        At <strong>Bassify</strong>, we handpick every product with
-        one goal in mind—delivering the best sound quality at the best value.
-        Because when sound is pure, life feels better.
-      </p>
-      <h2>🎧 Hear the difference. Feel the music. Live the sound.</h2>
+    <div className="about-page">
+      
+      
+
+      {/* Main Content */}
+      <div className="about-content">
+        <div className="content-section">
+          <h2>WHO WE ARE</h2>
+          <p>
+            Welcome to <strong>Xenfit</strong>. We aren't just a clothing brand; we are a movement. 
+            Born from the streets and designed for the bold, Xenfit bridges the gap between 
+            high-fashion aesthetics and everyday comfort.
+          </p>
+          <p>
+            Our mission is simple: to empower you to express your unique identity through 
+            premium quality fits. Whether you're into anime culture, sports vibes, or 
+            minimalist streetwear, we create pieces that speak louder than words.
+          </p>
+        </div>
+
+        <div className="values-grid">
+          <div className="value-card">
+            <h3>QUALITY FIRST</h3>
+            <p>Premium fabrics that last. We don't compromise on the feel or durability of our gear.</p>
+          </div>
+          <div className="value-card">
+            <h3>BOLD DESIGNS</h3>
+            <p>From oversized tees to vintage washes, our designs are made to turn heads.</p>
+          </div>
+          <div className="value-card">
+            <h3>COMMUNITY</h3>
+            <p>We build for the culture. Xenfit is powered by the people who wear it.</p>
+          </div>
+        </div>
+
+        {/* Contact Section */}
+        <div className="contact-section">
+          <h2>GET IN TOUCH</h2>
+          <p className="contact-intro">Got questions? Need sizing help? Or just want to say what's up? We're here.</p>
+          
+          <div className="contact-details">
+            <div className="contact-item">
+              <h4>EMAIL US</h4>
+              <p>support@xenfit.com</p>
+              <p>collabs@xenfit.com</p>
+            </div>
+            <div className="contact-item">
+              <h4>CALL US</h4>
+              <p>+91 98765 43210</p>
+              <p>Mon - Fri, 10am - 6pm</p>
+            </div>
+            <div className="contact-item">
+              <h4>VISIT HQ</h4>
+              <p>Xenfit Studios, Building 42</p>
+              <p>Koramangala, Bangalore - 560034</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="cta-section">
+          <h2>JOIN THE REVOLUTION</h2>
+          <p>Don't just wear the trend. Be the trend.</p>
+          <NavLink to="/shop">
+            <button className="shop-now-btn">EXPLORE COLLECTION</button>
+          </NavLink>
+        </div>
+      </div>
     </div>
-  )
+  );
 }
 
-export default About
+export default About;

@@ -43,13 +43,15 @@ function Checkout() {
     if(!details.name || !details.address || !details.pincode || !details.mobile || !details.place){
       alert('please fill the delivery details')
     }else{
+      // EDITED: Added status: "Order Placed" to the payload
       axios.post(`${import.meta.env.VITE_API_URL}/orders`,{
-        
         username:user.username,
         useremail:user.email,
         userid:user.id,
         items:user.cart,
-        delivery:details
+        delivery:details,
+        status: "Order Placed", // Default status
+        orderDate: new Date().toLocaleDateString() // Optional: good to have
       })
       .then(()=>{
         return axios.put(`${import.meta.env.VITE_API_URL}/users/${userId}`,{

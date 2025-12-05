@@ -2,9 +2,160 @@
   "products": [
     {
       "id": 1,
-      "title": "SuperSquad Graphic Tee",
-      "brand": "SuperSquad",
-      "category": "Round Neck",
+      "title": "Goku Super Saiyan Tee",
+      "brand": "Otaku Wear",
+      "theme": "Anime",
+      "category": "Oversized",
+      "gender": "Men",
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "mrp": 1499,
+      "price": 799,
+      "image": "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=1887&auto=format&fit=crop",
+      "status": "active",
+      "description": "Unleash your power with this premium cotton oversized tee featuring a high-density Goku print."
+    },
+    {
+      "id": 2,
+      "title": "Retro 90s Vintage Wash",
+      "brand": "Xenfit Originals",
+      "theme": "Vintage",
+      "category": "Regular Fit",
+      "gender": "Unisex",
+      "sizes": [
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "mrp": 1299,
+      "price": 699,
+      "image": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=1780&auto=format&fit=crop",
+      "status": "active",
+      "description": "Classic vintage wash t-shirt with distressed detailing for that authentic thrift store find look."
+    },
+    {
+      "id": 3,
+      "title": "Hustle Hard Motivation",
+      "brand": "Grind Gear",
+      "theme": "Motivational",
+      "category": "Athletic Fit",
+      "gender": "Men",
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "mrp": 999,
+      "price": 499,
+      "image": "https://images.unsplash.com/photo-1581655353564-df123a1eb820?q=80&w=1887&auto=format&fit=crop",
+      "status": "active",
+      "description": "Stay focused on your goals with this clean motivational print tee. Breathable fabric for workouts."
+    },
+    {
+      "id": 4,
+      "title": "Minimalist Box Logo",
+      "brand": "Xenfit Essentials",
+      "theme": "Minimal",
+      "category": "Boxy Fit",
+      "gender": "Unisex",
+      "sizes": [
+        "S",
+        "M",
+        "L"
+      ],
+      "mrp": 899,
+      "price": 449,
+      "image": "https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=1964&auto=format&fit=crop",
+      "status": "active",
+      "description": "Less is more. A simple, elegant box logo tee in monochrome black and white."
+    },
+    {
+      "id": 5,
+      "title": "Lakers Court Side",
+      "brand": "Hoops Nation",
+      "theme": "Sports",
+      "category": "Jersey Style",
+      "gender": "Men",
+      "sizes": [
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "mrp": 1999,
+      "price": 999,
+      "image": "https://images.unsplash.com/photo-1518459031867-a89b944bffe4?q=80&w=1941&auto=format&fit=crop",
+      "status": "active",
+      "description": "Rep your team with this oversized sports jersey tee. Mesh fabric for maximum airflow."
+    },
+    {
+      "id": 6,
+      "title": "Pulp Fiction Graphic",
+      "brand": "Cinema Cult",
+      "theme": "Movie",
+      "category": "Oversized",
+      "gender": "Unisex",
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "mrp": 1599,
+      "price": 899,
+      "image": "https://images.unsplash.com/photo-1562157873-818bc0726f68?q=80&w=1827&auto=format&fit=crop",
+      "status": "active",
+      "description": "Iconic scenes from the cult classic. A must-have for movie buffs and streetwear enthusiasts."
+    },
+    {
+      "id": 7,
+      "title": "Naruto Uzumaki Mode",
+      "brand": "Otaku Wear",
+      "theme": "Anime",
+      "category": "Regular Fit",
+      "gender": "Men",
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L"
+      ],
+      "mrp": 1199,
+      "price": 599,
+      "image": "https://images.unsplash.com/photo-1622445272461-c6580cab8755?q=80&w=1887&auto=format&fit=crop",
+      "status": "active",
+      "description": "Vibrant anime print that stays fresh wash after wash. Perfect for conventions or casual wear."
+    },
+    {
+      "id": 8,
+      "title": "Never Give Up",
+      "brand": "Grind Gear",
+      "theme": "Motivational",
+      "category": "Slim Fit",
+      "gender": "Men",
+      "sizes": [
+        "M",
+        "L",
+        "XL"
+      ],
+      "mrp": 899,
+      "price": 399,
+      "image": "https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?q=80&w=1769&auto=format&fit=crop",
+      "status": "active",
+      "description": "Daily motivation on your chest. Soft cotton blend that moves with you."
+    },
+    {
+      "id": 9,
+      "title": "Plain White Tee",
+      "brand": "Xenfit Essentials",
+      "theme": "Minimal",
+      "category": "Classic Fit",
       "gender": "Men",
       "sizes": [
         "S",
@@ -13,166 +164,28 @@
         "XL",
         "XXL"
       ],
-      "mrp": 999,
-      "price": 499,
-      "image": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/e/a/i/xxl-mf-62-supersquad-original-imah2n79hekvngyh.jpeg?q=70",
+      "mrp": 699,
+      "price": 299,
+      "image": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=1780&auto=format&fit=crop",
       "status": "active",
-      "description": "Trendy graphic print t-shirt for casual wear."
-    },
-    {
-      "id": 2,
-      "title": "Try This Men's Casual",
-      "brand": "Try This",
-      "category": "V-Neck",
-      "gender": "Men",
-      "sizes": [
-        "M",
-        "L",
-        "XL"
-      ],
-      "mrp": 1299,
-      "price": 599,
-      "image": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/q/l/5/m-jr5nahlm6l-try-this-original-imahfe5fmhqehwzm.jpeg?q=70",
-      "status": "active",
-      "description": "Comfortable V-neck t-shirt made from soft cotton blend."
-    },
-    {
-      "id": 3,
-      "title": "Royal Club Colorblock",
-      "brand": "Royal Club",
-      "category": "Round Neck",
-      "gender": "Men",
-      "sizes": [
-        "L",
-        "XL",
-        "3XL"
-      ],
-      "mrp": 1499,
-      "price": 699,
-      "image": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/0/t/r/3xl-rct-whtblk-cmb-royal-club-tshirt-original-imahgg2gp38rcnec.jpeg?q=70",
-      "status": "active",
-      "description": "Stylish colorblock design perfect for street style."
-    },
-    {
-      "id": 4,
-      "title": "Unicus Apparel Henley",
-      "brand": "Unicus",
-      "category": "Henley",
-      "gender": "Men",
-      "sizes": [
-        "M",
-        "L",
-        "XL"
-      ],
-      "mrp": 899,
-      "price": 449,
-      "image": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/v/o/4/l-dhneck-02-unicus-apparel-original-imahdxmyujzjnz8n.jpeg?q=70",
-      "status": "active",
-      "description": "Classic Henley neck t-shirt for a smart casual look."
-    },
-    {
-      "id": 5,
-      "title": "ABC Red & Black Tee",
-      "brand": "ABC",
-      "category": "Round Neck",
-      "gender": "Men",
-      "sizes": [
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "mrp": 1199,
-      "price": 549,
-      "image": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/6/p/l/l-t599-rdbl-abc-original-imah7x74y6csezvd.jpeg?q=70",
-      "status": "active",
-      "description": "Bold red and black color combination t-shirt."
-    },
-    {
-      "id": 6,
-      "title": "Modern Striped Polo",
-      "brand": "Roadster",
-      "category": "Polo",
-      "gender": "Men",
-      "sizes": [
-        "M",
-        "L",
-        "XL"
-      ],
-      "mrp": 1599,
-      "price": 799,
-      "image": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/l/z/7/-original-imahfjzxgdevyk8c.jpeg?q=70",
-      "status": "active",
-      "description": "Premium quality striped polo t-shirt for men."
-    },
-    {
-      "id": 7,
-      "title": "Eyebogler Color Block",
-      "brand": "Eyebogler",
-      "category": "Round Neck",
-      "gender": "Men",
-      "sizes": [
-        "S",
-        "M",
-        "L"
-      ],
-      "mrp": 1299,
-      "price": 399,
-      "image": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/f/o/i/m-t1313-tm-new-eyebogler-original-imahg2jb2wtzu2c7.jpeg?q=70",
-      "status": "active",
-      "description": "Trendy color block t-shirt with a modern fit."
-    },
-    {
-      "id": 8,
-      "title": "Burrmellow Green Tee",
-      "brand": "Burrmellow",
-      "category": "Round Neck",
-      "gender": "Men",
-      "sizes": [
-        "M",
-        "L",
-        "XL"
-      ],
-      "mrp": 999,
-      "price": 499,
-      "image": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/s/z/3/xl-trum-green-navy-blue-white-burrmellow-original-imahdsgpqwy5exjr.jpeg?q=70",
-      "status": "active",
-      "description": "Soft green, navy, and white casual t-shirt."
-    },
-    {
-      "id": 9,
-      "title": "Eyebogler Designer Tee",
-      "brand": "Eyebogler",
-      "category": "Round Neck",
-      "gender": "Men",
-      "sizes": [
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "mrp": 1399,
-      "price": 449,
-      "image": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/j/y/x/s-t1307-tmblwh-eyebogler-original-imahg2jgc32qwnf9.jpeg?q=70",
-      "status": "active",
-      "description": "Unique designer print t-shirt for fashion lovers."
+      "description": "The ultimate wardrobe staple. Premium combed cotton plain white t-shirt."
     },
     {
       "id": 10,
-      "title": "Being Wanted Navy Blue",
-      "brand": "Being Wanted",
-      "category": "Round Neck",
+      "title": "Chicago Bulls Vintage",
+      "brand": "Hoops Nation",
+      "theme": "Sports",
+      "category": "Vintage Wash",
       "gender": "Men",
       "sizes": [
-        "M",
         "L",
         "XL"
       ],
-      "mrp": 899,
-      "price": 349,
-      "image": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/g/5/j/xl-men-hs-rn-navy-being-wanted-original-imahfhba7svhhjn9.jpeg?q=70",
+      "mrp": 1799,
+      "price": 849,
+      "image": "https://images.unsplash.com/photo-1576871337622-98d48d1cf531?q=80&w=1887&auto=format&fit=crop",
       "status": "active",
-      "description": "Solid navy blue t-shirt for everyday use."
+      "description": "Throwback sports vibe with cracked print effect for that authentic vintage feel."
     }
   ],
   "users": [
@@ -199,17 +212,10 @@
       "id": 2,
       "cart": [
         {
-          "productId": 6,
-          "title": "Modern Striped Polo",
-          "price": 799,
-          "image": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/l/z/7/-original-imahfjzxgdevyk8c.jpeg?q=70",
-          "quantity": 1
-        },
-        {
-          "productId": 8,
-          "title": "Burrmellow Green Tee",
-          "price": 499,
-          "image": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/s/z/3/xl-trum-green-navy-blue-white-burrmellow-original-imahdsgpqwy5exjr.jpeg?q=70",
+          "productId": 4,
+          "title": "Minimalist Box Logo",
+          "price": 449,
+          "image": "https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=1964&auto=format&fit=crop",
           "quantity": 1
         }
       ],
@@ -219,6 +225,20 @@
           "title": "Try This Men's Casual",
           "price": 599,
           "image": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/q/l/5/m-jr5nahlm6l-try-this-original-imahfe5fmhqehwzm.jpeg?q=70",
+          "quantity": 1
+        },
+        {
+          "productId": 3,
+          "title": "Hustle Hard Motivation",
+          "price": 499,
+          "image": "https://images.unsplash.com/photo-1581655353564-df123a1eb820?q=80&w=1887&auto=format&fit=crop",
+          "quantity": 1
+        },
+        {
+          "productId": 4,
+          "title": "Minimalist Box Logo",
+          "price": 449,
+          "image": "https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=1964&auto=format&fit=crop",
           "quantity": 1
         }
       ]
@@ -378,5 +398,35 @@
       "whishlist": []
     }
   ],
-  "orders": []
+  "orders": [
+    {
+      "username": "sanu",
+      "useremail": "sanuvkd104@gmail.com",
+      "userid": 2,
+      "items": [
+        {
+          "productId": 6,
+          "title": "Modern Striped Polo",
+          "price": 799,
+          "image": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/l/z/7/-original-imahfjzxgdevyk8c.jpeg?q=70",
+          "quantity": 1
+        },
+        {
+          "productId": 8,
+          "title": "Burrmellow Green Tee",
+          "price": 499,
+          "image": "https://rukminim2.flixcart.com/image/612/612/xif0q/t-shirt/s/z/3/xl-trum-green-navy-blue-white-burrmellow-original-imahdsgpqwy5exjr.jpeg?q=70",
+          "quantity": 1
+        }
+      ],
+      "delivery": {
+        "name": "sanu",
+        "mobile": "8989982830",
+        "address": "safdfds",
+        "place": "vkd",
+        "pincode": "2345678"
+      },
+      "id": 1
+    }
+  ]
 }

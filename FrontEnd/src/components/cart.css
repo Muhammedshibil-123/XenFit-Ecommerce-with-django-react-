@@ -1,160 +1,255 @@
-
+/* --- Main Layout --- */
 .main-cart-conatainer {
   width: 100%;
-  min-height: 100vh;
-  background: #f8f9fa;
+  min-height: 90vh;
+  background: #fff; /* EDITED: Changed to white for cleaner look */
   display: flex;
   justify-content: center;
-  padding: 30px;
+  padding: 60px 20px;
   box-sizing: border-box;
 }
 
-
 .cart-container {
   width: 100%;
-  max-width: 1200px;
-  background: #fff;
-  border-radius: 12px;
-  padding: 25px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  max-width: 1100px;
+  /* EDITED: Removed box-shadow/border-radius for a flatter, sharper streetwear look */
+  background: #fff; 
 }
-
 
 .cart-container h1 {
-  text-align: center;
-  margin-bottom: 25px;
-  font-size: 28px;
-  color: #333;
+  text-align: left;
+  margin-bottom: 40px;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: #111;
+  text-transform: uppercase;
+  border-bottom: 2px solid #111;
+  padding-bottom: 20px;
 }
 
-.cart-container .cartdiv {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+/* --- Empty Cart State --- */
+.empty-cart-msg {
+  text-align: center;
+  padding: 60px 0;
+}
+
+.empty-cart-msg p {
+  font-size: 18px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.empty-cart-msg button {
+  padding: 12px 30px;
+  background-color: #111;
+  color: white;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+/* --- Cart Header (Desktop) --- */
+.cart-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 0.5fr; /* Matches the item layout */
+  padding-bottom: 15px;
   border-bottom: 1px solid #eee;
-  padding: 15px 0;
+  margin-bottom: 20px;
+  font-weight: 600;
+  color: #888;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* --- Cart Item Row --- */
+.cartdiv {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 0.5fr; /* Matches header */
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding: 25px 0;
   gap: 15px;
 }
 
-.cart-container .cartdiv img {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-}
-
-.cart-container .cartdiv h3 {
-  flex: 1;
-  font-size: 18px;
-  color: #444;
-}
-
-.cart-container .cartdiv p {
-  font-size: 14px;
-  margin: 4px 0;
-  color: #555;
-}
-
-
-.cart-container .cartdiv .increment {
-  background: #007bff;
-  color: #fff;
-  border: none;
-  padding: 5px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.2s ease-in-out;
- 
-}
-
-.cart-container .cartdiv .increment:hover {
-  background: #0056b3;
-}
-
-
-
-#decrement{
+/* Product Info Column */
+.product-info-col {
   display: flex;
-  position: relative;
-  left: 20px;
-}
-#increment{
-  display: flex;
-  position: relative;
-  right: 8px;
- 
-}
-
-.cart-container .cartdiv span {
-  margin: 0 10px;
-  font-weight: bold;
-  font-size: 16px;
-  width: 1px;
-}
-
-
-
-.cart-container .cartdiv button {
-  background: #dc3545;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.2s ease-in-out;
-}
-
-.cart-container .cartdiv button:hover {
-  background: #a71d2a;
-}
-
-.cart-container .cartdiv .remove-btn{
-  background-color: #007bff;
-}
-
-.cart-container .cartdiv .remove-btn:hover{
-  background-color: #0056b3;
-}
-
-
-.cart-container .pay {
-  margin-top: 25px;
-  display: flex;
-  justify-content: flex-end;
   align-items: center;
   gap: 20px;
 }
 
-.cart-container .pay h1 {
-  font-size: 22px;
-  margin: 0;
-  color: #333;
- 
+.cartdiv img {
+  width: 80px;
+  height: 100px; /* EDITED: Vertical aspect ratio for t-shirts */
+  object-fit: cover;
+  border-radius: 0; /* EDITED: Removed radius for sharper look */
 }
 
-.cart-container .pay button {
-  background: #28a745;
+.product-text h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111;
+  margin: 0 0 5px 0;
+  text-transform: uppercase;
+}
+
+.size-text {
+  font-size: 13px;
+  color: #777;
+  margin: 0;
+}
+
+/* Price & Total */
+.price, .total-price {
+  font-size: 15px;
+  color: #333;
+  font-weight: 500;
+}
+
+/* --- Quantity Controls --- */
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  width: fit-content;
+  padding: 5px;
+}
+
+.qty-btn {
+  background: transparent !important;
+  color: #111 !important;
+  border: none !important;
+  padding: 5px 10px !important;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 400;
+}
+
+.quantity-controls span {
+  margin: 0 10px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* --- Remove Button --- */
+.remove-btn {
+  background: transparent !important;
+  color: #999 !important;
+  text-decoration: underline;
+  border: none !important;
+  font-size: 12px !important;
+  padding: 0 !important;
+  cursor: pointer;
+  transition: color 0.2s;
+  text-transform: uppercase;
+}
+
+.remove-btn:hover {
+  color: #e63946 !important; /* Xenfit Red hover */
+}
+
+/* --- Checkout Section --- */
+.pay {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  border-top: 1px solid #eee;
+  padding-top: 30px;
+}
+
+.subtotal-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 10px;
+}
+
+.subtotal-info span {
+  font-size: 16px;
+  color: #555;
+}
+
+.pay h1 {
+  font-size: 24px;
+  margin: 0;
+  color: #111;
+  border: none;
+  padding: 0;
+}
+
+.shipping-note {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 25px;
+}
+
+.pay button {
+  background: #111; /* Black primary button */
   color: white;
   border: none;
-  padding: 10px 18px;
-  border-radius: 8px;
+  padding: 15px 40px;
+  border-radius: 0; /* Sharp corners */
   cursor: pointer;
-  font-size: 16px;
-  transition: background 0.2s ease-in-out;
-  display: flex;
-  position: static;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: background 0.3s ease;
+  width: auto;
 }
 
-.cart-container .pay button:hover {
-  background: #1e7e34;
+.pay button:hover {
+  background: #e63946; /* Xenfit Red hover */
 }
 
-@media (max-width: 768px){
-  .cartdiv{
-    display: flex;
-    flex-direction: column;
+/* --- Mobile Responsiveness --- */
+@media (max-width: 768px) {
+  .cart-header {
+    display: none; /* Hide header items on mobile */
+  }
 
+  .cartdiv {
+    grid-template-columns: 1fr; /* Stack everything */
+    gap: 15px;
+    position: relative;
+    padding: 20px 0;
+  }
+
+  .product-info-col {
+    width: 100%;
+  }
+
+  .cartdiv img {
+    width: 70px;
+    height: 90px;
+  }
+
+  /* Reposition quantity and remove button for mobile layout */
+  .quantity-controls {
+    margin-top: 10px;
+  }
+
+  .total-price {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .remove-btn {
+    position: absolute;
+    top: 20px;
+    right: 0;
+  }
+  
+  .pay {
+    align-items: center;
+    text-align: center;
+  }
+  
+  .pay button {
+    width: 100%;
   }
 }
-

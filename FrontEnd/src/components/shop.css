@@ -1,169 +1,270 @@
-
+/* --- Main Layout --- */
 .main-shop-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-  padding: 20px;
-  background-color: #f8f9fa;
-  
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 30px;
+  padding: 40px;
+  background-color: #fff;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
+/* --- Product Card --- */
 .shop-container {
   background: white;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid #eee; 
+  padding: 0;
+  transition: all 0.3s ease;
   position: relative;
   display: flex;
   flex-direction: column;
- 
+  height: 100%;
 }
 
 .shop-container:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  border-color: #ddd;
+}
+
+/* Image Area */
+.product-image-box {
+  width: 100%;
+  height: 320px;
+  overflow: hidden;
+  position: relative;
+  background-color: #f9f9f9;
 }
 
 .shop-container img {
   width: 100%;
-  height: 200px;
-  object-fit: contain;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  background-color: #f8f9fa;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
 }
 
+.shop-container:hover img {
+  transform: scale(1.05);
+}
+
+/* Discount Badge */
+.discount-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #000;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  z-index: 5;
+}
+
+/* Wishlist Icon */
+.whislist-contaniner {
+  width: 32px;
+  height: 32px;
+  position: absolute;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  right: 10px;
+  top: 10px;
+  background-color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.whislist-contaniner:hover {
+  transform: scale(1.1);
+}
+
+/* Info Area */
+.product-info-box {
+  padding: 15px;
+  text-align: left;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
 
 .shop-container h3 {
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111;
   margin: 0 0 4px 0;
-  line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+  text-transform: none; /* Changed based on reference usually standard case looks better, but ref had mixed */
+  line-height: 1.4;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-
 .shop-container h4 {
-  font-size: 12px;
-  font-weight: 400;
-  color: #666;
-  margin: 0 0 8px 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: #888;
+  margin: 0 0 10px 0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-
-.shop-container .description {
-  font-size: 12px;
-  color: #777;
-  margin: 0 0 12px 0;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+/* Price Row */
+.price-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
 }
 
-
-.shop-container .price {
+.selling-price {
   font-size: 16px;
-  font-weight: 600;
-  color: #333;
-  margin: 0 0 16px 0;
+  font-weight: 800;
+  color: #3b07b4; /* Purple/Blue color from reference */
 }
 
+.mrp-price {
+  font-size: 13px;
+  color: #9ca3af; /* Light grey */
+  text-decoration: line-through;
+  font-weight: 400;
+}
+
+/* --- Buttons & Actions --- */
+.button-wrapper {
+  padding: 0 15px 20px 15px;
+}
 
 .shop-container .addtocart {
-  background-color: #e63946;
-  align-self: center;
-  color: white;
-  border: none;
-  padding: 10px 16px;
-  width: 140px;
-  border-radius: 16px;
-  font-size: 14px;
-  font-weight: 500;
+  background-color: #fff;
+  color: #111;
+  border: 1px solid #111;
+  padding: 12px;
+  width: 100%;
+  font-size: 13px;
+  font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  margin-top: auto;
-  
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .shop-container .addtocart:hover {
-  background-color: #c7323f;
+  background-color: #111;
+  color: white;
 }
 
-.shop-container .addtocart:active {
-  transform: scale(0.98);
-}
-
+/* --- Filters Section --- */
 .filters-container {
   display: flex;
-  gap: 12px;
-  padding: 12px 20px 0 20px;
-  background-color: #f8f9fa;
+  justify-content: center;
+  gap: 20px;
+  padding: 30px 20px;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+  flex-wrap: wrap;
 }
 
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
 
-
+.filter-group label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #888;
+  letter-spacing: 0.5px;
+  margin-left: 5px;
+}
 
 .filters-container select {
-  min-width: 160px;
-  padding: 8px 10px;
-  border-radius: 13px;
-  border: 1px solid #e6e6e6;
+  min-width: 180px;
+  padding: 10px 15px;
+  border-radius: 0;
+  border: 1px solid #ddd;
   background: #fff;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
   cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
 }
 
-.whislist-contaniner {
-  width: 23px;
-  height: 23px;
-  position: absolute;
-  z-index: 10;
-  display: flex;
-  right: 10px;
-  top: 10px;
+.filters-container select:focus {
+  border-color: #111;
 }
 
-.whislist-contaniner img{
-  width: 23px;
-  height: 23px;
-}
-
+/* --- Pagination --- */
 .pagination {
   display: flex;
   justify-content: center;
   list-style: none;
-  margin-top: 20px;
-  gap: 10px;
+  margin: 40px 0 60px;
+  gap: 8px;
   padding: 0;
 }
 
-.pagination li {
+.pagination li a {
   cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
+  padding: 10px 16px;
+  border: 1px solid #eee;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111;
+  transition: all 0.2s;
+  display: block;
 }
 
-.pagination li.active {
-  background-color: #333;
+.pagination li:hover a {
+  background-color: #f9f9f9;
+}
+
+.pagination li.active a {
+  background-color: #111;
   color: white;
-  border: 1px solid #333;
+  border-color: #111;
 }
 
+/* --- Mobile Responsiveness --- */
 @media (max-width: 768px) {
- .filters-container{
-  display: flex;
+ .filters-container {
   flex-direction: column;
+  align-items: stretch;
  } 
+ 
+ .filter-group {
+   width: 100%;
+ }
+ 
+ .filters-container select {
+   width: 100%;
+ }
 
+ .main-shop-container {
+   grid-template-columns: repeat(2, 1fr);
+   gap: 15px;
+   padding: 15px;
+ }
+ 
+ .product-image-box {
+   height: 200px;
+ }
+ 
+ .shop-container h3 {
+   font-size: 13px;
+ }
+ 
+ .shop-container .addtocart {
+   padding: 10px;
+   font-size: 11px;
+ }
 }

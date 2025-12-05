@@ -14,13 +14,15 @@
   margin: 0 auto;
   padding: 15px 20px;
   display: flex;
-  justify-content: space-between;
+  /* EDITED: Adjusted layout to align left items together */
+  justify-content: flex-start; 
   align-items: center;
 }
 
 /* --- Brand Logo --- */
 .brand-desktop {
-  flex: 1;
+  /* REMOVED flex: 1 to prevent it from pushing nav links away */
+  margin-right: 40px; /* Space between Logo and Links */
 }
 
 .brand-desktop a {
@@ -66,7 +68,8 @@
   display: flex;
   align-items: center;
   gap: 25px;
-  flex: 1;
+  /* IMPORTANT: Pushes this section to the far right */
+  flex: 1; 
   justify-content: flex-end;
 }
 
@@ -197,17 +200,69 @@
   border: 1px solid #eee;
 }
 
-/* Admin Icon */
-.admincss img {
-  width: 24px;
-  height: 24px;
-}
+/* Admin Icon - REMOVED from CSS as well since you removed it */
 
 /* Hamburger Menu */
 .burger {
   display: none;
   cursor: pointer;
   color: #111;
+}
+
+/* --- Dropdown Menu CSS --- */
+.profile-dropdown-menu {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background-color: white;
+  width: 180px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border: 1px solid #f0f0f0;
+  z-index: 1100;
+  padding: 8px 0;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  text-decoration: none;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #f5f5f5;
+  color: #e63946;
+}
+
+.dropdown-icon {
+  margin-right: 12px;
+  font-size: 16px;
+  color: #666;
+}
+
+.dropdown-item:hover .dropdown-icon {
+  color: #e63946;
+}
+
+.dropdown-item.logout {
+  border-top: 1px solid #eee;
+  color: #d62828;
+}
+
+.dropdown-item.logout:hover {
+  background-color: #fff5f5;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* --- Mobile Responsiveness --- */

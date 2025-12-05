@@ -2,14 +2,15 @@ import React, { useState, useContext } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import './navbar.css'
 
-// Importing assets using correct relative paths and exact filenames from your list
+// Importing assets
 import cart from '../assets/cart.png'
-import search from '../assets/serach.png'  // Kept your filename typo 'serach.png'
-import whishlist from '../assets/whishlist.png' // Kept your filename typo 'whishlist.png'
+import search from '../assets/serach.png'
+import whishlist from '../assets/whishlist.png'
 import account from '../assets/account.png'
-import adminimg from '../assets/admin.png'
 
-// Importing contexts from 'src/component/' (singular folder)
+// Importing React Icons for the dropdown menu
+import { FaUser, FaUserShield, FaSignOutAlt } from "react-icons/fa";
+
 import { CartContext } from '../component/cartcouter.jsx'
 import { WishlistContext } from '../component/whislistcouter.jsx'
 import { SearchContext } from '../component/searchcontext.jsx'
@@ -23,6 +24,9 @@ function Navbar() {
     const { setSearchTerm } = useContext(SearchContext)
     const admin = localStorage.getItem('role')
     const [menuOpen, setMenuOpen] = useState(false)
+    
+    // State for toggling profile dropdown
+    const [showProfileMenu, setShowProfileMenu] = useState(false)
 
     function handleKeyPress(e) {
         if (e.key === 'Enter') {
@@ -42,11 +46,26 @@ function Navbar() {
         navigate('/shop');
     }
 
+    // Logout function
+    function handleLogout() {
+        localStorage.clear();
+        setShowProfileMenu(false);
+        navigate('/login');
+        window.location.reload(); 
+    }
+
     return (
         <div className='main-navbar-container'>
             <div className='navbar-container'>
+                
+                {/* MOVED: Desktop Brand Name to the start (Left side) */}
+                <div className='brand-desktop'>
+                    <NavLink to="/" style={{textDecoration: 'none'}}>
+                        Xenfit.
+                    </NavLink>
+                </div>
+
                 <div className="hambarg">
-                    {/* SVG Burger Icon */}
                     <svg 
                         className="burger" 
                         onClick={() => setMenuOpen(!menuOpen)}
@@ -66,7 +85,6 @@ function Navbar() {
                     </svg>
 
                     <div className={`left-navbar ${menuOpen ? 'open' : ''}`}>
-                        {/* Mobile Menu Close Icon */}
                         <svg 
                             className="burger inside-burger"
                             onClick={() => setMenuOpen(false)}
@@ -84,20 +102,12 @@ function Navbar() {
                             <line x1="6" y1="6" x2="18" y2="18"></line>
                         </svg>
 
-                        <div className='admincss'>
-                            <NavLink to={'/admin'}>
-                                <img src={adminimg} style={{ display: admin === 'admin' ? 'block' : 'none' }} alt="Admin Panel" />
-                            </NavLink>
-                        </div>
-                        
-                        {/* Mobile Brand Name (Clickable Home Link) */}
+                        {/* Mobile Brand Name */}
                         <div className='brand-mobile'>
                             <NavLink to="/" onClick={() => setMenuOpen(false)} style={{textDecoration: 'none', color: 'inherit'}}>
                                 Xenfit
                             </NavLink>
                         </div>
-
-                        {/* REMOVED: Home link div as requested */}
                         
                         <div className='shop'>
                             <NavLink to={'/shop'} onClick={() => { shopRefresh(); setMenuOpen(false); }}>Shop</NavLink>
@@ -111,13 +121,6 @@ function Navbar() {
                     </div>
                 </div>
 
-                {/* Desktop Brand Name */}
-                <div className='brand-desktop'>
-                    <NavLink to="/" style={{textDecoration: 'none'}}>
-                        Xenfit.
-                    </NavLink>
-                </div>
-
                 <div className='right-navbar'>
                     <div className='serach-bar'>
                         <input type="text"
@@ -126,7 +129,6 @@ function Navbar() {
                             onChange={(e) => setSearchnav(e.target.value)}
                             onKeyDown={handleKeyPress}
                         />
-
                         <img src={search} alt="Search" onClick={handleImgeClick} />
                     </div>
                     <div className="whishlist">
@@ -148,12 +150,34 @@ function Navbar() {
 
                     {
                         userId &&
-                        <div className="account">
-                            <NavLink to={'/profile'} className="account-btn" >
-                                <button className='btn'><span>Hi, {userId} </span>
-                                </button>
+                        <div className="account" style={{position: 'relative'}}>
+                            <div 
+                                className="account-btn" 
+                                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                                style={{cursor: 'pointer'}}
+                            >
+                                <button className='btn'><span>Hi, {userId} </span></button>
                                 <img className='account-img' src={account} alt="Account" />
-                            </NavLink>
+                            </div>
+
+                            {/* Profile Dropdown Menu */}
+                            {showProfileMenu && (
+                                <div className="profile-dropdown-menu">
+                                    <NavLink to="/profile" onClick={() => setShowProfileMenu(false)} className="dropdown-item">
+                                        <FaUser className="dropdown-icon" /> Profile
+                                    </NavLink>
+                                    
+                                    {admin === 'admin' && (
+                                        <NavLink to="/admin" onClick={() => setShowProfileMenu(false)} className="dropdown-item">
+                                            <FaUserShield className="dropdown-icon" /> Admin
+                                        </NavLink>
+                                    )}
+                                    
+                                    <div onClick={handleLogout} className="dropdown-item logout">
+                                        <FaSignOutAlt className="dropdown-icon" /> Logout
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     }
                     {

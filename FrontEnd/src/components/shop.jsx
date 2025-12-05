@@ -10,23 +10,36 @@ import { WishlistContext } from "../component/whislistcouter";
 import { SearchContext } from "../component/searchcontext";
 import ReactPaginate from "react-paginate";
 
+// Helper to safely get API URL
+const getApiUrl = () => {
+  try {
+    return import.meta.env.VITE_API_URL || 'http://localhost:3000';
+  } catch (e) {
+    return 'http://localhost:3000';
+  }
+};
+
 function Shop() {
   const [products, setProducts] = useState([]);
-  const userId = (localStorage.getItem("id"))
+  const userId = localStorage.getItem("id");
+  const API_URL = getApiUrl();
+  
+  // Sort and Filter States
   const [sortType, setSortType] = useState('default')
-  const [typesort, setTypesort] = useState('types')
-  const [brandsort, setBrandsort] = useState('brand')
+  const [themeSort, setThemeSort] = useState('all') 
+  const [brandSort, setBrandSort] = useState('all')
+  
   const navigate = useNavigate()
   const [wishlist, setWishlist] = useState([])
   const { searchTerm } = useContext(SearchContext)
-  const { updateCartCount } = useContext(CartContext)
+  const { updateCartCount, CartHandleChange } = useContext(CartContext)
   const { updateWhislistCount } = useContext(WishlistContext)
-  const [currentPage,setCurrentPage]=useState(0)
+  const [currentPage, setCurrentPage] = useState(0)
   const productsPerPage = 16
 
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_API_URL}/products`)
+      .get(`${API_URL}/products`)
       .then((res) => {
         let filterdata = res.data.filter((product) => {
           return product.status === 'active'
@@ -36,261 +49,210 @@ function Shop() {
       .catch((err) => console.log(err));
 
     if (userId) {
-      axios.get(`${import.meta.env.VITE_API_URL}/users/${userId}`)
+      axios.get(`${API_URL}/users/${userId}`)
         .then((res) => setWishlist(res.data.whishlist || []))
+        .catch(err => console.log(err));
     }
-  }, [userId]);
+  }, [userId, API_URL]);
 
-
-
-
-  async function CartHandleChange(product) {
-    if (!userId) {
-      toast.error("Please log in to add to cart ",
-        {
-          positon: 'top-center',
-          autoClose: 1300,
-          style: { marginTop: '60px' }
-        })
-      return
-    }
-
-    const userRespone = await axios.get(`${import.meta.env.VITE_API_URL}/users/${userId}`)
-    const userData = userRespone.data
-    const currenCart = userData.cart || []
-
-    const existingItem = currenCart.findIndex((item) => item.productId === product.id)
-    let updatedCart;
-
-    if (existingItem !== -1) {
-      toast.warn('Product already in cart', {
-        positon: 'top-center',
-        autoClose: 1300,
-        style: { marginTop: '60px' }
-      })
-    } else {
-      updatedCart = [
-        ...currenCart,
-        {
-          productId: product.id,
-          title: product.title,
-          price: product.price,
-          image: product.image,
-          quantity: 1,
-        },
-      ]
-      toast.success('Item added to Cart', {
-        positon: 'top-center',
-        autoClose: 1300,
-        style: { marginTop: '60px' }
-      })
-
-      await axios.put(`${import.meta.env.VITE_API_URL}/users/${userId}`, {
-        ...userData,
-        cart: updatedCart,
-      })
-      updateCartCount()
-    }
-
-  }
-
-
+  // Filtering Logic
   let filterProducts = products.filter((product) =>
-    product.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.brand?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    (product.title?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+    (product.brand?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+    (product.theme?.toLowerCase() || "").includes(searchTerm.toLowerCase()) || 
+    (product.description?.toLowerCase() || "").includes(searchTerm.toLowerCase())
   )
 
+  // Sorting Logic
   if (sortType === 'low to high') {
     filterProducts.sort((a, b) => a.price - b.price)
-
   } else if (sortType === 'high to low') {
     filterProducts.sort((a, b) => b.price - a.price)
   }
 
-
-  if (typesort === 'headphone') {
+  // Theme Filtering
+  if (themeSort !== 'all') {
     filterProducts = filterProducts.filter((product) =>
-      product.type.toLowerCase().includes('headphone')
-    )
-  } else if (typesort === 'headset') {
-    filterProducts = filterProducts.filter((product) =>
-      product.type.toLowerCase().includes('headset')
-    )
-  } else if (typesort === 'earbuds') {
-    filterProducts = filterProducts.filter((product) =>
-      product.type.toLowerCase().includes('earbuds')
-    )
-  } else if (typesort === 'neckband') {
-    filterProducts = filterProducts.filter((product) =>
-      product.type.toLowerCase().includes('neckband')
-    )
-  } else if (typesort === 'speaker') {
-    filterProducts = filterProducts.filter((product) =>
-      product.type.toLowerCase().includes('speaker')
+      product.theme && product.theme.toLowerCase() === themeSort.toLowerCase()
     )
   }
 
-  if (brandsort === 'boat') {
+  // Brand Filtering
+  if (brandSort !== 'all') {
     filterProducts = filterProducts.filter((product) =>
-      product.brand.toLowerCase().includes('boat')
-    )
-  } else if (brandsort === 'oneplus') {
-    filterProducts = filterProducts.filter((product) =>
-      product.brand.toLowerCase().includes('oneplus')
-    )
-  } else if (brandsort === 'realme') {
-    filterProducts = filterProducts.filter((product) =>
-      product.brand.toLowerCase().includes('realme')
-    )
-  } else if (brandsort === 'apple') {
-    filterProducts = filterProducts.filter((product) =>
-      product.brand.toLowerCase().includes('apple')
-    )
-  } else if (brandsort === 'sony') {
-    filterProducts = filterProducts.filter((product) =>
-      product.brand.toLowerCase().includes('sony')
-    )
-  } else if (brandsort === 'jbl') {
-    filterProducts = filterProducts.filter((product) =>
-      product.brand.toLowerCase().includes('jbl')
+      product.brand && product.brand.toLowerCase() === brandSort.toLowerCase()
     )
   }
-
-  //  function showMoreHandle(){
-  //    navigate(`/${filterProducts.id}`)
-  //  }
 
   async function WhishlistHandleChange(product) {
     if (!userId) {
-      toast.error("Please log in to add to Whislist ",
+      toast.error("Please log in to add to Wishlist ",
         {
-          positon: 'top-center',
+          position: 'top-center',
           autoClose: 1300,
           style: { marginTop: '60px' }
         })
       return
     }
 
-    const userRespone = await axios.get(`${import.meta.env.VITE_API_URL}/users/${userId}`)
-    const userData = userRespone.data
-    const currenwhishlist = userData.whishlist || []
+    try {
+      const userRespone = await axios.get(`${API_URL}/users/${userId}`)
+      const userData = userRespone.data
+      const currenwhishlist = userData.whishlist || []
 
-    const existingItem = currenwhishlist.findIndex((item) => item.productId === product.id)
-    let updatedwihislist;
+      const existingItem = currenwhishlist.findIndex((item) => item.productId === product.id)
+      let updatedwihislist;
 
-    if (existingItem !== -1) {
-      toast.warn('Product already in whishlist', {
-        positon: 'top-center',
-        autoClose: 1300,
-        style: { marginTop: '60px' }
-      })
-    } else {
-      updatedwihislist = [
-        ...currenwhishlist,
-        {
-          productId: product.id,
-          title: product.title,
-          price: product.price,
-          image: product.image,
-          quantity: 1,
-        },
-      ]
-      toast.success('Item added to Whishlist', {
-        positon: 'top-center',
-        autoClose: 1300,
-        style: { marginTop: '60px' }
-      })
-
-      await axios.put(`${import.meta.env.VITE_API_URL}/users/${userId}`, {
-        ...userData,
-        whishlist: updatedwihislist,
-      })
-      setWishlist(updatedwihislist)
+      if (existingItem !== -1) {
+        toast.warn('Product already in wishlist', {
+          position: 'top-center',
+          autoClose: 1300,
+          style: { marginTop: '60px' }
+        })
+      } else {
+        updatedwihislist = [
+          ...currenwhishlist,
+          {
+            productId: product.id,
+            title: product.title,
+            price: product.price,
+            image: product.image,
+            quantity: 1,
+          },
+        ]
+        
+        await axios.put(`${API_URL}/users/${userId}`, {
+          ...userData,
+          whishlist: updatedwihislist,
+        })
+        
+        setWishlist(updatedwihislist)
+        toast.success('Item added to Wishlist', {
+          position: 'top-center',
+          autoClose: 1300,
+          style: { marginTop: '60px' }
+        })
+        updateWhislistCount()
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update wishlist");
     }
-
-    updateWhislistCount()
-
   }
-
-
 
   function whishlistcolor(productId) {
     return wishlist.find((item) => item.productId === productId)
   }
 
-const offset = currentPage * productsPerPage;
-const pageCount = Math.ceil(filterProducts.length / productsPerPage);
-const currentProducts = filterProducts.slice(offset, offset + productsPerPage);
-
+  const offset = currentPage * productsPerPage;
+  const pageCount = Math.ceil(filterProducts.length / productsPerPage);
+  const currentProducts = filterProducts.slice(offset, offset + productsPerPage);
 
   const handlePageClick = ({ selected }) => {
     setCurrentPage(selected);
   };
-  
 
   return (
     <>
       <div className="filters-container">
-        <select name="" id="" value={sortType} onChange={(e) => setSortType(e.target.value)}>
-          <option value="default">Default</option>
-          <option value="low to high">Low to high</option>
-          <option value="high to low">High to low </option>
-        </select>
-        <select name="" id="" value={typesort} onChange={(e) => setTypesort(e.target.value)}>
-          <option value="types">Product Type</option>
-          <option value="headphone">Headphone</option>
-          <option value="headset">Headset</option>
-          <option value="earbuds">Earbuds</option>
-          <option value="neckband">Neckband</option>
-          <option value="speaker">Speaker</option>
-        </select>
-        <select name="" id="" value={brandsort} onChange={(e) => setBrandsort(e.target.value)} >
-          <option value="brand">Brand</option>
-          <option value="boat">boAt</option>
-          <option value="oneplus">OnePlus</option>
-          <option value="realme">Realme</option>
-          <option value="apple">Apple</option>
-          <option value="sony">Sony</option>
-          <option value="jbl">JBL</option>
-        </select>
+        {/* Sort Price */}
+        <div className="filter-group">
+            <label>Sort By</label>
+            <select value={sortType} onChange={(e) => setSortType(e.target.value)}>
+            <option value="default">Featured</option>
+            <option value="low to high">Price: Low to High</option>
+            <option value="high to low">Price: High to Low</option>
+            </select>
+        </div>
+
+        {/* Theme Filter */}
+        <div className="filter-group">
+            <label>Theme</label>
+            <select value={themeSort} onChange={(e) => setThemeSort(e.target.value)}>
+            <option value="all">All Themes</option>
+            <option value="Anime">Anime</option>
+            <option value="Sports">Sports</option>
+            <option value="Movie">Movie</option>
+            <option value="Motivational">Motivational</option>
+            <option value="Minimal">Minimal</option>
+            <option value="Vintage">Vintage</option>
+            </select>
+        </div>
+
+        {/* Brand Filter */}
+        <div className="filter-group">
+            <label>Brand</label>
+            <select value={brandSort} onChange={(e) => setBrandSort(e.target.value)} >
+            <option value="all">All Brands</option>
+            <option value="Otaku Wear">Otaku Wear</option>
+            <option value="Xenfit Originals">Xenfit Originals</option>
+            <option value="Grind Gear">Grind Gear</option>
+            <option value="Xenfit Essentials">Xenfit Essentials</option>
+            <option value="Hoops Nation">Hoops Nation</option>
+            <option value="Cinema Cult">Cinema Cult</option>
+            </select>
+        </div>
       </div>
 
       <div className="main-shop-container">
-        {currentProducts.map((product, index) => (
-          <div className="shop-container" key={index}>
+        {currentProducts.map((product, index) => {
+          // Calculate discount percentage
+          const discount = product.mrp ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
 
-            <div className="whislist-contaniner"
-              onClick={() => WhishlistHandleChange(product)}>
-              <FaHeart style={{
-                color: whishlistcolor(product.id) ? 'red' : 'gray',
-                width: '20px',
-                height: '20px'
-              }} />
-            </div>
-            <NavLink to={`/${product.id}`} style={{ textDecoration: 'none' }}>
-              <div >
-                <img src={product.image} alt="" />
-                <h3>{product.title}</h3>
-                <h4>{product.brand}</h4>
-                <p className="description"> {product.description}</p>
-                <p className="price">₹{product.price}</p>
+          return (
+            <div className="shop-container" key={index}>
+              
+              <div className="whislist-contaniner"
+                onClick={() => WhishlistHandleChange(product)}>
+                <FaHeart style={{
+                  color: whishlistcolor(product.id) ? '#e63946' : '#ccc', 
+                  width: '18px',
+                  height: '18px'
+                }} />
               </div>
-            </NavLink>
-            <button className="addtocart" onClick={() => CartHandleChange(product)}>Add to Cart</button>
 
-
-          </div>
-        ))}
+              <NavLink to={`/${product.id}`} style={{ textDecoration: 'none' }}>
+                <div className="product-image-box">
+                  <img src={product.image} alt={product.title} />
+                  {/* Discount Badge */}
+                  {discount > 0 && (
+                    <span className="discount-badge">{discount}% OFF</span>
+                  )}
+                </div>
+                <div className="product-info-box">
+                  <h3>{product.title}</h3>
+                  <h4>{product.brand}</h4>
+                  
+                  <div className="price-row">
+                    <span className="selling-price">₹{product.price}</span>
+                    {product.mrp && <span className="mrp-price">₹{product.mrp}</span>}
+                  </div>
+                </div>
+              </NavLink>
+              
+              <div className="button-wrapper">
+                <button className="addtocart" onClick={() => CartHandleChange(product)}>ADD TO BAG</button>
+              </div>
+            </div>
+          )
+        })}
       </div>
 
       <ReactPaginate
-      previousLabel={"Previous"}
-      nextLabel={'Next'}
-      pageCount={pageCount}
-      onPageChange={handlePageClick}
-      containerClassName={'pagination'}
-      activeClassName={'active'}
+        previousLabel={"Prev"}
+        nextLabel={'Next'}
+        pageCount={pageCount}
+        onPageChange={handlePageClick}
+        containerClassName={'pagination'}
+        activeClassName={'active'}
+        pageClassName={'page-item'}
+        pageLinkClassName={'page-link'}
+        previousClassName={'page-item'}
+        previousLinkClassName={'page-link'}
+        nextClassName={'page-item'}
+        nextLinkClassName={'page-link'}
+        breakClassName={'page-item'}
+        breakLinkClassName={'page-link'}
       />
     </>
   );
