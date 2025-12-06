@@ -216,14 +216,7 @@
           "title": "Hustle Hard Motivation",
           "price": 499,
           "image": "https://images.unsplash.com/photo-1581655353564-df123a1eb820?q=80&w=1887&auto=format&fit=crop",
-          "quantity": 8
-        },
-        {
-          "productId": 8,
-          "title": "Never Give Up",
-          "price": 399,
-          "image": "https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?q=80&w=1769&auto=format&fit=crop",
-          "quantity": 2
+          "quantity": 1
         },
         {
           "productId": 4,
@@ -440,7 +433,8 @@
         "place": "vkd",
         "pincode": "2345678"
       },
-      "id": 1
+      "id": 1,
+      "status": "Delivered"
     },
     {
       "username": "sanu",
@@ -462,9 +456,78 @@
         "place": "vkd",
         "pincode": "679333"
       },
-      "status": "Shipped",
+      "status": "Out for Delivery",
       "orderDate": "12/5/2025",
       "id": 2
+    },
+    {
+      "username": "sanu",
+      "useremail": "sanuvkd104@gmail.com",
+      "userid": 2,
+      "items": [
+        {
+          "productId": 3,
+          "title": "Hustle Hard Motivation",
+          "price": 499,
+          "image": "https://images.unsplash.com/photo-1581655353564-df123a1eb820?q=80&w=1887&auto=format&fit=crop",
+          "quantity": 8
+        },
+        {
+          "productId": 8,
+          "title": "Never Give Up",
+          "price": 399,
+          "image": "https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?q=80&w=1769&auto=format&fit=crop",
+          "quantity": 2
+        },
+        {
+          "productId": 4,
+          "title": "Minimalist Box Logo",
+          "price": 449,
+          "image": "https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=1964&auto=format&fit=crop",
+          "quantity": 1
+        }
+      ],
+      "delivery": {
+        "name": "adhil",
+        "mobile": "24443244",
+        "address": "dfasf",
+        "place": "demoo",
+        "pincode": "32442"
+      },
+      "status": "Shipped",
+      "orderDate": "12/6/2025",
+      "id": 3
+    },
+    {
+      "username": "yahya",
+      "useremail": "sanuvkd104@gmail.com",
+      "userid": 4,
+      "items": [
+        {
+          "productId": 2,
+          "title": "Retro 90s Vintage Wash",
+          "price": 699,
+          "image": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=1780&auto=format&fit=crop",
+          "quantity": 1
+        },
+        {
+          "productId": 3,
+          "title": "Hustle Hard Motivation",
+          "price": 499,
+          "image": "https://images.unsplash.com/photo-1581655353564-df123a1eb820?q=80&w=1887&auto=format&fit=crop",
+          "quantity": 1
+        }
+      ],
+      "delivery": {
+        "name": "Muhammed Shibil",
+        "mobile": "08606569408",
+        "address": "avalaksham vittil",
+        "place": "vazhikkkadavu",
+        "pincode": "679333"
+      },
+      "status": "Out for Delivery",
+      "orderDate": "12/6/2025",
+      "id": 4
     }
   ]
 }

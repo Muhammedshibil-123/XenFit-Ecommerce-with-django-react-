@@ -1,141 +1,229 @@
+/* --- Page Wrapper --- */
+.users-page-wrapper {
+  width: 100%;
+  box-sizing: border-box;
+}
 
 .main-users-container {
   background: #fff;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  width: 85%;
-  margin: 20px auto;
+  padding: 30px;
+  /* EDITED: Removed rounded corners for sharper look */
+  border: 1px solid #eee;
+  width: 95%;
+  max-width: 1200px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
+}
+
+/* --- Header & Controls --- */
+.users-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #111;
+  padding-bottom: 20px;
+  flex-wrap: wrap;
   gap: 20px;
 }
 
+.users-header h1 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #111;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
+}
 
-.main-users-container .tableheadline {
-  display: grid;
-  grid-template-columns: 80px 120px 2fr 1fr 250px 1fr 1fr 1fr;
-  gap: 10px;
-  padding: 15px;
-  background: #f5f7fa;
-  border-radius: 10px;
-  font-weight: 600;
+.controls-container {
+  display: flex;
+  gap: 15px;
+}
+
+.search-box input {
+  padding: 10px 15px;
+  border: 1px solid #ddd;
   font-size: 14px;
-  color: #444;
-  height: 55px;
- 
+  width: 250px;
+  outline: none;
+  transition: all 0.3s ease;
+  background-color: #f9f9f9;
 }
 
-.main-users-container .tablestatus{
-    display: flex;
-    left: 120px;
-    position: relative;
+.search-box input:focus {
+  border-color: #111;
+  background-color: #fff;
 }
 
+.filter-box select {
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  cursor: pointer;
+  background-color: #fff;
+  outline: none;
+  min-width: 130px;
+}
 
-.main-users-container .product-row {
+.filter-box select:focus {
+  border-color: #111;
+}
+
+/* --- Table Grid Layout --- */
+/* Define the column widths in one place to ensure header and rows match */
+.table-header-row, .user-row {
   display: grid;
-  grid-template-columns: 80px 120px 2fr 1fr 250px 1fr 1fr 1fr;
-  gap: 10px;
+  /* ID | User | Email | Mobile | Status | Action */
+  grid-template-columns: 0.5fr 1.5fr 2fr 1.5fr 1fr 1fr; 
   align-items: center;
-  padding: 12px 15px;
-  border-bottom: 1px solid #eee;
-  transition: background 0.2s ease;
+  padding: 15px 20px;
+  gap: 10px;
 }
 
-.main-users-container .product-row:hover {
-  background: #f9fbfd;
-}
-
-
-.main-users-container .Id {
-  font-size: 14px;
-  color: #666;
-}
-
-
-
-.main-users-container .username {
-  font-size: 15px;
+/* --- Table Header --- */
+.table-header-row {
+  background: #f4f4f4;
   font-weight: 700;
-  color: #333;
-}
-
-.main-users-container .email {
-  font-size: 14px;
+  font-size: 12px;
   color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #ddd;
 }
 
+/* --- Table Body --- */
+.users-list {
+  display: flex;
+  flex-direction: column;
+}
 
+.user-row {
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s;
+}
 
+.user-row:hover {
+  background-color: #fafafa;
+}
 
-.main-users-container .status {
+/* Column Specific Styles */
+.col-id {
+  font-weight: 600;
+  color: #888;
+  font-size: 13px;
+}
+
+.col-user {
+  font-weight: 700;
+  color: #111;
+  font-size: 14px;
+}
+
+.col-email, .col-mobile {
+  color: #555;
+  font-size: 14px;
+}
+
+/* Status Badge */
+.col-status {
+  display: flex;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-badge.active {
+  background-color: #e6ffe6;
+  color: #008000;
+  border: 1px solid #ccffcc;
+}
+
+.status-badge.inactive {
+  background-color: #ffe6e6;
+  color: #cc0000;
+  border: 1px solid #ffcccc;
+}
+
+/* --- Toggle Button --- */
+.col-action {
   display: flex;
   justify-content: center;
-  font-size: 20px;
-  color: #666;
-  cursor: pointer;
 }
 
-
-.main-users-container .toggle-btn {
-  width: 48px;      
+.toggle-btn {
+  width: 44px;      
   height: 24px;     
   display: flex;
   align-items: center;
-  border-radius: 9999px;
-  padding: 4px;    
+  border-radius: 20px; /* Pill shape */
+  padding: 3px;    
   transition: background-color 0.3s ease;
   cursor: pointer;
-  background-color: red; 
+  border: none;
+  outline: none;
 }
 
-.main-users-container .toggle-btn.active {
-  background-color: #16a34a; 
+.toggle-btn.on {
+  background-color: #111; /* Active color */
 }
 
-.main-users-container .toggle-circle {
-  width: 16px;      
-  height: 16px;   
+.toggle-btn.off {
+  background-color: #ccc; /* Inactive color */
+}
+
+.toggle-circle {
+  width: 18px;      
+  height: 18px;   
   background: white;
   border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transform: translateX(0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease;
 }
 
-.main-users-container .toggle-circle.active {
-  transform: translateX(24px);
+.toggle-btn.on .toggle-circle {
+  transform: translateX(20px);
 }
 
+.toggle-btn.off .toggle-circle {
+  transform: translateX(0);
+}
 
-.main-users-container .first-part h1 {
-  font-size: 28px;
-  font-weight: 700;
-  color: #333;
-  margin-bottom: 15px;
+/* --- No Data Message --- */
+.no-data {
   text-align: center;
+  padding: 40px;
+  color: #777;
+  font-style: italic;
 }
 
-
-.main-users-container .serach input {
-  padding: 10px 1px;
-  border: 2px solid #ddd;
-  border-radius: 14px;
-  outline: none;
-  font-size: 14px;
-  width: 250px;
-  transition: all 0.3s ease;
+/* --- Mobile Responsiveness --- */
+@media (max-width: 900px) {
+  .main-users-container {
+    overflow-x: auto; /* Allow horizontal scroll for table on small screens */
+  }
+  
+  .table-header-row, .user-row {
+    min-width: 800px; /* Force minimum width so columns don't squash */
+  }
+  
+  .users-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .controls-container {
+    width: 100%;
+    flex-direction: column;
+  }
+  
+  .search-box input, .filter-box select {
+    width: 100%;
+  }
 }
-
-.main-users-container .serach input:focus {
-  border-color: #1a73e8;
-  box-shadow: 0 0 2px black;
-}
-
-.serach-container{
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-}
-

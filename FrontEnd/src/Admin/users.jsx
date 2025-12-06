@@ -1,7 +1,8 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import './users.css'
-
+// EDITED: Importing search icon if you want to use it inside the input wrapper, 
+// otherwise standard input is fine.
 
 function Users() {
   const [users, setUsers] = useState([])
@@ -10,7 +11,17 @@ function Users() {
   const userId = localStorage.getItem('id')
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_URL}/users`)
+    // Using the environment variable correctly
+    const getApiUrl = () => {
+      try {
+        return import.meta.env.VITE_API_URL || 'http://localhost:3000';
+      } catch (e) {
+        return 'http://localhost:3000';
+      }
+    };
+    const API_URL = getApiUrl();
+
+    axios.get(`${API_URL}/users`)
       .then((res) => setUsers(res.data))
       .catch((err) => console.error(err))
   }, [userId])
@@ -24,9 +35,17 @@ function Users() {
     setUsers((prev) =>
       prev.map((p) => (p.id === id ? { ...p, status: newStatus } : p))
     )
+    
+    const getApiUrl = () => {
+      try {
+        return import.meta.env.VITE_API_URL || 'http://localhost:3000';
+      } catch (e) {
+        return 'http://localhost:3000';
+      }
+    };
 
     axios
-      .patch(`${import.meta.env.VITE_API_URL}/users/${id}`, { status: newStatus })
+      .patch(`${getApiUrl()}/users/${id}`, { status: newStatus })
       .catch((err) => {
         console.error(err)
       })
@@ -34,15 +53,14 @@ function Users() {
 
   function handleSearch(e) {
     setSearch(e.target.value)
-
   }
 
   let filterProducts = users.filter((user) => (
-    user.username?.toLowerCase().includes(search.toLowerCase()) ||
-    user.email?.toLowerCase().includes(search.toLowerCase()) ||
-    user.id?.toString().toLowerCase().includes(search.toLowerCase())) ||
-    user.status?.toLowerCase().includes(search.toLowerCase())
-  )
+    (user.username?.toLowerCase() || '').includes(search.toLowerCase()) ||
+    (user.email?.toLowerCase() || '').includes(search.toLowerCase()) ||
+    (user.id?.toString().toLowerCase() || '').includes(search.toLowerCase()) ||
+    (user.status?.toLowerCase() || '').includes(search.toLowerCase())
+  ))
 
 
   if (typesort === 'active') {
@@ -56,62 +74,73 @@ function Users() {
   }
 
   return (
-    <div style={{ marginLeft: '290px' }}>
+    // EDITED: Removed inline margin-left. The Sidebar layout handles the spacing now.
+    <div className='users-page-wrapper'>
       <div className='main-users-container'>
-        <div className="first-part">
-          <h1>Users</h1>
-          <div className="serach-container">
-            <div className="serach">
+        
+        {/* Header Section */}
+        <div className="users-header">
+          <h1>CUSTOMER DATABASE</h1>
+          <div className="controls-container">
+            <div className="search-box">
               <input type="text"
                 onChange={handleSearch}
-                placeholder=' search user...'
+                placeholder='Search customers...'
                 value={search}
               />
             </div>
-            <div className="filters">
-                <select name="" id="" value={typesort} onChange={(e) => setTypesort(e.target.value)}>
-                  <option value="types">Default</option>
+            <div className="filter-box">
+                <select value={typesort} onChange={(e) => setTypesort(e.target.value)}>
+                  <option value="types">All Status</option>
                   <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
+                  <option value="inactive">Blocked</option>
                 </select>
-              </div>
+            </div>
           </div>
         </div>
-        <div className="tableheadline">
-          <h4 className='tableId'>Id</h4>
-          <h4 className='tableTitle'>Username</h4>
-          <h4 className='tableBrand'>Email</h4>
-          <h4 className='tablemobile'>Mobile</h4>
-          <h4 className='tablestatus'>Status</h4>
-          <h4 className='tableblock'>Block/Unblock</h4>
+
+        {/* Table Header */}
+        <div className="table-header-row">
+          <span className='col-id'>ID</span>
+          <span className='col-user'>USER</span>
+          <span className='col-email'>EMAIL</span>
+          <span className='col-mobile'>MOBILE</span>
+          <span className='col-status'>STATUS</span>
+          <span className='col-action'>ACTION</span>
         </div>
 
-        <div className="products-container">
-          {filterProducts.map((users, index) => (
-            <div className="product-row" key={index}>
-              <p className='Id'>{users.id}</p>
+        {/* Table Body */}
+        <div className="users-list">
+          {filterProducts.length > 0 ? (
+             filterProducts.map((user) => (
+              <div className="user-row" key={user.id}>
+                <span className='col-id'>#{user.id}</span>
+                <span className='col-user'>{user.username}</span>
+                <span className='col-email'>{user.email}</span>
+                <span className='col-mobile'>{user.mobile}</span>
+                
+                <span className='col-status'>
+                  <span className={`status-badge ${user.status === 'active' ? 'active' : 'inactive'}`}>
+                    {user.status}
+                  </span>
+                </span>
 
-
-              <h3 className='username'>{users.username}</h3>
-              <p className='email'>{users.email}</p>
-              <p className='mobile'>{users.mobile}</p>
-              <p className='status'>{users.status}</p>
-
-
-              <p className='status'>
-                <button
-                  onClick={() => toggleusersStatus(users.id)}
-                  className={`toggle-btn ${users.status === "active" ? "active" : ""}`}
-                >
-                  <div className={`toggle-circle ${users.status === "active" ? "active" : ""}`}></div>
-                </button>
-              </p>
-
-            </div>
-          ))}
+                <span className='col-action'>
+                  <button
+                    onClick={() => toggleusersStatus(user.id)}
+                    className={`toggle-btn ${user.status === "active" ? "on" : "off"}`}
+                    title={user.status === "active" ? "Block User" : "Unblock User"}
+                  >
+                    <div className="toggle-circle"></div>
+                  </button>
+                </span>
+              </div>
+            ))
+          ) : (
+            <p className="no-data">No users found matching your criteria.</p>
+          )}
         </div>
       </div>
-
     </div>
   )
 }
