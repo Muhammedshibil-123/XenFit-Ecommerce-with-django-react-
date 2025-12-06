@@ -212,6 +212,20 @@
       "id": 2,
       "cart": [
         {
+          "productId": 3,
+          "title": "Hustle Hard Motivation",
+          "price": 499,
+          "image": "https://images.unsplash.com/photo-1581655353564-df123a1eb820?q=80&w=1887&auto=format&fit=crop",
+          "quantity": 8
+        },
+        {
+          "productId": 8,
+          "title": "Never Give Up",
+          "price": 399,
+          "image": "https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?q=80&w=1769&auto=format&fit=crop",
+          "quantity": 2
+        },
+        {
           "productId": 4,
           "title": "Minimalist Box Logo",
           "price": 449,
@@ -427,6 +441,30 @@
         "pincode": "2345678"
       },
       "id": 1
+    },
+    {
+      "username": "sanu",
+      "useremail": "sanuvkd104@gmail.com",
+      "userid": 2,
+      "items": [
+        {
+          "productId": 4,
+          "title": "Minimalist Box Logo",
+          "price": 449,
+          "image": "https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=1964&auto=format&fit=crop",
+          "quantity": 1
+        }
+      ],
+      "delivery": {
+        "name": "sanu",
+        "mobile": "8989982830",
+        "address": "faf",
+        "place": "vkd",
+        "pincode": "679333"
+      },
+      "status": "Shipped",
+      "orderDate": "12/5/2025",
+      "id": 2
     }
   ]
 }

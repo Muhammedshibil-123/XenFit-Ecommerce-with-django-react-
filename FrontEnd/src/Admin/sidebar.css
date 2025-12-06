@@ -1,24 +1,51 @@
+/* --- Admin Layout Wrapper --- */
+.admin-layout {
+  display: flex;
+  width: 100%;
+}
+
+.admin-container {
+  display: flex;
+  width: 100%;
+}
+
+/* --- Sidebar Container --- */
 .main-sidebar {
-  width: 250px;
-  height: 690px;
-  background: linear-gradient(180deg, #1e1e2f, #141421);
+  width: 260px;
+  height: 100vh;
+  /* EDITED: Changed background to Jet Black to match Footer/Streetwear vibe */
+  background-color: #111; 
   color: #fff;
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: 30px;
   position: fixed;
   top: 0;
   left: 0;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.4);
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+  z-index: 100;
 }
 
+/* --- Brand Header --- */
 .main-sidebar h1 {
-  font-size: 26px;
-  font-weight: bold;
-  margin-bottom: 40px;
-  color: #ff4d4d;
-  letter-spacing: 1px;
-  margin-left: 7px;
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 50px;
+  /* EDITED: Using the Xenfit Red Accent */
+  color: #fff; 
+  letter-spacing: -1px;
+  text-transform: uppercase;
+  text-align: center;
+  border-bottom: 2px solid #333;
+  padding-bottom: 20px;
+}
+
+/* --- Navigation Links --- */
+.text-div {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-grow: 1;
 }
 
 .main-sidebar a {
@@ -27,39 +54,64 @@
 }
 
 .main-sidebar p {
-  padding: 12px 16px;
-  font-size: 16px;
-  color: #bbb;
-  margin: 6px 0;
-  border-radius: 10px;
-  transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.05);
+  padding: 15px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #888; /* Gray text for inactive state */
+  margin: 0;
+  /* EDITED: Removed border-radius for sharp streetwear look */
+  border-radius: 0; 
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-left: 3px solid transparent;
 }
 
+/* --- Hover State --- */
 .main-sidebar p:hover {
-  background: rgba(0, 229, 255, 0.15);
-  color: #00e5ff;
-  transform: translateX(5px);
-  cursor: pointer;
+  background: #1a1a1a;
+  color: #fff;
+  padding-left: 25px; /* Slight movement effect */
+  border-left: 3px solid #555;
 }
 
+/* --- Active State (Matches React Router 'active' class on NavLink) --- */
+.nav.active p {
+  background: #e63946; /* Xenfit Red Background */
+  color: #fff;
+  border-left: 3px solid #fff;
+}
 
+/* --- Logout Button --- */
 .main-sidebar button {
   margin-top: auto; 
+  margin-bottom: 80px;
   width: 100%;
-  padding: 12px 16px;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  background: #ff4d4d;
+  padding: 15px;
+  font-size: 14px;
+  font-weight: 700;
+  border: 1px solid #fff;
+  /* EDITED: Inverted style (White button on Black bg) */
+  background: transparent;
   color: #fff;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
   transition: all 0.3s ease;
+  border-radius: 0; /* Sharp corners */
 }
 
 .main-sidebar button:hover {
-  background: #e60000;
-  box-shadow: 0 0 10px rgba(255, 77, 77, 0.6);
+  background: #fff;
+  color: #111;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
 }
 
+/* --- Content Area Adjustment --- */
+.admin-content {
+  margin-left: 260px; /* Same width as sidebar */
+  width: calc(100% - 260px);
+  padding: 40px;
+  background-color: #f4f4f4; /* Light grey background for content */
+  min-height: 100vh;
+}

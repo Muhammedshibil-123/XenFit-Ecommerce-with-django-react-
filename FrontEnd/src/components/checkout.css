@@ -7,10 +7,10 @@
   box-sizing: border-box;
 }
 
-/* Grid Layout for Desktop */
+/* EDITED: Grid Layout for Desktop - Split Screen */
 .checkout-grid {
   display: grid;
-  grid-template-columns: 1.5fr 1fr; /* Form takes more space, Summary takes less */
+  grid-template-columns: 1.5fr 1fr; /* Form takes 60%, Summary takes 40% */
   gap: 60px;
   max-width: 1200px;
   margin: 0 auto;
@@ -27,6 +27,7 @@
   color: #111;
   margin: 0 0 10px 0;
   letter-spacing: -1px;
+  text-transform: uppercase;
 }
 
 .header-section .underline {
@@ -42,6 +43,7 @@
   gap: 25px;
 }
 
+/* Grouping label and input */
 .input-group {
   display: flex;
   flex-direction: column;
@@ -53,6 +55,7 @@
   font-weight: 700;
   color: #555;
   letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .input-group input {
@@ -60,7 +63,7 @@
   border: 1px solid #ddd;
   background-color: #f9f9f9;
   font-size: 15px;
-  border-radius: 0; /* Sharp edges */
+  border-radius: 0; /* Sharp edges for streetwear look */
   outline: none;
   transition: all 0.3s ease;
   color: #333;
@@ -69,8 +72,10 @@
 .input-group input:focus {
   border-color: #111;
   background-color: #fff;
+  box-shadow: 0 0 0 1px #111;
 }
 
+/* Two inputs side by side */
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -101,10 +106,10 @@
   max-height: 300px;
   overflow-y: auto;
   margin-bottom: 25px;
-  padding-right: 5px; /* Space for scrollbar */
+  padding-right: 5px; 
 }
 
-/* Custom Scrollbar for items */
+/* Custom Scrollbar */
 .summary-items::-webkit-scrollbar {
   width: 4px;
 }
@@ -132,6 +137,7 @@
   font-weight: 600;
   margin: 0 0 5px 0;
   color: #333;
+  text-transform: uppercase;
 }
 
 .summary-info .qty-text {
@@ -150,7 +156,7 @@
 .price-breakdown {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 25px;
 }
 
@@ -172,7 +178,7 @@
 }
 
 .price-breakdown .total {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 800;
   color: #111;
 }
@@ -188,12 +194,13 @@
   font-weight: 700;
   letter-spacing: 1px;
   cursor: pointer;
-  border-radius: 0; /* Sharp edges */
+  border-radius: 0; 
   transition: background-color 0.3s ease;
+  text-transform: uppercase;
 }
 
 .place-order-btn:hover {
-  background-color: #e63946; /* Xenfit Red */
+  background-color: #e63946; 
 }
 
 /* --- Mobile Responsiveness --- */
@@ -209,5 +216,10 @@
 
   .summary-card {
     position: static; /* Remove sticky on mobile */
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr; /* Stack inputs on small screens */
+    gap: 15px;
   }
 }
