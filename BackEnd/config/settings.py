@@ -38,9 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    'django.contrib.staticfiles', 
-
-    
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
@@ -88,8 +85,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'xenfit_db',       
+        'USER': 'postgres',        
+        'PASSWORD': '123456',
+        'HOST': 'localhost',      
+        'PORT': '5432',          
     }
 }
 
@@ -150,3 +151,5 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),    
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+AUTH_USER_MODEL='users_app.CustomUser'
