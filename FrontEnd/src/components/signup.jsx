@@ -48,25 +48,32 @@ function Signup() {
     return errors;
   }
 
-  function submit(e) {
+  async function submit(e) {
     e.preventDefault();
     const ValidateErrors = validate(Users);
     setValidate(ValidateErrors);
 
     if (Object.keys(ValidateErrors).length === 0) {
-      axios.post(`${import.meta.env.VITE_API_URL}/users`, Users)
-      .then(() => {
-        setUsers({
-          username: "",
-          age: "",
-          email: "",
-          mobile: "",
-          password: "",
-          status:"active"
-        })
-      })
-      .catch((err)=>console.log(err))
-      navigate('/login')
+      try {
+        await axios.post(`${import.meta.env.VITE_API_URL}/users/register/`, {
+            username: Users.username,
+            email: Users.email,
+            password: Users.password,
+            mobile: Users.mobile,
+            age: Users.age
+        });
+
+        navigate('/login');
+        
+      } catch (err) {
+        console.error("Signup Error:", err);
+        if (err.response && err.response.data) {
+            const djangoErrors = err.response.data;
+            alert(JSON.stringify(djangoErrors)); 
+        } else {
+            alert("Signup failed. Please try again.");
+        }
+      }
     }
   }
 

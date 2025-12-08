@@ -41,43 +41,43 @@ function Login() {
   }, [])
 
  async function submit(e) {
-  e.preventDefault();
-  const ValidateErrors = validate(Users);
-  setValidate(ValidateErrors);
+    e.preventDefault();
+    const ValidateErrors = validate(Users);
+    setValidate(ValidateErrors);
 
-  if (Object.keys(ValidateErrors).length === 0) {
-    try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/users`);
-      const allUsers = response.data;
-
-      const userdata = allUsers.find((details) => {
-        return details.username === Users.username && details.password === Users.password;
-      });
-
-      if (userdata) {
-        if (userdata.status === 'inactive') {
-          setError('This User is Blocked');
-        } else {
-          localStorage.setItem('username',userdata.username)
-        localStorage.setItem('age',userdata.age)
-        localStorage.setItem('email',userdata.email)
-        localStorage.setItem('mobile',userdata.mobile)
-        localStorage.setItem('id',userdata.id)
-        localStorage.setItem('role',userdata.role)
-
+    if (Object.keys(ValidateErrors).length === 0) {
+      try {
+   
+        setError(''); 
         
-          navigate('/', { replace: true });
-          window.location.reload()
+
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/token/`, {
+            username: Users.username,
+            password: Users.password
+        });
+
+       
+        const data = response.data;
+        
+        localStorage.setItem('access_token', data.access);
+        localStorage.setItem('refresh_token', data.refresh);
+        localStorage.setItem('id', data.id);
+        localStorage.setItem('username', data.username);
+        localStorage.setItem('role', data.role);
+      
+        navigate('/', { replace: true });
+        window.location.reload();
+
+      } catch (err) {
+        console.error("Login Error:", err);
+        if (err.response && err.response.status === 401) {
+            setError('Invalid username or password');
+        } else {
+            setError('Login failed. Is the server running?');
         }
-      } else {
-        setError('User not found');
       }
-    } catch (err) {
-      setError('An error occurred. Please try again.');
-      console.error(err);
     }
   }
-}
 
   return (
     <div className="main-login-container">
