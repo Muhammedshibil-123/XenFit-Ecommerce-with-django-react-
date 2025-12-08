@@ -27,6 +27,7 @@ import Orders from './Admin/orders'
 import Products from './Admin/Products'
 import { SearchProvider } from './component/searchcontext'
 import OtpVerify from './components/otpverfiy';
+import { AuthProvider } from './component/AuthContext';
 
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
       <SearchProvider>
       <WhishlistProvider>
         <CartProvider>
+          <AuthProvider>
           <BrowserRouter>
             <ConditonNavbar />
             <ToastContainer
@@ -92,6 +94,7 @@ function App() {
               <Route path='*' element={<Notfound />} />
             </Routes>
           </BrowserRouter>
+          </AuthProvider>
         </CartProvider>
       </WhishlistProvider>
       </SearchProvider>
