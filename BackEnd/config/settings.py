@@ -167,3 +167,9 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'sanuvkd104@gmail.com' 
 EMAIL_HOST_PASSWORD = 'jged vudf ijgn lkdr'
+
+
+import os
+
+MEDIA_URL='/media'
+MEDIA_ROOT=os.path.join(BASE_DIR,'media')

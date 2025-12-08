@@ -27,7 +27,6 @@ urlpatterns = [
 
  
     path('api/users/',include('users_app.urls')),
-    # path('api/orders/',include('orders.urls'))
-    #  path('api/products/',include('products.urls')),
+    path('api/products/',include('products.urls')),
 
 ]
