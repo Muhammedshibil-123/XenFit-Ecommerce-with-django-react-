@@ -10,10 +10,10 @@ import { WishlistContext } from "../component/whislistcouter";
 import { SearchContext } from "../component/searchcontext";
 import ReactPaginate from "react-paginate";
 
-// Helper to safely get API URL
+
 const getApiUrl = () => {
   try {
-    // EDITED: Default fallback set to Django's port 8000 if .env is missing
+    
     return import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
   } catch (e) {
     return 'http://127.0.0.1:8000/api';
@@ -25,7 +25,7 @@ function Shop() {
   const userId = localStorage.getItem("id");
   const API_URL = getApiUrl();
 
-  // Sort and Filter States
+
   const [sortType, setSortType] = useState('default')
   const [themeSort, setThemeSort] = useState('all')
   const [brandSort, setBrandSort] = useState('all')
@@ -50,18 +50,17 @@ function Shop() {
       })
       .catch((err) => {
         console.error("Error fetching products:", err);
-        // Optional: Show error to user if fetch fails completely
-        // toast.error("Could not load products");
+
       });
 
     if (userId) {
-      axios.get(`${API_URL}/users/${userId}/`) // Added slash here too for consistency
+      axios.get(`${API_URL}/users/${userId}/`)
         .then((res) => setWishlist(res.data.whishlist || []))
         .catch(err => console.log(err));
     }
   }, [userId, API_URL]);
 
-  // Filtering Logic
+  
   let filterProducts = products.filter((product) =>
     (product.title?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
     (product.brand?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
@@ -69,22 +68,21 @@ function Shop() {
     (product.description?.toLowerCase() || "").includes(searchTerm.toLowerCase())
   )
 
-  // Sorting Logic
+
   if (sortType === 'low to high') {
     filterProducts.sort((a, b) => a.price - b.price)
   } else if (sortType === 'high to low') {
     filterProducts.sort((a, b) => b.price - a.price)
   }
 
-  // Theme Filtering
+
   if (themeSort !== 'all') {
     filterProducts = filterProducts.filter((product) =>
       product.theme && product.theme.toLowerCase() === themeSort.toLowerCase()
     )
   }
 
-  // Brand Filtering
-  if (brandSort !== 'all') {
+   if (brandSort !== 'all') {
     filterProducts = filterProducts.filter((product) =>
       product.brand && product.brand.toLowerCase() === brandSort.toLowerCase()
     )
@@ -161,7 +159,7 @@ function Shop() {
   return (
     <>
       <div className="filters-container">
-        {/* Sort Price */}
+
         <div className="filter-group">
           <label>Sort By</label>
           <select value={sortType} onChange={(e) => setSortType(e.target.value)}>
@@ -171,7 +169,7 @@ function Shop() {
           </select>
         </div>
 
-        {/* Theme Filter */}
+
         <div className="filter-group">
           <label>Theme</label>
           <select value={themeSort} onChange={(e) => setThemeSort(e.target.value)}>
@@ -185,7 +183,7 @@ function Shop() {
           </select>
         </div>
 
-        {/* Brand Filter */}
+      
         <div className="filter-group">
           <label>Brand</label>
           <select value={brandSort} onChange={(e) => setBrandSort(e.target.value)} >
@@ -202,9 +200,15 @@ function Shop() {
 
       <div className="main-shop-container">
         {currentProducts.map((product, index) => {
-          // Calculate discount percentage
+
           const discount = product.mrp ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
 
+          const imageUrl = product.image 
+            ? (product.image.toString().startsWith('http') 
+                ? product.image 
+                : `http://127.0.0.1:8000${product.image}`)
+            : 'https://via.placeholder.com/300?text=No+Image'; 
+        
           return (
             <div className="shop-container" key={index}>
 
@@ -220,15 +224,10 @@ function Shop() {
               <NavLink to={`/${product.id}`} style={{ textDecoration: 'none' }}>
                 <div className="product-image-box">
                   <img
-                    src={
-                      product.image.startsWith('http')
-                        ? product.image
-                        : `http://127.0.0.1:8000${product.image}`
-                    }
+                    src={imageUrl}
                     alt={product.title}
                   />
 
-                  {/* Discount Badge */}
                   {discount > 0 && (
                     <span className="discount-badge">{discount}% OFF</span>
                   )}

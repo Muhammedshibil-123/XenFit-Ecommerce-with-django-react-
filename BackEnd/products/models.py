@@ -51,7 +51,7 @@ class ProductSize(models.Model):
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, related_name='extra_images', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='product_gallery/')
+    image = models.ImageField(upload_to='product_gallery/',blank=True, null=True)
 
     def __str__(self):
         return f"Image for {self.product.title}"
