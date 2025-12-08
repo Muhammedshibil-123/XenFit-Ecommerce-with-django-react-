@@ -17,7 +17,7 @@ class CustomTokenjwtView(TokenObtainPairView):
     
 class RegisterView(generics.CreateAPIView):
     queryset=CustomUser.objects.all()
-    permission_classes=(AllowAny)
+    permission_classes=[AllowAny]
     serializer_class=RegisterSerializer
 
     def perform_create(self, serializer):
@@ -36,7 +36,7 @@ class RegisterView(generics.CreateAPIView):
         )
 
 class VerifyOTPView(views.APIView):
-    permission_classes = (AllowAny,)
+    permission_classes = [AllowAny,]
 
     def post(self, request):
         serializer = VerifyOTPSerializer(data=request.data)
