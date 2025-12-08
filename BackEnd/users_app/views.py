@@ -15,25 +15,50 @@ from rest_framework_simplejwt.tokens import RefreshToken
 class CustomTokenjwtView(TokenObtainPairView):
     serializer_class=CustomTokenJwtSerializer
     
-class RegisterView(generics.CreateAPIView):
-    queryset=CustomUser.objects.all()
-    permission_classes=[AllowAny]
-    serializer_class=RegisterSerializer
+class RegisterView(generics.GenericAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = RegisterSerializer
 
-    def perform_create(self, serializer):
-        user = serializer.save()
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+    
+        existing_user = CustomUser.objects.filter(email=email).first()
         
-        otp_code = str(random.randint(100000, 999999))
-        user.otp = otp_code
-        user.save()
+        if existing_user:
+            if not existing_user.is_active:
+                otp_code = str(random.randint(100000, 999999))
+                existing_user.otp = otp_code
+                existing_user.save()
+                
+                send_mail(
+                    'XenFit Verification Code',
+                    f'Your OTP code is: {otp_code}',
+                    settings.EMAIL_HOST_USER,
+                    [existing_user.email],
+                    fail_silently=False,
+                )
+                return Response({"message": "User exists but unverified. New OTP sent."}, status=status.HTTP_200_OK)
+            else:
+                return Response({"error": "User with this email already exists."}, status=status.HTTP_400_BAD_REQUEST)
 
-        send_mail(
-            'XenFit Verification Code',
-            f'Your OTP code is: {otp_code}',
-            settings.EMAIL_HOST_USER,
-            [user.email],
-            fail_silently=False,
-        )
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            
+            otp_code = str(random.randint(100000, 999999))
+            user.otp = otp_code
+            user.save()
+
+            send_mail(
+                'XenFit Verification Code',
+                f'Your OTP code is: {otp_code}',
+                settings.EMAIL_HOST_USER,
+                [user.email],
+                fail_silently=False,
+            )
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class VerifyOTPView(views.APIView):
     permission_classes = [AllowAny,]

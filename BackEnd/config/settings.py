@@ -157,7 +157,7 @@ AUTH_USER_MODEL='users_app.CustomUser'
 
 
 AUTHENTICATION_BACKENDS = [
-    'users_app.backends.EmailOrUsernameBackend', 
+    'users_app.backends.EmailUsernameBackend',
     'django.contrib.auth.backends.ModelBackend', 
 ]
 
