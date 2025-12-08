@@ -36,23 +36,31 @@ function OtpVerify() {
   }
 
   return (
-    <div className="main-login-container"> 
-        <div className="login-container">
-            <div>Verify OTP</div>
-            <p style={{color:'#666', fontSize:'13px', marginBottom:'20px'}}>
-                Code sent to: <strong>{email}</strong>
-            </p>
+    <div className="main-signup-container"> 
+        <div className="otp-container-wrapper">
+            <div className="otp-header">
+                <h2>OTP Verfication</h2>
+                <p>Please enter the 6-digit code sent to<br/><strong>{email || 'your email'}</strong></p>
+            </div>
+            
             <form onSubmit={handleVerify}>
-                <label>Enter 6-Digit Code</label>
-                <input 
-                    type="text" 
-                    maxLength="6"
-                    value={otp} 
-                    onChange={(e) => setOtp(e.target.value)} 
-                    style={{letterSpacing: '5px', textAlign: 'center', fontSize: '18px'}}
-                />
-                <button type="submit">Verify & Login</button>
+                <div className="signup-form-group">
+                    <input 
+                        className="otp-input-box"
+                        type="text" 
+                        maxLength="6"
+                        value={otp} 
+                        onChange={(e) => setOtp(e.target.value)} 
+                        placeholder="000000"
+                        autoFocus
+                    />
+                </div>
+                <button type="submit" className="otp-btn">VERIFY & LOGIN</button>
             </form>
+            
+            <div style={{marginTop: '20px', fontSize: '12px', color: '#999'}}>
+               <span style={{cursor:'pointer', textDecoration:'underline'}} onClick={() => navigate('/login')}>Back to Login</span>
+            </div>
         </div>
     </div>
   );

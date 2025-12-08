@@ -59,33 +59,62 @@ function Signup() {
 
   return (
     <div className="main-signup-container">
-      <div className="signup-container">
-        <div>Create Account</div>
-        <form onSubmit={submit} noValidate>
-          
-          <label>Username</label>
-          <input type="text" name="username" value={formData.username} onChange={handleChange} />
-          {errors.username && <p>{errors.username}</p>}
+      <div className="signup-wrapper">
+        
 
-          <label>Email</label>
-          <input type="email" name="email" value={formData.email} onChange={handleChange} />
-          {errors.email && <p>{errors.email}</p>}
+        <div className="signup-image-section">
+           <img src="https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?q=80&w=1887&auto=format&fit=crop" alt="Style" />
+           <div className="text-overlay">
+              <h1>Join the<br/>Cult.</h1>
+              <p>Exclusive Drops & Rewards</p>
+           </div>
+        </div>
 
-          <label>Mobile No</label>
-          <input type="tel" name="mobile" value={formData.mobile} onChange={handleChange} />
-          {errors.mobile && <p>{errors.mobile}</p>}
+        <div className="signup-form-section">
+            <div className="form-title">
+                <h2>Create Account</h2>
+                <p>Sign up to start shopping</p>
+            </div>
 
-          <label>Password</label>
-          <input type="password" name="password" value={formData.password} onChange={handleChange} />
-          {errors.password && <p>{errors.password}</p>}
+            <form onSubmit={submit} noValidate>
+            
+              <div className="signup-form-group">
+                  <label>Username</label>
+                  <input type="text" name="username" value={formData.username} onChange={handleChange} placeholder="Username" />
+                  {errors.username && <span className="signup-error">{errors.username}</span>}
+              </div>
 
-          <label>Confirm Password</label>
-          <input type="password" name="confirm_password" value={formData.confirm_password} onChange={handleChange} />
-          {errors.confirm_password && <p>{errors.confirm_password}</p>}
+              <div className="signup-form-group">
+                  <label>Email Address</label>
+                  <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="name@example.com" />
+                  {errors.email && <span className="signup-error">{errors.email}</span>}
+              </div>
 
-          <button type="submit">Sign Up</button>
-        </form>
-        <p>Already have an account? <NavLink to="/login">Login</NavLink></p>
+              <div className="signup-form-group">
+                  <label>Mobile Number</label>
+                  <input type="tel" name="mobile" value={formData.mobile} onChange={handleChange} placeholder="10-digit number" />
+                  {errors.mobile && <span className="signup-error">{errors.mobile}</span>}
+              </div>
+
+              <div className="signup-form-group">
+                  <label>Password</label>
+                  <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="••••••••" />
+                  {errors.password && <span className="signup-error">{errors.password}</span>}
+              </div>
+
+              <div className="signup-form-group">
+                  <label>Confirm Password</label>
+                  <input type="password" name="confirm_password" value={formData.confirm_password} onChange={handleChange} placeholder="••••••••" />
+                  {errors.confirm_password && <span className="signup-error">{errors.confirm_password}</span>}
+              </div>
+
+              <button type="submit" className="signup-btn">SIGN UP</button>
+            </form>
+
+            <div className="login-footer">
+              <p>Already have an account? <NavLink to="/login">Login</NavLink></p>
+            </div>
+        </div>
       </div>
     </div>
   );

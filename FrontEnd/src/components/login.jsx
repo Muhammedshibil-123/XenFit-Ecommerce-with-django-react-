@@ -2,6 +2,7 @@ import "./login.css";
 import {  NavLink,  useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { FcGoogle } from "react-icons/fc";
 
 function Login() {
   const [Users, setUsers] = useState({
@@ -79,36 +80,71 @@ function Login() {
     }
   }
 
-  return (
+ return (
     <div className="main-login-container">
-      <div className="login-container">
-        <div>Login</div>
-        <form action="" onSubmit={submit}>
-          <label>Username</label>
-          <input type="text"
-            name="username"
-            value={Users.username}
-            onChange={handlechange}
-          />
-          {Validate.username && <p>{Validate.username}</p>}
+      <div className="login-wrapper">
+        
+        {/* Left Side: Aesthetic Image */}
+        <div className="login-image-section">
+          {/* UPDATED: Hanging T-Shirts (No Person) */}
+          <img src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=2070&auto=format&fit=crop" alt="Fashion" />
+          <div className="text-overlay">
+            <h1>XenFit.</h1>
+            <p>Streetwear Reimagined</p>
+          </div>
+        </div>
 
-          <label>Password</label>
-          <input type="password"
-            name="password"
-            value={Users.password}
-            onChange={handlechange}
-          />
-          {Validate.password && <p>{Validate.password}</p>}
+        {/* Right Side: Form */}
+        <div className="login-form-section">
+          <div className="form-title">
+            <h2>Welcome Back</h2>
+            <p>Please enter your details to sign in.</p>
+          </div>
 
-          <button type="submit">Login</button>
-          {error&&<p style={{ marginTop: "8px"}}>{error}</p>}
-        </form>
-        <p>
-          Dont have any account?
-          <NavLink to={"/signup"} style={{ textDecoration: "none" }}>
-            Signup
-          </NavLink>
-        </p>
+          <form onSubmit={submit}>
+            <div className="form-group">
+              <label>Username</label>
+              <input 
+                type="text"
+                name="username"
+                placeholder="Enter your username"
+                value={Users.username}
+                onChange={handlechange}
+              />
+              {Validate.username && <span className="error-msg">{Validate.username}</span>}
+            </div>
+
+            <div className="form-group">
+              <label>Password</label>
+              <input 
+                type="password"
+                name="password"
+                placeholder="••••••••"
+                value={Users.password}
+                onChange={handlechange}
+              />
+              {Validate.password && <span className="error-msg">{Validate.password}</span>}
+            </div>
+
+            <button type="submit" className="submit-btn">LOG IN</button>
+            
+            {error && <p className="error-msg" style={{textAlign:'center'}}>{error}</p>}
+          </form>
+
+          {/* Google Login Section */}
+          <div className="divider"><span>OR</span></div>
+          <button className="google-btn">
+             <FcGoogle size={20} />
+             <span>Sign in with Google</span>
+          </button>
+
+          <div className="login-footer">
+            <p>Don't have an account? 
+              <NavLink to={"/signup"}>Create Account</NavLink>
+            </p>
+          </div>
+        </div>
+
       </div>
     </div>
   );

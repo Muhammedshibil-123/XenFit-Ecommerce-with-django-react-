@@ -1,81 +1,194 @@
-
+/* --- Shared Layout (Inherits base from login but customized) --- */
 .main-signup-container {
-  font-family: 'Poppins', sans-serif;
-  margin: 0;
-  background: #f9f9f9;
+  width: 100%;
+  min-height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
-  height: 100vh;
+  justify-content: center;
+  background-color: #f4f4f4;
+  font-family: 'Poppins', sans-serif;
 }
 
-
-.signup-container {
+.signup-wrapper {
+  display: flex;
+  width: 1000px;
+  max-width: 90%;
+  height: 600px; /* Matching Login Height */
   background: #fff;
-  padding: 40px;
-  padding-right: 60px;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  width: 400px;
-  text-align: center;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+  overflow: hidden; /* Ensures rounded corners and no outer spill */
+  border-radius: 1%;
 }
 
+/* Reuse Left Image styles */
+.signup-image-section {
+  flex: 1;
+  position: relative;
+  background-color: #111;
+}
 
-.signup-container > div {
-  font-size: 26px;
-  font-weight: 700;
-  color: #222;
+.signup-image-section img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.85;
+}
+
+.signup-form-section {
+  flex: 1;
+  padding: 30px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* EDITED: Removed overflow-y: auto to remove the scrollbar */
+}
+
+/* --- Added Title Styles --- */
+.form-title {
   margin-bottom: 20px;
 }
 
-.signup-container form label {
-  display: block;
-  text-align: left;
-  margin-bottom: 6px;
-  font-weight: 500;
-  color: #333;
+.form-title h2 {
+  font-size: 26px;
+  font-weight: 800;
+  color: #111;
+  text-transform: uppercase;
+  margin: 0;
+  letter-spacing: -1px;
 }
 
+.form-title p {
+  color: #666;
+  font-size: 13px;
+  margin-top: 5px;
+}
 
-.signup-container form input {
+/* --- Input Groups --- */
+.signup-form-group {
+  margin-bottom: 12px;
+  text-align: left;
+}
+
+.signup-form-group label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #888;
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+
+.signup-form-group input {
   width: 100%;
   padding: 12px;
-  margin-bottom: 18px;
   border: 1px solid #ddd;
-  border-radius: 8px;
+  background: #f9f9f9;
+  font-size: 13px;
   outline: none;
-  transition: 0.3s;
-  font-size: 14px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  border-radius: 0;
 }
 
-.signup-container form input:focus {
-  border-color: #e63946; 
-  box-shadow: 0 0 6px rgba(230,57,70,0.4);
+.signup-form-group input:focus {
+  border-color: #111;
+  background: #fff;
 }
 
+.signup-error {
+  color: #e63946;
+  font-size: 10px;
+  margin-top: 2px;
+  display: block;
+}
 
-.signup-container form button {
-  margin-left: 15px;
+.signup-btn {
   width: 100%;
-  padding: 10px;
-  background: #e63946;
+  padding: 14px;
+  background-color: #111;
   color: #fff;
-  font-weight: bold;
   border: none;
-  border-radius: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
   cursor: pointer;
-  transition: 0.3s;
-  font-size: 14px; 
+  transition: background 0.3s;
+  margin-top: 10px;
 }
 
-
-.signup-container form button:hover {
-  background: #d62839;
+.signup-btn:hover {
+  background-color: #e63946;
 }
 
-.signup-container form p {
-  color: red;
-  font-size: 12px;
-  margin: -12px 0 12px 0; 
-  text-align: left;     
+/* --- OTP Verify CSS (Centered Card Design) --- */
+.otp-container-wrapper {
+  background: #fff;
+  padding: 50px;
+  width: 450px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+  border-top: 4px solid #e63946; 
+}
+
+.otp-header h2 {
+  font-size: 24px;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin: 0 0 10px 0;
+  color: #111;
+}
+
+.otp-header p {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.otp-input-box {
+  letter-spacing: 10px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  border: 2px solid #ddd;
+  background: #fff;
+}
+
+.otp-input-box:focus {
+  border-color: #e63946;
+}
+
+.otp-btn {
+  width: 100%;
+  padding: 15px;
+  background-color: #111;
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-top: 20px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.otp-btn:hover {
+  background-color: #000;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .signup-image-section {
+    display: none;
+  }
+  .signup-wrapper {
+    height: auto;
+    padding: 20px 0;
+  }
+  .signup-form-section {
+    padding: 30px;
+  }
+  .otp-container-wrapper {
+    width: 90%;
+    padding: 30px;
+  }
 }

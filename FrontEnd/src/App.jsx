@@ -35,7 +35,7 @@ function App() {
 
   const ConditonNavbar = () => {
     const location = useLocation()
-    if (location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/admin' || location.pathname === '/admin/users'|| location.pathname === '/admin/products'|| location.pathname === '/admin/orders') {
+    if (location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/admin' || location.pathname === '/admin/users'|| location.pathname === '/admin/products'|| location.pathname === '/admin/orders' || location.pathname === '/otp-verify') {
       return null
     } else {
       return <Navbar />
