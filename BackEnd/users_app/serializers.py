@@ -26,7 +26,7 @@ class CustomTokenJwtSerializer(TokenObtainPairSerializer):
     
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
-    confirm_password = serializers.CharField(write_only=True) 
+    confirm_password = serializers.CharField(write_only=True)
 
     class Meta:
         model = CustomUser
@@ -40,11 +40,11 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('confirm_password')
         password = validated_data.pop('password')
-        
         user = CustomUser(**validated_data)
         user.set_password(password)
         user.is_active = False 
         user.save()
+        
         return user
 
 
