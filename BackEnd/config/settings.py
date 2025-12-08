@@ -153,3 +153,17 @@ SIMPLE_JWT = {
 }
 
 AUTH_USER_MODEL='users_app.CustomUser'
+
+
+
+AUTHENTICATION_BACKENDS = [
+    'users_app.backends.EmailOrUsernameBackend', 
+    'django.contrib.auth.backends.ModelBackend', 
+]
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'sanuvkd104@gmail.com' 
+EMAIL_HOST_PASSWORD = 'jged vudf ijgn lkdr'

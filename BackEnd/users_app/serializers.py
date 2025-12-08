@@ -15,25 +15,39 @@ class CustomTokenJwtSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data= super().validate(attrs)  
 
-        data['id']=self.user.id
-        data['username']=self.user.username
-        data['email'] = self.user.email
-        data['role'] = self.user.role
-        data['mobile'] = self.user.mobile
-        data['age'] = self.user.age
-        data['status'] = self.user.status
-
+        data.update({
+            'id': self.user.id,
+            'username': self.user.username,
+            'email': self.user.email,
+            'role': self.user.role,
+            'mobile': self.user.mobile,
+        })
         return data
     
 class RegisterSerializer(serializers.ModelSerializer):
-    password=serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True) 
+
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email', 'mobile', 'password', 'confirm_password')
+
+    def validate(self, data):
+        if data['password'] != data['confirm_password']:
+            raise serializers.ValidationError("Passwords do not match.")
+        return data
 
     def create(self, validated_data):
-        user = CustomUser.objects.create_user(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            password=validated_data['password'],
-            mobile=validated_data.get('mobile'),
-            age=validated_data.get('age')
-        )
+        validated_data.pop('confirm_password')
+        password = validated_data.pop('password')
+        
+        user = CustomUser(**validated_data)
+        user.set_password(password)
+        user.is_active = False 
+        user.save()
         return user
+
+
+class VerifyOTPSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    otp = serializers.CharField(max_length=6)

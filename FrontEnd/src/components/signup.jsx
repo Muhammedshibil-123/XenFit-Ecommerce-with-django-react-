@@ -2,76 +2,56 @@ import "./signup.css";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify"; 
 
 function Signup() {
-  const [Users, setUsers] = useState({
+  const [formData, setFormData] = useState({
     username: "",
-    age: "",
     email: "",
     mobile: "",
     password: "",
-    status:"active"
+    confirm_password: ""
   });
+  
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
-  const [Validate, setValidate] = useState({});
 
-  function handlechange(e) {
-    setUsers((perv) => ({
-      ...perv,
+  function handleChange(e) {
+    setFormData(prev => ({
+      ...prev,
       [e.target.name]: e.target.value,
     }));
   }
 
-  function validate(Users) {
-    const errors = {};
-
-    if (Users.username.length === 0)
-      errors.username = "Name is required";
-    if (Users.age.length === 0) errors.age = "Age is required";
-    else if(Number(Users.age) < 18){
-      errors.age='Age must be more than 18'
-    }
-    if (Users.email.length === 0) {
-      errors.email = "Email is required";
-    } else if (!Users.email.includes("@") || !Users.email.includes(".")) {
-      errors.email = "Email not valid";
-    }
-    if (Users.mobile.length === 0) {
-      errors.mobile = "Mobile number required";
-    } else if (Users.mobile.length !== 10) {
-      errors.mobile = "Mobile number 10 digits needed";
-    }
-    if (Users.password.length === 0) errors.password = "Password is required";
-    else if (Users.password.length < 6)
-      errors.password = "More than 6 characters needed ";
-
-    return errors;
+  function validate() {
+    const newErrors = {};
+    if (!formData.username) newErrors.username = "Username required";
+    if (!formData.email.includes("@")) newErrors.email = "Invalid email";
+    if (formData.mobile.length !== 10) newErrors.mobile = "10 digit mobile required";
+    if (formData.password.length < 6) newErrors.password = "Min 6 chars";
+    if (formData.password !== formData.confirm_password) newErrors.confirm_password = "Passwords do not match";
+    
+    return newErrors;
   }
 
   async function submit(e) {
     e.preventDefault();
-    const ValidateErrors = validate(Users);
-    setValidate(ValidateErrors);
+    const validationErrors = validate();
+    setErrors(validationErrors);
 
-    if (Object.keys(ValidateErrors).length === 0) {
+    if (Object.keys(validationErrors).length === 0) {
       try {
-        await axios.post(`${import.meta.env.VITE_API_URL}/users/register/`, {
-            username: Users.username,
-            email: Users.email,
-            password: Users.password,
-            mobile: Users.mobile,
-            age: Users.age
-        });
-
-        navigate('/login');
+        await axios.post(`${import.meta.env.VITE_API_URL}/users/register/`, formData);
+        
+        toast.success("OTP Sent to your email!");
+        navigate('/otp-verify', { state: { email: formData.email } });
         
       } catch (err) {
-        console.error("Signup Error:", err);
+        console.error(err);
         if (err.response && err.response.data) {
-            const djangoErrors = err.response.data;
-            alert(JSON.stringify(djangoErrors)); 
+           toast.error(JSON.stringify(err.response.data));
         } else {
-            alert("Signup failed. Please try again.");
+           toast.error("Signup Failed");
         }
       }
     }
@@ -80,57 +60,32 @@ function Signup() {
   return (
     <div className="main-signup-container">
       <div className="signup-container">
-        <div>Signup</div>
-        <form onSubmit={submit} action="" noValidate>
-          <label> Username</label>
-          <input
-            type="text"
-            value={Users.username}
-            name="username"
-            onChange={handlechange}
-          />
-          {Validate.username && <p>{Validate.username}</p>}
-          <label>Age</label>
-          <input
-            type="number"
-            value={Users.age}
-            name="age"
-            onChange={handlechange}
-          />
-          {Validate.age && <p>{Validate.age}</p>}
-          <label>Email</label>
-          <input
-            type="email"
-            value={Users.email}
-            name="email"
-            onChange={handlechange}
-          />
-          {Validate.email && <p>{Validate.email}</p>}
-          <label>Mobile No</label>
-          <input
-            type="tel"
-            value={Users.mobile}
-            name="mobile"
-            onChange={handlechange}
-          />
-          {Validate.mobile && <p>{Validate.mobile}</p>}
-          <label>Password</label>
-          <input
-            type="password"
-            value={Users.password}
-            name="password"
-            onChange={handlechange}
-          />
-          {Validate.password && <p>{Validate.password}</p>}
+        <div>Create Account</div>
+        <form onSubmit={submit} noValidate>
+          
+          <label>Username</label>
+          <input type="text" name="username" value={formData.username} onChange={handleChange} />
+          {errors.username && <p>{errors.username}</p>}
 
-          <button type="submit">Submit</button>
+          <label>Email</label>
+          <input type="email" name="email" value={formData.email} onChange={handleChange} />
+          {errors.email && <p>{errors.email}</p>}
+
+          <label>Mobile No</label>
+          <input type="tel" name="mobile" value={formData.mobile} onChange={handleChange} />
+          {errors.mobile && <p>{errors.mobile}</p>}
+
+          <label>Password</label>
+          <input type="password" name="password" value={formData.password} onChange={handleChange} />
+          {errors.password && <p>{errors.password}</p>}
+
+          <label>Confirm Password</label>
+          <input type="password" name="confirm_password" value={formData.confirm_password} onChange={handleChange} />
+          {errors.confirm_password && <p>{errors.confirm_password}</p>}
+
+          <button type="submit">Sign Up</button>
         </form>
-        <p>
-          already have an account?
-          <NavLink to={"/login"} style={{ textDecoration: "none" }}>
-            Login
-          </NavLink>
-        </p>
+        <p>Already have an account? <NavLink to="/login">Login</NavLink></p>
       </div>
     </div>
   );

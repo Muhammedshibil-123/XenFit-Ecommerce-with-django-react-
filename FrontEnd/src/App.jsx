@@ -26,6 +26,7 @@ import Sidebar from './Admin/sidebar'
 import Orders from './Admin/orders'
 import Products from './Admin/Products'
 import { SearchProvider } from './component/searchcontext'
+import OtpVerify from './components/otpverfiy';
 
 
 function App() {
@@ -64,6 +65,7 @@ function App() {
               <Route path='/' element={<Home />} />
               <Route path='/login' element={<Login/>} />
               <Route path='/signup' element={<Signup/>} />
+              <Route path='/otp-verify' element={<OtpVerify/>}/>
               <Route path='/shop' element={<Shop />} />
               <Route path='/cart' element={<Cart />} />
               <Route path='/profile' element={<Profile />} />
@@ -73,6 +75,7 @@ function App() {
               <Route path='/whishlist' element={<Whislist />} />
               <Route path='/myorders' element={<Myorders />} />
               <Route path='/about' element={<About />} />
+
 
               <Route path='/admin' element={<Adminprotected />}>
                 <Route element={<Sidebar />}>
