@@ -13,9 +13,10 @@ import ReactPaginate from "react-paginate";
 // Helper to safely get API URL
 const getApiUrl = () => {
   try {
-    return import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    // EDITED: Default fallback set to Django's port 8000 if .env is missing
+    return import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
   } catch (e) {
-    return 'http://localhost:3000';
+    return 'http://127.0.0.1:8000/api';
   }
 };
 
@@ -38,18 +39,24 @@ function Shop() {
   const productsPerPage = 16
 
   useEffect(() => {
+    // EDITED: Added trailing slash '/products/' to match Django URL pattern
     axios
-      .get(`${API_URL}/products`)
+      .get(`${API_URL}/products/`)
       .then((res) => {
+        console.log("Products Fetched:", res.data); // Debug: Check console to see if data arrives
         let filterdata = res.data.filter((product) => {
           return product.status === 'active'
         })
         setProducts(filterdata)
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.error("Error fetching products:", err);
+        // Optional: Show error to user if fetch fails completely
+        // toast.error("Could not load products");
+      });
 
     if (userId) {
-      axios.get(`${API_URL}/users/${userId}`)
+      axios.get(`${API_URL}/users/${userId}/`) // Added slash here too for consistency
         .then((res) => setWishlist(res.data.whishlist || []))
         .catch(err => console.log(err));
     }
