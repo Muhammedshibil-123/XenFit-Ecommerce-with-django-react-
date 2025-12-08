@@ -24,12 +24,12 @@ function Shop() {
   const [products, setProducts] = useState([]);
   const userId = localStorage.getItem("id");
   const API_URL = getApiUrl();
-  
+
   // Sort and Filter States
   const [sortType, setSortType] = useState('default')
-  const [themeSort, setThemeSort] = useState('all') 
+  const [themeSort, setThemeSort] = useState('all')
   const [brandSort, setBrandSort] = useState('all')
-  
+
   const navigate = useNavigate()
   const [wishlist, setWishlist] = useState([])
   const { searchTerm } = useContext(SearchContext)
@@ -39,11 +39,10 @@ function Shop() {
   const productsPerPage = 16
 
   useEffect(() => {
-    // EDITED: Added trailing slash '/products/' to match Django URL pattern
     axios
       .get(`${API_URL}/products/`)
       .then((res) => {
-        console.log("Products Fetched:", res.data); // Debug: Check console to see if data arrives
+        console.log("Products Fetched:", res.data);
         let filterdata = res.data.filter((product) => {
           return product.status === 'active'
         })
@@ -66,7 +65,7 @@ function Shop() {
   let filterProducts = products.filter((product) =>
     (product.title?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
     (product.brand?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-    (product.theme?.toLowerCase() || "").includes(searchTerm.toLowerCase()) || 
+    (product.theme?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
     (product.description?.toLowerCase() || "").includes(searchTerm.toLowerCase())
   )
 
@@ -127,12 +126,12 @@ function Shop() {
             quantity: 1,
           },
         ]
-        
+
         await axios.put(`${API_URL}/users/${userId}`, {
           ...userData,
           whishlist: updatedwihislist,
         })
-        
+
         setWishlist(updatedwihislist)
         toast.success('Item added to Wishlist', {
           position: 'top-center',
@@ -164,18 +163,18 @@ function Shop() {
       <div className="filters-container">
         {/* Sort Price */}
         <div className="filter-group">
-            <label>Sort By</label>
-            <select value={sortType} onChange={(e) => setSortType(e.target.value)}>
+          <label>Sort By</label>
+          <select value={sortType} onChange={(e) => setSortType(e.target.value)}>
             <option value="default">Featured</option>
             <option value="low to high">Price: Low to High</option>
             <option value="high to low">Price: High to Low</option>
-            </select>
+          </select>
         </div>
 
         {/* Theme Filter */}
         <div className="filter-group">
-            <label>Theme</label>
-            <select value={themeSort} onChange={(e) => setThemeSort(e.target.value)}>
+          <label>Theme</label>
+          <select value={themeSort} onChange={(e) => setThemeSort(e.target.value)}>
             <option value="all">All Themes</option>
             <option value="Anime">Anime</option>
             <option value="Sports">Sports</option>
@@ -183,13 +182,13 @@ function Shop() {
             <option value="Motivational">Motivational</option>
             <option value="Minimal">Minimal</option>
             <option value="Vintage">Vintage</option>
-            </select>
+          </select>
         </div>
 
         {/* Brand Filter */}
         <div className="filter-group">
-            <label>Brand</label>
-            <select value={brandSort} onChange={(e) => setBrandSort(e.target.value)} >
+          <label>Brand</label>
+          <select value={brandSort} onChange={(e) => setBrandSort(e.target.value)} >
             <option value="all">All Brands</option>
             <option value="Otaku Wear">Otaku Wear</option>
             <option value="Xenfit Originals">Xenfit Originals</option>
@@ -197,7 +196,7 @@ function Shop() {
             <option value="Xenfit Essentials">Xenfit Essentials</option>
             <option value="Hoops Nation">Hoops Nation</option>
             <option value="Cinema Cult">Cinema Cult</option>
-            </select>
+          </select>
         </div>
       </div>
 
@@ -208,11 +207,11 @@ function Shop() {
 
           return (
             <div className="shop-container" key={index}>
-              
+
               <div className="whislist-contaniner"
                 onClick={() => WhishlistHandleChange(product)}>
                 <FaHeart style={{
-                  color: whishlistcolor(product.id) ? '#e63946' : '#ccc', 
+                  color: whishlistcolor(product.id) ? '#e63946' : '#ccc',
                   width: '18px',
                   height: '18px'
                 }} />
@@ -220,7 +219,15 @@ function Shop() {
 
               <NavLink to={`/${product.id}`} style={{ textDecoration: 'none' }}>
                 <div className="product-image-box">
-                  <img src={product.image} alt={product.title} />
+                  <img
+                    src={
+                      product.image.startsWith('http')
+                        ? product.image
+                        : `http://127.0.0.1:8000${product.image}`
+                    }
+                    alt={product.title}
+                  />
+
                   {/* Discount Badge */}
                   {discount > 0 && (
                     <span className="discount-badge">{discount}% OFF</span>
@@ -229,14 +236,14 @@ function Shop() {
                 <div className="product-info-box">
                   <h3>{product.title}</h3>
                   <h4>{product.brand}</h4>
-                  
+
                   <div className="price-row">
                     <span className="selling-price">₹{product.price}</span>
                     {product.mrp && <span className="mrp-price">₹{product.mrp}</span>}
                   </div>
                 </div>
               </NavLink>
-              
+
               <div className="button-wrapper">
                 <button className="addtocart" onClick={() => CartHandleChange(product)}>ADD TO BAG</button>
               </div>
