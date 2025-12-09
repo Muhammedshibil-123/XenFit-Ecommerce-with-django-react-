@@ -3,115 +3,184 @@ import { useState, useEffect, useContext } from "react";
 import './cart.css';
 import { useNavigate } from "react-router-dom";
 import { CartContext } from "../component/cartcouter";
+import { toast } from "react-toastify";
 
 function Cart() {
-  const [user, setUser] = useState([]);
-  const userId = localStorage.getItem("id");
+  const [cartItems, setCartItems] = useState([]);
   const navigate = useNavigate();
   const { updateCartCount } = useContext(CartContext);
+  const token = localStorage.getItem('access_token');
+
+  const getApiUrl = () => {
+      try {
+          return import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+      } catch (e) {
+          return 'http://127.0.0.1:8000/api';
+      }
+  };
+  const API_URL = getApiUrl();
+
+  // Fetch Cart Data
+  const fetchCart = () => {
+    if(token) {
+        axios.get(`${API_URL}/orders/cart/`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        .then((res) => {
+            setCartItems(res.data.items || []);
+        })
+        .catch((err) => console.log(err));
+    }
+  }
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_URL}/users/${userId}`)
-      .then((res) => setUser(res.data || []))
-      .catch((err) => console.log(err));
-  }, [userId]);
+    fetchCart();
+  }, [token]);
 
+  // Remove Item
   function removeitem(id) {
-    let updatedCart = {
-      ...user,
-      cart: user.cart.filter((item) => item.productId !== id)
-    };
-    setUser(updatedCart);
-    axios.put(`${import.meta.env.VITE_API_URL}/users/${userId}`, updatedCart)
-      .then((res) => updateCartCount())
-      .catch((err) => console.log(err));
+    axios.delete(`${API_URL}/orders/cart/item/${id}/`, {
+        headers: { Authorization: `Bearer ${token}` }
+    })
+    .then(() => {
+        fetchCart();
+        updateCartCount();
+        toast.info("Item removed");
+    })
+    .catch((err) => console.log(err));
   }
 
-  function incrementHandle(id) {
-    const updatedcart = user.cart.map((item) => {
-      if (item.productId === id) {
-        return { ...item, quantity: item.quantity + 1 };
+  // Update Quantity
+  function updateQuantity(id, newQty, currentSize, maxStock) {
+      if (newQty < 1) return;
+      
+      // Check stock limit if size is selected
+      if (currentSize && maxStock > 0 && newQty > maxStock) {
+          toast.warn(`Only ${maxStock} items available in this size`);
+          return;
       }
-      return item;
-    });
 
-    const updateduser = { ...user, cart: updatedcart };
-    setUser(updateduser);
-    axios.put(`${import.meta.env.VITE_API_URL}/users/${userId}`, updateduser);
+      axios.patch(`${API_URL}/orders/cart/item/${id}/`, 
+        { quantity: newQty },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      .then(() => fetchCart())
+      .catch((err) => {
+          toast.error(err.response?.data?.error || "Cannot update quantity");
+      });
   }
 
-  function decrementHandle(id) {
-    const updatedcart = user.cart.map((item) => {
-      if (item.productId === id) {
-        if (item.quantity > 1) {
-          return { ...item, quantity: item.quantity - 1 };
-        }
-      }
-      return item;
-    });
-
-    const updateduser = { ...user, cart: updatedcart };
-    setUser(updateduser);
-    axios.put(`${import.meta.env.VITE_API_URL}/users/${userId}`, updateduser);
+  // Update Size
+  function handleSizeChange(id, newSize) {
+      axios.patch(`${API_URL}/orders/cart/item/${id}/`, 
+        { size: newSize },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      .then(() => fetchCart())
+      .catch((err) => {
+          toast.error(err.response?.data?.error || "Stock not available for this size");
+      });
   }
 
-  const totalCart = user.cart ? user.cart.reduce((total, item) => {
-    return total + (item.quantity * item.price);
-  }, 0) : 0;
+  // Calculate Total
+  const totalCart = cartItems.reduce((total, item) => {
+    return total + (item.quantity * Number(item.product.price));
+  }, 0);
 
+  // Validate before Checkout
   function orderhandle() {
+    // Check if any item has no size selected
+    const unsizedItems = cartItems.filter(item => !item.size);
+    
+    if (unsizedItems.length > 0) {
+        toast.error("Please select a size for all items before checkout", {
+            position: "top-center",
+            theme: "dark"
+        });
+        return;
+    }
     navigate('/checkout');
   }
 
   return (
     <div className="main-cart-conatainer">
       <div className="cart-container">
-        <h1>YOUR BAG</h1> {/* EDITED: Changed "Your Cart" to "Your Bag" for a fashion feel */}
+        <h1>YOUR BAG</h1>
         
-        {!user.cart || user.cart.length === 0 ? (
+        {cartItems.length === 0 ? (
           <div className="empty-cart-msg">
             <p>Your bag is empty.</p>
-            {/* ADDED: Button to go back to shop if empty */}
             <button onClick={() => navigate('/shop')}>Start Shopping</button>
           </div>
         ) : (
           <div>
-            <div className="cart-header"> {/* ADDED: Header row for clearer layout */}
+            <div className="cart-header">
                 <span>Product</span>
+                <span>Size</span> {/* Added Size Column */}
                 <span>Price</span>
                 <span>Quantity</span>
                 <span>Total</span>
                 <span>Action</span>
             </div>
 
-            {user.cart.map((item) => (
-              <div className="cartdiv" key={item.productId}>
-                
-                <div className="product-info-col">
-                    <img src={item.image} alt={item.title} />
-                    <div className="product-text">
-                        <h3>{item.title}</h3>
-                        {/* ADDED: Placeholder for Size. You'll need to save 'size' to the cart in your database to use this dynamically. */}
-                        {/* <p className="size-text">Size: M</p> */} 
+            {cartItems.map((item) => {
+                const getImageUrl = (img) => {
+                    if (!img) return 'https://via.placeholder.com/150';
+                    return img.startsWith('http') ? img : `http://127.0.0.1:8000${img}`;
+                };
+
+                return (
+                  <div className="cartdiv" key={item.id}>
+                    
+                    <div className="product-info-col">
+                        <img src={getImageUrl(item.product.image)} alt={item.product.title} />
+                        <div className="product-text">
+                            <h3>{item.product.title}</h3>
+                            <p className="size-text">{item.product.brand}</p>
+                        </div>
                     </div>
-                </div>
 
-                <p className="price">₹{item.price}</p>
+                    {/* Size Selector */}
+                    <div className="size-selector">
+                        <select 
+                            value={item.size || ""} 
+                            onChange={(e) => handleSizeChange(item.id, e.target.value)}
+                            style={{
+                                padding: '8px', 
+                                border: item.size ? '1px solid #ddd' : '1px solid #e63946', // Highlight if empty
+                                outline: 'none'
+                            }}
+                        >
+                            <option value="" disabled>Select Size</option>
+                            {item.product.sizes && item.product.sizes.map((s) => (
+                                <option 
+                                    key={s.id} 
+                                    value={s.size} 
+                                    disabled={s.stock === 0}
+                                >
+                                    {s.size} {s.stock < 5 && s.stock > 0 ? `(Only ${s.stock} left)` : ''} {s.stock === 0 ? '(Out of Stock)' : ''}
+                                </option>
+                            ))}
+                        </select>
+                        {!item.size && <span style={{display:'block', fontSize:'10px', color:'#e63946', marginTop:'4px'}}>Required</span>}
+                    </div>
 
-                <div className="quantity-controls">
-                    <button className="qty-btn" onClick={() => decrementHandle(item.productId)}>-</button>
-                    <span>{item.quantity}</span>
-                    <button className="qty-btn" onClick={() => incrementHandle(item.productId)}>+</button>
-                </div>
+                    <p className="price">₹{item.product.price}</p>
 
-                <p className="total-price">₹{(item.price * item.quantity)}</p>
+                    <div className="quantity-controls">
+                        <button className="qty-btn" onClick={() => updateQuantity(item.id, item.quantity - 1, item.size, item.max_stock)}>-</button>
+                        <span>{item.quantity}</span>
+                        <button className="qty-btn" onClick={() => updateQuantity(item.id, item.quantity + 1, item.size, item.max_stock)}>+</button>
+                    </div>
 
-                <button className="remove-btn" onClick={() => removeitem(item.productId)}>
-                    {/* EDITED: Changed text to an X or Icon usually looks better, but keeping text simple for now */}
-                    Remove
-                </button>
-              </div>
-            ))}
+                    <p className="total-price">₹{(Number(item.product.price) * item.quantity)}</p>
+
+                    <button className="remove-btn" onClick={() => removeitem(item.id)}>
+                        Remove
+                    </button>
+                  </div>
+                )
+            })}
             
             <div className="pay">
               <div className="subtotal-info">
