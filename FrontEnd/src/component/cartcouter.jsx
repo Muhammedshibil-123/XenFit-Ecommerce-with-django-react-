@@ -6,8 +6,6 @@ export const CartContext = createContext()
 
 export function CartProvider({ children }) {
     const [cartcount, setCartcount] = useState(0)
-    const userId = localStorage.getItem('id')
-    const token = localStorage.getItem('access_token') // Needed for authenticated requests
 
     const getApiUrl = () => {
         try {
@@ -20,6 +18,10 @@ export function CartProvider({ children }) {
 
     // Fetch Count
     const updateCartCount = useCallback(() => {
+        // UPDATED: Get token and userId INSIDE the function to ensure they are fresh
+        const token = localStorage.getItem('access_token');
+        const userId = localStorage.getItem('id');
+
         if (userId && token) {
             axios.get(`${API_URL}/orders/cart/`, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -29,11 +31,17 @@ export function CartProvider({ children }) {
                 setCartcount(res.data.items ? res.data.items.length : 0)
             })
             .catch((err) => console.error("Cart fetch error:", err))
+        } else {
+            setCartcount(0);
         }
-    }, [userId, token, API_URL])
+    }, [API_URL])
 
     // Add to Cart Function
     async function CartHandleChange(product) {
+        // UPDATED: Get token and userId INSIDE the function to ensure they are fresh
+        const token = localStorage.getItem('access_token');
+        const userId = localStorage.getItem('id');
+
         if (!userId) {
             toast.error("Please log in to add to cart", {
                 position: 'top-center',
@@ -58,7 +66,12 @@ export function CartProvider({ children }) {
             updateCartCount()
         } catch (err) {
             console.error(err)
-            toast.error("Failed to add to cart")
+            // Show more specific error if available from backend
+            if (err.response && err.response.data && err.response.data.error) {
+                toast.error(err.response.data.error);
+            } else {
+                toast.error("Failed to add to cart");
+            }
         }
     }
 
