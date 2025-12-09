@@ -16,9 +16,8 @@ export function CartProvider({ children }) {
     };
     const API_URL = getApiUrl();
 
-    // Fetch Count
+   
     const updateCartCount = useCallback(() => {
-        // UPDATED: Get token and userId INSIDE the function to ensure they are fresh
         const token = localStorage.getItem('access_token');
         const userId = localStorage.getItem('id');
 
@@ -27,7 +26,6 @@ export function CartProvider({ children }) {
                 headers: { Authorization: `Bearer ${token}` }
             })
             .then((res) => {
-                // Count total items
                 setCartcount(res.data.items ? res.data.items.length : 0)
             })
             .catch((err) => console.error("Cart fetch error:", err))
@@ -36,12 +34,7 @@ export function CartProvider({ children }) {
         }
     }, [API_URL])
 
-    // Add to Cart Function
-    async function CartHandleChange(product) {
-        // UPDATED: Get token and userId INSIDE the function to ensure they are fresh
-        const token = localStorage.getItem('access_token');
-        const userId = localStorage.getItem('id');
-
+   async function CartHandleChange(product) {
         if (!userId) {
             toast.error("Please log in to add to cart", {
                 position: 'top-center',
@@ -52,9 +45,12 @@ export function CartProvider({ children }) {
         }
 
         try {
-            // Send request to backend
+           
             await axios.post(`${API_URL}/orders/cart/add/`, 
-                { product_id: product.id },
+                { 
+                    product_id: product.id,
+                    size: product.selectedSize  
+                },
                 { headers: { Authorization: `Bearer ${token}` } }
             )
             
@@ -66,12 +62,7 @@ export function CartProvider({ children }) {
             updateCartCount()
         } catch (err) {
             console.error(err)
-            // Show more specific error if available from backend
-            if (err.response && err.response.data && err.response.data.error) {
-                toast.error(err.response.data.error);
-            } else {
-                toast.error("Failed to add to cart");
-            }
+            toast.error("Failed to add to cart")
         }
     }
 

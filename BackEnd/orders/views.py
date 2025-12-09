@@ -21,6 +21,7 @@ class AddToCartView(views.APIView):
 
     def post(self, request):
         product_id = request.data.get('product_id')
+        size = request.data.get('size') 
         
         if not product_id:
             return Response({"error": "Product ID required"}, status=status.HTTP_400_BAD_REQUEST)
@@ -35,7 +36,7 @@ class AddToCartView(views.APIView):
         cart_item, item_created = CartItem.objects.get_or_create(
             cart=cart, 
             product=product, 
-            size=None, 
+            size=size, 
             defaults={'quantity': 1}
         )
 
