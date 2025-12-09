@@ -408,6 +408,15 @@
     color: #666;
     font-weight: 500;
 }
+.deliveryicons{
+    width: 20px;
+    margin-right: 10px;
+}
+
+.back-link img{
+    width: 20px;
+    height: 20px;
+}
 
 /* ================= MEDIA QUERIES (RESPONSIVE) ================= */
 

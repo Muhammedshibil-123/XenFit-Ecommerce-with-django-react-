@@ -16,7 +16,6 @@ export function CartProvider({ children }) {
     };
     const API_URL = getApiUrl();
 
-   
     const updateCartCount = useCallback(() => {
         const token = localStorage.getItem('access_token');
         const userId = localStorage.getItem('id');
@@ -34,7 +33,11 @@ export function CartProvider({ children }) {
         }
     }, [API_URL])
 
-   async function CartHandleChange(product) {
+    async function CartHandleChange(product) {
+        // FIX: Retrieve userId and token here so they are available in this function
+        const token = localStorage.getItem('access_token');
+        const userId = localStorage.getItem('id');
+
         if (!userId) {
             toast.error("Please log in to add to cart", {
                 position: 'top-center',
@@ -45,7 +48,6 @@ export function CartProvider({ children }) {
         }
 
         try {
-           
             await axios.post(`${API_URL}/orders/cart/add/`, 
                 { 
                     product_id: product.id,

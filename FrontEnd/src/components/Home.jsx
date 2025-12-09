@@ -8,7 +8,7 @@ import shipping from '../assets/freeshipping.png'
 import refund from '../assets/tick-home.png'
 import wallet from '../assets/wallet.png'
 import technical from '../assets/admin.png' 
-import { CartContext } from "../component/cartcouter.jsx"; // Corrected extension and path
+import { CartContext } from "../component/cartcouter.jsx"; 
 
 
 function Home() {
@@ -18,7 +18,6 @@ function Home() {
   const { updateCartCount } = useContext(CartContext)
 
   useEffect(() => {
-    // Using import.meta.env for Vite environment variables
     axios
       .get(`${import.meta.env.VITE_API_URL}/products`)
       .then((res) => setProducts(res.data))
@@ -104,12 +103,12 @@ function Home() {
         </NavLink>
         <NavLink to={'/shop'} className="cat-card cat-polo">
            <div className="overlay">
-             <h2>POLOS</h2>
+             <h2>Minimal</h2>
            </div>
         </NavLink>
         <NavLink to={'/shop'} className="cat-card cat-women">
            <div className="overlay">
-             <h2>FOR HER</h2>
+             <h2>Printed</h2>
            </div>
         </NavLink>
       </div>

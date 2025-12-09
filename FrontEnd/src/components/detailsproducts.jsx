@@ -5,6 +5,8 @@ import backarrow from '../assets/back-arrow.png'
 import './detailsproducts.css'
 import { toast } from "react-toastify";
 import { CartContext } from "../component/cartcouter";
+import shipping from '../assets/freeshipping.png'
+import tick from '../assets/tick-home.png'
 
 function Detailsproducts() {
     const { id } = useParams()
@@ -218,8 +220,8 @@ function Detailsproducts() {
                     </div>
 
                     <div className="delivery-note">
-                        <p>✅ Free Delivery on orders above ₹999</p>
-                        <p>✅ 7 Day Easy Return Policy</p>
+                        <p><img className='deliveryicons' src={shipping} alt="" />Free Delivery on orders above ₹999</p>
+                        <p><img className='deliveryicons' src={tick} alt="" />7 Day Easy Return Policy</p>
                     </div>
                 </div>
             </div>
