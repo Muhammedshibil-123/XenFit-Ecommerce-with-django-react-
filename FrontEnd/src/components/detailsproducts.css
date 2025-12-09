@@ -264,60 +264,197 @@
     margin: 5px 0;
 }
 
-/* ... existing code ... */
-
-/* --- Variants / Colors Section --- */
 .variants-section {
     margin-bottom: 30px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
 }
 
 .variants-header {
-    font-size: 14px;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 600;
     text-transform: uppercase;
-    color: #111;
-    margin-bottom: 10px;
+    color: #666;
+    margin-bottom: 12px;
 }
 
 .variants-grid {
     display: flex;
-    gap: 15px;
+    gap: 10px; /* Smaller gap */
     flex-wrap: wrap;
 }
 
 .variant-card {
-    width: 80px;
+    /* HALF SIZE: Reduced from 80px to 50px */
+    width: 50px; 
     text-decoration: none;
     border: 1px solid #eee;
     transition: all 0.2s ease;
+    
+    /* Layout: Image on top, Text below */
     display: flex;
-    flex-direction: column;
+    flex-direction: column; 
     background: #fff;
+    border-radius: 4px; /* Optional: Slight rounding */
+    border-color: #000;
+    overflow: hidden;
 }
 
 .variant-card:hover {
-    border-color: #111;
+    border-color: #000;
     transform: translateY(-2px);
 }
 
 .variant-card img {
     width: 100%;
-    height: 100px; /* Portrait aspect ratio */
+    /* Reduced height to match the smaller width */
+    height: 65px; 
     object-fit: cover;
 }
 
 .variant-card span {
-    font-size: 10px;
+    /* Smaller text to fit the 50px box */
+    font-size: 9px; 
     text-align: center;
-    padding: 5px;
-    color: #555;
-    font-weight: 600;
-    text-transform: uppercase;
+    padding: 4px 2px;
+    color: #333;
+    font-weight: 500;
+    text-transform: capitalize;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    background-color: #f9f9f9;
 }
 
+.size-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px; /* Space for the banner */
+}
+
+/* The red banner text */
+.stock-alert {
+    position: absolute;
+    top: -18px; /* Move above the button */
+    font-size: 10px;
+    font-weight: 700;
+    color: #e63946; /* Red warning color */
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Message when all sizes are gone */
+.no-stock-msg {
+    color: #e63946;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 10px 0;
+}
+
+
+.image-section {
+    display: flex;
+    flex-direction: column;
+    /* Height needs to adjust to content now, remove fixed height if present */
+    height: auto; 
+    min-height: 600px;
+    align-items: center;
+    padding-bottom: 20px;
+}
+
+.main-image-container {
+    width: 100%;
+    height: 500px; /* Fixed height for main image area */
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.active-product-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: opacity 0.3s ease;
+}
+
+/* Gallery Wrapper (Thumbnails + Buttons) */
+.gallery-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 400px; /* Limit width to keep it neat */
+    gap: 10px;
+}
+
+/* The scrollable track */
+.gallery-track {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 5px;
+    scrollbar-width: none; /* Firefox: hide scrollbar */
+}
+
+/* Hide scrollbar for Chrome/Safari */
+.gallery-track::-webkit-scrollbar {
+    display: none;
+}
+
+/* Individual Thumbnail */
+.gallery-thumb {
+    min-width: 70px;
+    height: 70px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    border-radius: 4px;
+    overflow: hidden;
+    opacity: 0.6;
+    transition: all 0.2s;
+}
+
+.gallery-thumb:hover {
+    opacity: 1;
+}
+
+.gallery-thumb.selected {
+    border: 2px solid #111;
+    opacity: 1;
+}
+
+.gallery-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Scroll Buttons (< >) */
+.gallery-btn {
+    background: #fff;
+    border: 1px solid #ddd;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-weight: bold;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    flex-shrink: 0; /* Prevent button from shrinking */
+}
+
+.gallery-btn:hover {
+    background: #111;
+    color: #fff;
+    border-color: #111;
+}
 /* --- Mobile Responsiveness --- */
 @media (max-width: 900px) {
     .details-grid {

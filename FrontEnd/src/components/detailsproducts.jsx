@@ -1,18 +1,21 @@
 import axios from 'axios'
-import React, { useEffect, useState, useContext } from 'react'
-import { NavLink, useParams } from 'react-router-dom' // Ensure NavLink is imported
+import React, { useEffect, useState, useContext, useRef } from 'react'
+import { NavLink, useParams } from 'react-router-dom'
 import backarrow from '../assets/back-arrow.png'
 import './detailsproducts.css'
 import { toast } from "react-toastify";
 import { CartContext } from "../component/cartcouter";
+// Optional: You can import arrow icons if you have them, or use text < >
+// import rightArrow from '../assets/right-arrow.png' 
 
 function Detailsproducts() {
     const { id } = useParams()
     const [product, setProduct] = useState(null)
     const [selectedSize, setSelectedSize] = useState(null)
     const [loading, setLoading] = useState(true)
+    const [activeImg, setActiveImg] = useState('') // State for the main large image
+    const scrollRef = useRef(null) // Ref for scrolling the gallery
     
-    // Get API URL Helper
     const getApiUrl = () => {
         try {
             return import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
@@ -25,11 +28,11 @@ function Detailsproducts() {
     const { CartHandleChange } = useContext(CartContext)
 
     useEffect(() => {
-        // Fetch specific product by ID
         axios.get(`${API_URL}/products/${id}/`)
             .then((res) => {
                 setProduct(res.data)
-                // Reset size when product changes (e.g. clicking a color variant)
+                // Set initial main image
+                setActiveImg(res.data.image) 
                 setSelectedSize(null) 
                 setLoading(false)
             })
@@ -52,17 +55,38 @@ function Detailsproducts() {
         CartHandleChange({ ...product, selectedSize: selectedSize });
     }
 
+    // Scroll Logic for Thumbnails
+    const scroll = (direction) => {
+        if (scrollRef.current) {
+            const { current } = scrollRef;
+            const scrollAmount = 100; // Adjust scroll distance
+            if (direction === 'left') {
+                current.scrollLeft -= scrollAmount;
+            } else {
+                current.scrollLeft += scrollAmount;
+            }
+        }
+    };
+
     if (loading) return <div className="loading-state">Loading...</div>
     if (!product) return <div className="loading-state">Product not found</div>
 
     const discount = product.mrp ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
 
-    // Helper for Image URLs
     const getImageUrl = (img) => {
-        return img 
-            ? (img.toString().startsWith('http') ? img : `http://127.0.0.1:8000${img}`)
-            : 'https://via.placeholder.com/300';
+        if (!img) return 'https://via.placeholder.com/300';
+        if (img.toString().startsWith('http')) return img;
+        return `http://127.0.0.1:8000${img}`;
     }
+
+    // Combine Main Image + Extra Images into one array for the gallery
+    const allImages = [
+        { id: 'main', image: product.image }, 
+        ...(product.extra_images || [])
+    ];
+
+    const hasVariants = product.sizes && product.sizes.length > 0;
+    const availableSizes = hasVariants ? product.sizes.filter(s => s.stock > 0) : [];
 
     return (
         <div className='main-details-wrapper'>
@@ -74,12 +98,34 @@ function Detailsproducts() {
             </div>
 
             <div className='details-grid'>
-                {/* Left Column: Image */}
+                {/* --- IMAGE SECTION UPDATED --- */}
                 <div className='image-section'>
+                    {/* Main Large Image */}
                     <div className="main-image-container">
-                        <img src={getImageUrl(product.image)} alt={product.title} />
+                        <img src={getImageUrl(activeImg)} alt={product.title} className="active-product-img" />
                         {discount > 0 && <span className="discount-tag">-{discount}%</span>}
                     </div>
+
+                    {/* Thumbnail Gallery with Scroll Buttons */}
+                    {allImages.length > 1 && (
+                        <div className="gallery-wrapper">
+                            <button className="gallery-btn left" onClick={() => scroll('left')}>&lt;</button>
+                            
+                            <div className="gallery-track" ref={scrollRef}>
+                                {allImages.map((imgObj, index) => (
+                                    <div 
+                                        key={imgObj.id || index} 
+                                        className={`gallery-thumb ${activeImg === imgObj.image ? 'selected' : ''}`}
+                                        onClick={() => setActiveImg(imgObj.image)}
+                                    >
+                                        <img src={getImageUrl(imgObj.image)} alt="thumb" />
+                                    </div>
+                                ))}
+                            </div>
+
+                            <button className="gallery-btn right" onClick={() => scroll('right')}>&gt;</button>
+                        </div>
+                    )}
                 </div>
 
                 {/* Right Column: Info */}
@@ -95,7 +141,7 @@ function Detailsproducts() {
 
                     <div className="divider"></div>
 
-                    {/* --- ADDED: Color Variants Section --- */}
+                    {/* Color Variants */}
                     {product.available_colors && product.available_colors.length > 0 && (
                         <div className="variants-section">
                             <h3 className="variants-header">More Colors</h3>
@@ -113,7 +159,6 @@ function Detailsproducts() {
                             </div>
                         </div>
                     )}
-                    {/* ------------------------------------- */}
 
                     {/* Size Selector */}
                     <div className="size-section">
@@ -121,32 +166,42 @@ function Detailsproducts() {
                             <h3>Select Size</h3>
                         </div>
                         <div className="size-options">
-                            {product.sizes && product.sizes.length > 0 ? (
-                                product.sizes.map((sizeObj) => (
-                                    <button 
-                                        key={sizeObj.id} 
-                                        className={`size-btn ${selectedSize === sizeObj.size ? 'active' : ''}`}
-                                        onClick={() => setSelectedSize(sizeObj.size)}
-                                        disabled={sizeObj.stock <= 0}
-                                        style={{ opacity: sizeObj.stock <= 0 ? 0.5 : 1 }}
-                                    >
-                                        {sizeObj.size}
-                                    </button>
-                                ))
+                            {hasVariants ? (
+                                availableSizes.length > 0 ? (
+                                    availableSizes.map((sizeObj) => (
+                                        <div key={sizeObj.id} className="size-wrapper">
+                                            {sizeObj.stock < 10 && (
+                                                <span className="stock-alert">{sizeObj.stock} left</span>
+                                            )}
+                                            <button 
+                                                className={`size-btn ${selectedSize === sizeObj.size ? 'active' : ''}`}
+                                                onClick={() => setSelectedSize(sizeObj.size)}
+                                            >
+                                                {sizeObj.size}
+                                            </button>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="no-stock-msg">Out of Stock</p>
+                                )
                             ) : (
                                 <p className="no-size">One Size</p>
                             )}
                         </div>
                     </div>
 
-                    <button className='add-to-bag-btn' onClick={handleAddToCart}>
-                        ADD TO BAG
+                    <button 
+                        className='add-to-bag-btn' 
+                        onClick={handleAddToCart}
+                        disabled={hasVariants && availableSizes.length === 0}
+                        style={{ opacity: (hasVariants && availableSizes.length === 0) ? 0.5 : 1 }}
+                    >
+                        {(hasVariants && availableSizes.length === 0) ? "OUT OF STOCK" : "ADD TO BAG"}
                     </button>
 
                     <div className="product-specs">
                         <h3>Product Details</h3>
                         <p className='description'>{product.description}</p>
-                        
                         <div className="spec-grid">
                             <div className="spec-item">
                                 <span className="label">Theme</span>
