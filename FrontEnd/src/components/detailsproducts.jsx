@@ -1,30 +1,46 @@
 import axios from 'axios'
 import React, { useEffect, useState, useContext } from 'react'
-import { NavLink, useParams } from 'react-router-dom'
+import { NavLink, useParams } from 'react-router-dom' // Ensure NavLink is imported
 import backarrow from '../assets/back-arrow.png'
 import './detailsproducts.css'
 import { toast } from "react-toastify";
-import Notfound from './notfound'
 import { CartContext } from "../component/cartcouter";
 
 function Detailsproducts() {
     const { id } = useParams()
-    const [product, setProduct] = useState()
-    // EDITED: Added state for selected size
+    const [product, setProduct] = useState(null)
     const [selectedSize, setSelectedSize] = useState(null)
+    const [loading, setLoading] = useState(true)
     
-    const userId = (localStorage.getItem("id"))
-    const { updateCartCount, CartHandleChange } = useContext(CartContext)
+    // Get API URL Helper
+    const getApiUrl = () => {
+        try {
+            return import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+        } catch (e) {
+            return 'http://127.0.0.1:8000/api';
+        }
+    };
+    const API_URL = getApiUrl();
+
+    const { CartHandleChange } = useContext(CartContext)
 
     useEffect(() => {
-        axios.get(`${import.meta.env.VITE_API_URL}/products/${id}`)
-            .then((res) => setProduct(res.data))
-            .catch((err) => console.error(err))
-    }, [id])
+        // Fetch specific product by ID
+        axios.get(`${API_URL}/products/${id}/`)
+            .then((res) => {
+                setProduct(res.data)
+                // Reset size when product changes (e.g. clicking a color variant)
+                setSelectedSize(null) 
+                setLoading(false)
+            })
+            .catch((err) => {
+                console.error("Error fetching product:", err)
+                setLoading(false)
+            })
+    }, [id, API_URL])
 
-    // EDITED: Wrapper function to handle Size Validation
     const handleAddToCart = () => {
-        if (!selectedSize) {
+        if (product.sizes && product.sizes.length > 0 && !selectedSize) {
             toast.error('Please select a size', {
                 position: 'top-center',
                 autoClose: 1500,
@@ -33,23 +49,23 @@ function Detailsproducts() {
             });
             return;
         }
-        
-        // Pass the product with the selected size (Note: Your current CartContext 
-        // might need updating to save the size property to the backend, 
-        // but this sends it correctly from the UI)
         CartHandleChange({ ...product, selectedSize: selectedSize });
     }
 
-    if (!product) {
-        return <div className="loading-state">Loading...</div>
-    }
+    if (loading) return <div className="loading-state">Loading...</div>
+    if (!product) return <div className="loading-state">Product not found</div>
 
-    // Calculate discount
     const discount = product.mrp ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
+
+    // Helper for Image URLs
+    const getImageUrl = (img) => {
+        return img 
+            ? (img.toString().startsWith('http') ? img : `http://127.0.0.1:8000${img}`)
+            : 'https://via.placeholder.com/300';
+    }
 
     return (
         <div className='main-details-wrapper'>
-            {/* Back Button */}
             <div className="breadcrumb-nav">
                 <NavLink to={'/shop'} className="back-link">
                     <img src={backarrow} alt="Back" /> 
@@ -61,7 +77,7 @@ function Detailsproducts() {
                 {/* Left Column: Image */}
                 <div className='image-section'>
                     <div className="main-image-container">
-                        <img src={product.image} alt={product.title} />
+                        <img src={getImageUrl(product.image)} alt={product.title} />
                         {discount > 0 && <span className="discount-tag">-{discount}%</span>}
                     </div>
                 </div>
@@ -74,26 +90,47 @@ function Detailsproducts() {
                     <div className='price-block'>
                         <span className='current-price'>₹{product.price}</span>
                         {product.mrp && <span className='original-price'>MRP ₹{product.mrp}</span>}
-                        <span className='tax-note'>Pix. of all taxes</span>
+                        <span className='tax-note'>Inc. of all taxes</span>
                     </div>
 
                     <div className="divider"></div>
 
-                    {/* EDITED: Size Selector Section */}
+                    {/* --- ADDED: Color Variants Section --- */}
+                    {product.available_colors && product.available_colors.length > 0 && (
+                        <div className="variants-section">
+                            <h3 className="variants-header">More Colors</h3>
+                            <div className="variants-grid">
+                                {product.available_colors.map((variant) => (
+                                    <NavLink 
+                                        to={`/${variant.id}`} 
+                                        className="variant-card" 
+                                        key={variant.id}
+                                    >
+                                        <img src={getImageUrl(variant.image)} alt={variant.color} />
+                                        <span>{variant.color}</span>
+                                    </NavLink>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    {/* ------------------------------------- */}
+
+                    {/* Size Selector */}
                     <div className="size-section">
                         <div className="size-header">
                             <h3>Select Size</h3>
-                           
                         </div>
                         <div className="size-options">
                             {product.sizes && product.sizes.length > 0 ? (
-                                product.sizes.map((size) => (
+                                product.sizes.map((sizeObj) => (
                                     <button 
-                                        key={size} 
-                                        className={`size-btn ${selectedSize === size ? 'active' : ''}`}
-                                        onClick={() => setSelectedSize(size)}
+                                        key={sizeObj.id} 
+                                        className={`size-btn ${selectedSize === sizeObj.size ? 'active' : ''}`}
+                                        onClick={() => setSelectedSize(sizeObj.size)}
+                                        disabled={sizeObj.stock <= 0}
+                                        style={{ opacity: sizeObj.stock <= 0 ? 0.5 : 1 }}
                                     >
-                                        {size}
+                                        {sizeObj.size}
                                     </button>
                                 ))
                             ) : (
@@ -102,12 +139,10 @@ function Detailsproducts() {
                         </div>
                     </div>
 
-                    {/* Add to Cart Button */}
                     <button className='add-to-bag-btn' onClick={handleAddToCart}>
                         ADD TO BAG
                     </button>
 
-                    {/* Product Details Accordion/List */}
                     <div className="product-specs">
                         <h3>Product Details</h3>
                         <p className='description'>{product.description}</p>
@@ -119,15 +154,15 @@ function Detailsproducts() {
                             </div>
                             <div className="spec-item">
                                 <span className="label">Fit</span>
-                                <span className="value">{product.category || 'Regular'}</span>
+                                <span className="value">{product.sleeve_type || 'Regular'}</span>
                             </div>
                             <div className="spec-item">
-                                <span className="label">Gender</span>
-                                <span className="value">{product.gender || 'Unisex'}</span>
+                                <span className="label">Code</span>
+                                <span className="value">{product.product_code || '-'}</span>
                             </div>
                             <div className="spec-item">
-                                <span className="label">Material</span>
-                                <span className="value">100% Cotton</span>
+                                <span className="label">Color</span>
+                                <span className="value">{product.color || '-'}</span>
                             </div>
                         </div>
                     </div>

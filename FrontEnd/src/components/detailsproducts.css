@@ -264,6 +264,60 @@
     margin: 5px 0;
 }
 
+/* ... existing code ... */
+
+/* --- Variants / Colors Section --- */
+.variants-section {
+    margin-bottom: 30px;
+}
+
+.variants-header {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #111;
+    margin-bottom: 10px;
+}
+
+.variants-grid {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.variant-card {
+    width: 80px;
+    text-decoration: none;
+    border: 1px solid #eee;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+}
+
+.variant-card:hover {
+    border-color: #111;
+    transform: translateY(-2px);
+}
+
+.variant-card img {
+    width: 100%;
+    height: 100px; /* Portrait aspect ratio */
+    object-fit: cover;
+}
+
+.variant-card span {
+    font-size: 10px;
+    text-align: center;
+    padding: 5px;
+    color: #555;
+    font-weight: 600;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 /* --- Mobile Responsiveness --- */
 @media (max-width: 900px) {
     .details-grid {

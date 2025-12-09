@@ -22,4 +22,11 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def get_available_colors(self, obj):
         variants = Product.objects.filter(product_code=obj.product_code).exclude(id=obj.id)
-        return [{"id": v.id, "color": v.color} for v in variants]
+        return [
+            {
+                "id": v.id, 
+                "color": v.color, 
+                "image": v.image.url if v.image else None 
+            } 
+            for v in variants
+        ]
