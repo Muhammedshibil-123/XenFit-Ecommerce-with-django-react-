@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework import generics, status, views
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import Cart, CartItem
-from .serializers import CartSerializer, CartItemSerializer
+from .models import Cart, CartItem,Wishlist
+from .serializers import CartSerializer, CartItemSerializer,WishlistSerializer
 from products.models import Product, ProductSize
 
 # Create your views here.
@@ -94,3 +94,37 @@ class UpdateCartItemView(views.APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except CartItem.DoesNotExist:
             return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+
+class WishlistView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = WishlistSerializer
+
+    def get_object(self):
+        wishlist, created = Wishlist.objects.get_or_create(user=self.request.user)
+        return wishlist
+
+class ToggleWishlistView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        product_id = request.data.get('product_id')
+        if not product_id:
+            return Response({"error": "Product ID required"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+            
+        wishlist, created = Wishlist.objects.get_or_create(user=request.user)
+        
+        if wishlist.products.filter(id=product_id).exists():
+            wishlist.products.remove(product)
+            message = "Removed from wishlist"
+            action = "removed"
+        else:
+            wishlist.products.add(product)
+            message = "Added to wishlist"
+            action = "added"
+            
+        return Response({"message": message, "action": action}, status=status.HTTP_200_OK)

@@ -13,7 +13,6 @@ import ReactPaginate from "react-paginate";
 
 const getApiUrl = () => {
   try {
-    
     return import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
   } catch (e) {
     return 'http://127.0.0.1:8000/api';
@@ -23,6 +22,7 @@ const getApiUrl = () => {
 function Shop() {
   const [products, setProducts] = useState([]);
   const userId = localStorage.getItem("id");
+  const token = localStorage.getItem("access"); // Get token for API calls
   const API_URL = getApiUrl();
 
 
@@ -33,12 +33,15 @@ function Shop() {
   const navigate = useNavigate()
   const [wishlist, setWishlist] = useState([])
   const { searchTerm } = useContext(SearchContext)
+  // Note: Ensure CartHandleChange is actually available in your CartContext, 
+  // otherwise this needs to be implemented locally like in wishlist.jsx
   const { updateCartCount, CartHandleChange } = useContext(CartContext)
   const { updateWhislistCount } = useContext(WishlistContext)
   const [currentPage, setCurrentPage] = useState(0)
   const productsPerPage = 16
 
   useEffect(() => {
+    // 1. Fetch Products
     axios
       .get(`${API_URL}/products/`)
       .then((res) => {
@@ -50,15 +53,20 @@ function Shop() {
       })
       .catch((err) => {
         console.error("Error fetching products:", err);
-
       });
 
-    if (userId) {
-      axios.get(`${API_URL}/users/${userId}/`)
-        .then((res) => setWishlist(res.data.whishlist || []))
+    // 2. Fetch Wishlist (New API)
+    if (userId && token) {
+      axios.get(`${API_URL}/orders/wishlist/`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+        .then((res) => {
+          // Backend serializer returns { id, user, products: [...] }
+          setWishlist(res.data.products || []);
+        })
         .catch(err => console.log(err));
     }
-  }, [userId, API_URL]);
+  }, [userId, API_URL, token]);
 
   
   let filterProducts = products.filter((product) =>
@@ -88,6 +96,7 @@ function Shop() {
     )
   }
 
+  // --- NEW Wishlist Logic ---
   async function WhishlistHandleChange(product) {
     if (!userId) {
       toast.error("Please log in to add to Wishlist ",
@@ -100,44 +109,33 @@ function Shop() {
     }
 
     try {
-      const userRespone = await axios.get(`${API_URL}/users/${userId}`)
-      const userData = userRespone.data
-      const currenwhishlist = userData.whishlist || []
+      // Call the toggle endpoint
+      const response = await axios.post(
+        `${API_URL}/orders/wishlist/toggle/`,
+        { product_id: product.id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-      const existingItem = currenwhishlist.findIndex((item) => item.productId === product.id)
-      let updatedwihislist;
+      const action = response.data.action; // 'added' or 'removed'
 
-      if (existingItem !== -1) {
-        toast.warn('Product already in wishlist', {
-          position: 'top-center',
-          autoClose: 1300,
-          style: { marginTop: '60px' }
-        })
-      } else {
-        updatedwihislist = [
-          ...currenwhishlist,
-          {
-            productId: product.id,
-            title: product.title,
-            price: product.price,
-            image: product.image,
-            quantity: 1,
-          },
-        ]
-
-        await axios.put(`${API_URL}/users/${userId}`, {
-          ...userData,
-          whishlist: updatedwihislist,
-        })
-
-        setWishlist(updatedwihislist)
+      if (action === 'added') {
+        setWishlist((prev) => [...prev, product]); // Add to local state
         toast.success('Item added to Wishlist', {
           position: 'top-center',
           autoClose: 1300,
           style: { marginTop: '60px' }
-        })
-        updateWhislistCount()
+        });
+      } else {
+        setWishlist((prev) => prev.filter((item) => item.id !== product.id)); // Remove from local state
+        toast.warn('Removed from Wishlist', {
+          position: 'top-center',
+          autoClose: 1300,
+          style: { marginTop: '60px' }
+        });
       }
+      
+      updateWhislistCount(); // Update global counter
+
     } catch (err) {
       console.error(err);
       toast.error("Failed to update wishlist");
@@ -145,7 +143,8 @@ function Shop() {
   }
 
   function whishlistcolor(productId) {
-    return wishlist.find((item) => item.productId === productId)
+    // Check if the product ID exists in the wishlist array
+    return wishlist.some((item) => item.id === productId);
   }
 
   const offset = currentPage * productsPerPage;
@@ -203,6 +202,7 @@ function Shop() {
 
           const discount = product.mrp ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
 
+          // Ensure image URL is absolute
           const imageUrl = product.image 
             ? (product.image.toString().startsWith('http') 
                 ? product.image 
@@ -215,6 +215,7 @@ function Shop() {
               <div className="whislist-contaniner"
                 onClick={() => WhishlistHandleChange(product)}>
                 <FaHeart style={{
+                  // Check if product is in wishlist
                   color: whishlistcolor(product.id) ? '#e63946' : '#ccc',
                   width: '18px',
                   height: '18px'

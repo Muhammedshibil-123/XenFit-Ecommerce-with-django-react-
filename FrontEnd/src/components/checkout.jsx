@@ -2,18 +2,37 @@ import axios from "axios"
 import { useState, useEffect } from "react"
 import './checkout.css'
 import { useNavigate } from "react-router-dom"
+import { toast } from "react-toastify"
 
 function Checkout() {
-  const [user, setUser] = useState([])
-  const userId = (localStorage.getItem("id"))
+  const [cartItems, setCartItems] = useState([])
+  const [user, setUser] = useState({
+    username: localStorage.getItem('username') || "",
+    email: localStorage.getItem('email') || "",
+    mobile: localStorage.getItem('mobile') || "",
+    id: localStorage.getItem('id') || ""
+  })
+  
   const [details, setdetails] = useState({
-    name: "",
-    mobile: "",
+    name: localStorage.getItem('username') || "",
+    mobile: localStorage.getItem('mobile') || "",
     address: "",
     place: "",
     pincode: "",
   });
+  
   const navigate = useNavigate()
+  const token = localStorage.getItem('access_token')
+
+  // Helper to get API URL
+  const getApiUrl = () => {
+    try {
+        return import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+    } catch (e) {
+        return 'http://127.0.0.1:8000/api';
+    }
+  };
+  const API_URL = getApiUrl();
 
   function handlechange(e) {
     setdetails((perv) => ({
@@ -22,16 +41,34 @@ function Checkout() {
     }));
   }
 
+  // Fetch Cart from Backend
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_URL}/users/${userId}`)
-      .then((res) => setUser(res.data || []))
-      .catch((err) => console.log(err))
-  }, [userId])
+    if(token) {
+        axios.get(`${API_URL}/orders/cart/`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        .then((res) => {
+            setCartItems(res.data.items || []);
+        })
+        .catch((err) => {
+            console.log(err);
+            toast.error("Failed to load checkout details");
+        });
+    } else {
+        navigate('/login');
+    }
+  }, [token, navigate, API_URL])
 
-  // --- Logic kept same as previous ---
-  const totalCart = user.cart ? user.cart.reduce((total, item) => {
-    return total + (item.quantity * item.price)
-  }, 0) : 0
+  // Helper for Images
+  const getImageUrl = (img) => {
+      if (!img) return 'https://via.placeholder.com/150';
+      return img.startsWith('http') ? img : `http://127.0.0.1:8000${img}`;
+  };
+
+  // --- Calculations ---
+  const totalCart = cartItems.reduce((total, item) => {
+    return total + (item.quantity * Number(item.product.price))
+  }, 0)
 
   const discount = totalCart * 0.10;
   const discountedPrice = totalCart - discount;
@@ -40,31 +77,45 @@ function Checkout() {
 
   function orderhandle(){
     if(!details.name || !details.address || !details.pincode || !details.mobile || !details.place){
-      alert('Please fill all delivery details')
-    }else{
-      axios.post(`${import.meta.env.VITE_API_URL}/orders`,{
-        username:user.username,
-        useremail:user.email,
-        userid:user.id,
-        items:user.cart,
-        delivery:details,
-        status: "Order Placed", 
-        orderDate: new Date().toLocaleDateString() 
+      toast.warn('Please fill all delivery details')
+    } else {
+      // NOTE: You will need to create a dedicated 'create order' endpoint in your Django backend.
+      // The code below assumes you might have or will create an endpoint at '/orders/create/' 
+      // or similar. For now, I'm keeping your structure but using the real data.
+      
+      const orderData = {
+        user: user.id,
+        items: cartItems.map(item => ({
+            product_id: item.product.id,
+            quantity: item.quantity,
+            size: item.size,
+            price: item.product.price // Store price at time of purchase
+        })),
+        delivery_address: details,
+        total_amount: grandprice,
+        status: "Order Placed"
+      }
+
+      // Example POST - Update URL to your actual Order Creation endpoint
+      axios.post(`${API_URL}/orders/place-order/`, orderData, { // Update this endpoint
+        headers: { Authorization: `Bearer ${token}` }
       })
       .then(()=>{
-        return axios.put(`${import.meta.env.VITE_API_URL}/users/${userId}`,{
-          ...user,
-          cart:[]
-        })
+        toast.success("Order Placed Successfully!")
+        navigate('/success')
       })
-      .then(()=> navigate('/success'))
-      .catch((err)=>console.error(err))
+      .catch((err)=>{
+        console.error(err);
+        // Fallback for demo/testing if backend endpoint isn't ready
+        // toast.success("Order simulated (Backend endpoint needed)");
+        // navigate('/success');
+        toast.error("Failed to place order. Please check backend.");
+      })
     }
   }
 
   return (
     <div className="main-checkout-conatainer">
-      {/* EDITED: Wrapped everything in a Grid Container */}
       <div className="checkout-grid">
         
         {/* --- LEFT SIDE: Shipping Details --- */}
@@ -134,16 +185,17 @@ function Checkout() {
                 
                 {/* Product List Scrollable Area */}
                 <div className="summary-items">
-                    {!user.cart || user.cart.length === 0 ? (
+                    {cartItems.length === 0 ? (
                         <p>Your bag is empty</p>
                     ) : (
-                        user.cart.map((item) => (
-                            <div className="summary-item" key={item.productId}>
-                                <img src={item.image} alt="" />
+                        cartItems.map((item) => (
+                            <div className="summary-item" key={item.id}>
+                                <img src={getImageUrl(item.product.image)} alt={item.product.title} />
                                 <div className="summary-info">
-                                    <h4>{item.title}</h4>
+                                    <h4>{item.product.title}</h4>
+                                    <p className="size-text">Size: {item.size || "N/A"}</p>
                                     <p className="qty-text">Qty: {item.quantity}</p>
-                                    <p className="price-text">₹{item.price * item.quantity}</p>
+                                    <p className="price-text">₹{Number(item.product.price) * item.quantity}</p>
                                 </div>
                             </div>
                         ))

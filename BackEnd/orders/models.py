@@ -18,3 +18,12 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f"{self.product.title} - {self.size} ({self.quantity})"
+    
+
+class Wishlist(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='wishlist')
+    products = models.ManyToManyField(Product, related_name='wishlists', blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Wishlist of {self.user.username}"

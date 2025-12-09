@@ -84,9 +84,8 @@ function Login() {
     <div className="main-login-container">
       <div className="login-wrapper">
         
-        {/* Left Side: Aesthetic Image */}
+
         <div className="login-image-section">
-          {/* UPDATED: Hanging T-Shirts (No Person) */}
           <img src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=2070&auto=format&fit=crop" alt="Fashion" />
           <div className="text-overlay">
             <h1>XenFit.</h1>
@@ -94,7 +93,7 @@ function Login() {
           </div>
         </div>
 
-        {/* Right Side: Form */}
+        
         <div className="login-form-section">
           <div className="form-title">
             <h2>Welcome Back</h2>
@@ -131,7 +130,7 @@ function Login() {
             {error && <p className="error-msg" style={{textAlign:'center'}}>{error}</p>}
           </form>
 
-          {/* Google Login Section */}
+          
           <div className="divider"><span>OR</span></div>
           <button className="google-btn">
              <FcGoogle size={20} />

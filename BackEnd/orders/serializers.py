@@ -1,12 +1,12 @@
 from rest_framework import serializers
-from .models import Cart, CartItem
+from .models import Cart, CartItem,Wishlist
 from products.models import Product, ProductSize
 from products.serializers import ProductSerializer
 
 class CartItemSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
     product_id = serializers.IntegerField(write_only=True)
-    
+
     max_stock = serializers.SerializerMethodField()
 
     class Meta:
@@ -28,3 +28,10 @@ class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = ['id', 'user', 'items']
+
+class WishlistSerializer(serializers.ModelSerializer):
+    products = ProductSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Wishlist
+        fields = ['id', 'user', 'products']
