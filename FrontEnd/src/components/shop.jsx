@@ -1,7 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
 import './shop.css'
 import { useNavigate } from "react-router-dom";
 import { FaHeart } from "react-icons/fa";
@@ -13,7 +12,6 @@ import ReactPaginate from "react-paginate";
 
 const getApiUrl = () => {
   try {
-    
     return import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
   } catch (e) {
     return 'http://127.0.0.1:8000/api';
@@ -22,19 +20,20 @@ const getApiUrl = () => {
 
 function Shop() {
   const [products, setProducts] = useState([]);
-  const userId = localStorage.getItem("id");
   const API_URL = getApiUrl();
-
 
   const [sortType, setSortType] = useState('default')
   const [themeSort, setThemeSort] = useState('all')
   const [brandSort, setBrandSort] = useState('all')
 
   const navigate = useNavigate()
-  const [wishlist, setWishlist] = useState([])
+  
   const { searchTerm } = useContext(SearchContext)
-  const { updateCartCount, CartHandleChange } = useContext(CartContext)
-  const { updateWhislistCount } = useContext(WishlistContext)
+  const { CartHandleChange } = useContext(CartContext)
+  
+  // Use the Context Logic
+  const { WishlistHandleChange, wishlist } = useContext(WishlistContext)
+
   const [currentPage, setCurrentPage] = useState(0)
   const productsPerPage = 16
 
@@ -50,15 +49,8 @@ function Shop() {
       })
       .catch((err) => {
         console.error("Error fetching products:", err);
-
       });
-
-    if (userId) {
-      axios.get(`${API_URL}/users/${userId}/`)
-        .then((res) => setWishlist(res.data.whishlist || []))
-        .catch(err => console.log(err));
-    }
-  }, [userId, API_URL]);
+  }, [API_URL]);
 
   
   let filterProducts = products.filter((product) =>
@@ -88,64 +80,9 @@ function Shop() {
     )
   }
 
-  async function WhishlistHandleChange(product) {
-    if (!userId) {
-      toast.error("Please log in to add to Wishlist ",
-        {
-          position: 'top-center',
-          autoClose: 1300,
-          style: { marginTop: '60px' }
-        })
-      return
-    }
-
-    try {
-      const userRespone = await axios.get(`${API_URL}/users/${userId}`)
-      const userData = userRespone.data
-      const currenwhishlist = userData.whishlist || []
-
-      const existingItem = currenwhishlist.findIndex((item) => item.productId === product.id)
-      let updatedwihislist;
-
-      if (existingItem !== -1) {
-        toast.warn('Product already in wishlist', {
-          position: 'top-center',
-          autoClose: 1300,
-          style: { marginTop: '60px' }
-        })
-      } else {
-        updatedwihislist = [
-          ...currenwhishlist,
-          {
-            productId: product.id,
-            title: product.title,
-            price: product.price,
-            image: product.image,
-            quantity: 1,
-          },
-        ]
-
-        await axios.put(`${API_URL}/users/${userId}`, {
-          ...userData,
-          whishlist: updatedwihislist,
-        })
-
-        setWishlist(updatedwihislist)
-        toast.success('Item added to Wishlist', {
-          position: 'top-center',
-          autoClose: 1300,
-          style: { marginTop: '60px' }
-        })
-        updateWhislistCount()
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to update wishlist");
-    }
-  }
-
+  // Check color using context state
   function whishlistcolor(productId) {
-    return wishlist.find((item) => item.productId === productId)
+    return wishlist.some((item) => item.id === productId);
   }
 
   const offset = currentPage * productsPerPage;
@@ -203,6 +140,7 @@ function Shop() {
 
           const discount = product.mrp ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
 
+          // Ensure image URL is absolute
           const imageUrl = product.image 
             ? (product.image.toString().startsWith('http') 
                 ? product.image 
@@ -213,7 +151,11 @@ function Shop() {
             <div className="shop-container" key={index}>
 
               <div className="whislist-contaniner"
-                onClick={() => WhishlistHandleChange(product)}>
+                onClick={(e) => {
+                    e.stopPropagation(); // Stop click from triggering NavLink
+                    e.preventDefault();
+                    WishlistHandleChange(product);
+                }}>
                 <FaHeart style={{
                   color: whishlistcolor(product.id) ? '#e63946' : '#ccc',
                   width: '18px',

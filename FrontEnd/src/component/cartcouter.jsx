@@ -34,13 +34,13 @@ export function CartProvider({ children }) {
     }, [API_URL])
 
     async function CartHandleChange(product) {
-        // FIX: Retrieve userId and token here so they are available in this function
+        
         const token = localStorage.getItem('access_token');
         const userId = localStorage.getItem('id');
 
         if (!userId) {
             toast.error("Please log in to add to cart", {
-                position: 'top-center',
+                position: 'top-right',
                 autoClose: 1300,
                 style: { marginTop: '60px' }
             })
@@ -57,7 +57,7 @@ export function CartProvider({ children }) {
             )
             
             toast.success('Item added to Bag', {
-                position: 'top-center',
+                position: 'top-right',
                 autoClose: 1300,
                 style: { marginTop: '60px' }
             })

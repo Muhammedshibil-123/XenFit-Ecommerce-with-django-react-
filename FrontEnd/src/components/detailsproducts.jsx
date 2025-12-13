@@ -44,7 +44,7 @@ function Detailsproducts() {
     const handleAddToCart = () => {
         if (product.sizes && product.sizes.length > 0 && !selectedSize) {
             toast.error('Please select a size', {
-                position: 'top-center',
+                position: 'top-right',
                 autoClose: 1500,
                 hideProgressBar: true,
                 theme: "dark",
