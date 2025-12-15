@@ -9,7 +9,12 @@ from rest_framework.response import Response
 from django.core.mail import send_mail
 from django.conf import settings
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from rest_framework.views import APIView
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
+import secrets
+import string
+import requests
 
 # Create your views here.
 class CustomTokenjwtView(TokenObtainPairView):
@@ -95,3 +100,62 @@ class VerifyOTPView(views.APIView):
                 return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class GoogleLoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        google_token = request.data.get('token')
+        if not google_token:
+            return Response({'error': 'No token provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # --- OPTION A IMPLEMENTATION START ---
+        # We verify the Access Token by asking Google for the user's info
+        user_info_req = requests.get(f'https://www.googleapis.com/oauth2/v3/userinfo?access_token={google_token}')
+        
+        if not user_info_req.ok:
+             return Response({'error': 'Invalid Google Token'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # If successful, Google returns the user's email and details
+        idinfo = user_info_req.json()
+        email = idinfo['email']
+        first_name = idinfo.get('given_name', '')
+        last_name = idinfo.get('family_name', '')
+        # --- OPTION A IMPLEMENTATION END ---
+
+        # Now we find or create the user in our database
+        try:
+            user = CustomUser.objects.get(email=email)
+        except CustomUser.DoesNotExist:
+            # Create a new user if they don't exist
+            random_suffix = ''.join(secrets.choice(string.ascii_lowercase + string.digits) for _ in range(4))
+            username = f"{email.split('@')[0]}_{random_suffix}"
+            
+            user = CustomUser.objects.create(
+                email=email,
+                username=username,
+                first_name=first_name,
+                last_name=last_name,
+                role='user',  # Default role
+                is_active=True # Google verified emails are trusted
+            )
+            user.set_unusable_password()
+            user.save()
+
+        # Generate your JWT Tokens (Access/Refresh)
+        refresh = RefreshToken.for_user(user)
+        
+        # Add your custom claims (role, username)
+        refresh['role'] = user.role
+        refresh['username'] = user.username
+
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'role': user.role,
+            'mobile': user.mobile
+        }, status=status.HTTP_200_OK)
