@@ -42,7 +42,6 @@ export function CartProvider({ children }) {
             toast.error("Please log in to add to cart", {
                 position: 'top-right',
                 autoClose: 1300,
-                style: { marginTop: '60px' }
             })
             return
         }
@@ -59,7 +58,7 @@ export function CartProvider({ children }) {
             toast.success('Item added to Bag', {
                 position: 'top-right',
                 autoClose: 1300,
-                style: { marginTop: '60px' }
+
             })
             updateCartCount()
         } catch (err) {

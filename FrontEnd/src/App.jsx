@@ -61,7 +61,8 @@ function App() {
                   pauseOnFocusLoss
                   draggable
                   pauseOnHover
-                  theme="light"
+                  theme="dark" 
+                  style={{ top: '90px' }}
                 />
                 <Routes>
 

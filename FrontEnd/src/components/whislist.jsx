@@ -1,97 +1,81 @@
 import axios from "axios";
 import { useState, useEffect, useContext } from "react";
-import './whislist.css'; // Updated CSS import
+import './whislist.css'; 
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { CartContext } from "../component/cartcouter";
 import { WishlistContext } from "../component/whislistcouter";
 
-// Helper to safely get API URL
 const getApiUrl = () => {
-  try {
-    return import.meta.env.VITE_API_URL || 'http://localhost:3000';
-  } catch (e) {
-    return 'http://localhost:3000';
-  }
+  return import.meta.env.VITE_API_URL || 'http://localhost:8000/api'; 
 };
 
 function Whislist() {
-  const [user, setUser] = useState([]);
-  const userId = localStorage.getItem("id");
+  const [wishlistProducts, setWishlistProducts] = useState([]);
   const navigate = useNavigate();
   const { updateCartCount } = useContext(CartContext);
   const { updateWhislistCount } = useContext(WishlistContext);
-  const API_URL = getApiUrl();
+  
+  const API_URL = getApiUrl(); 
 
   useEffect(() => {
-    if (userId) {
-      axios.get(`${API_URL}/users/${userId}`)
-        .then((res) => setUser(res.data || []))
-        .catch((err) => console.log(err));
-    }
-  }, [userId, API_URL]);
+    fetchWishlist();
+  }, [API_URL]);
 
-  function removeproduct(id) {
-    let updatedwhishlist = {
-      ...user,
-      whishlist: user.whishlist.filter((product) => product.productId !== id)
-    };
-    setUser(updatedwhishlist);
-    axios.put(`${API_URL}/users/${userId}`, updatedwhishlist)
-      .then((res) => updateWhislistCount())
-      .catch((err) => console.log(err));
-  }
+  const fetchWishlist = async () => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+
+    try {
+      const res = await axios.get(`${API_URL}/orders/wishlist/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setWishlistProducts(res.data.products || []);
+    } catch (err) {
+      console.log("Error fetching wishlist:", err);
+    }
+  };
+
+  const removeproduct = async (productId) => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+
+    try {
+      await axios.post(`${API_URL}/orders/wishlist/toggle/`, 
+        { product_id: productId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setWishlistProducts(prev => prev.filter(p => p.id !== productId));
+      updateWhislistCount();
+      
+      toast.success("Removed from Wishlist", { autoClose: 1000 });
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to remove product");
+    }
+  };
 
   async function CartHandleChange(product) {
-    if (!userId) {
-      toast.error("Please log in to add to cart", {
-        position: 'top-center',
-        autoClose: 1300,
-        style: { marginTop: '60px' }
-      });
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+      toast.error("Please log in to add to cart");
       return;
     }
 
     try {
-      const userRespone = await axios.get(`${API_URL}/users/${userId}`);
-      const userData = userRespone.data;
-      const currenCart = userData.cart || [];
+      await axios.post(`${API_URL}/orders/cart/add/`, 
+        { 
+          product_id: product.id,
+          size: null 
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-      const productIdentifier = product.productId || product.id;
-      const existingproduct = currenCart.findIndex((cartItem) => cartItem.productId === productIdentifier);
+      toast.success('Moved to Bag', { autoClose: 1300 });
       
-      let updatedCart;
-
-      if (existingproduct !== -1) {
-        toast.warn('Product already in bag', {
-          position: 'top-center',
-          autoClose: 1300,
-          style: { marginTop: '60px' }
-        });
-      } else {
-        updatedCart = [
-          ...currenCart,
-          {
-            productId: productIdentifier,
-            title: product.title,
-            price: product.price,
-            image: product.image,
-            quantity: 1,
-          },
-        ];
-        
-        toast.success('Moved to Bag', {
-          position: 'top-center',
-          autoClose: 1300,
-          style: { marginTop: '60px' }
-        });
-
-        await axios.put(`${API_URL}/users/${userId}`, {
-          ...userData,
-          cart: updatedCart,
-        });
-        updateCartCount();
-      }
+      updateCartCount();
     } catch (err) {
       console.error(err);
       toast.error("Failed to add to bag");
@@ -103,20 +87,20 @@ function Whislist() {
       <div className="wishlist-content">
         <h1>YOUR WISHLIST</h1>
         
-        {!user.whishlist || user.whishlist.length === 0 ? (
+        {wishlistProducts.length === 0 ? (
           <div className="empty-wishlist">
             <p>Your wishlist is currently empty.</p>
             <button onClick={() => navigate('/shop')}>Continue Shopping</button>
           </div>
         ) : (
           <div className="wishlist-grid">
-            {user.whishlist.map((product) => (
-              <div className="wishlist-card" key={product.productId}>
+            {wishlistProducts.map((product) => (
+              <div className="wishlist-card" key={product.id}>
                 <div className="card-image">
                   <img src={product.image} alt={product.title} />
                   <button 
                     className="remove-icon" 
-                    onClick={() => removeproduct(product.productId)}
+                    onClick={() => removeproduct(product.id)}
                     title="Remove from Wishlist"
                   >
                     ×

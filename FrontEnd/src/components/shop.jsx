@@ -31,7 +31,7 @@ function Shop() {
   const { searchTerm } = useContext(SearchContext)
   const { CartHandleChange } = useContext(CartContext)
   
-  // Use the Context Logic
+  
   const { WishlistHandleChange, wishlist } = useContext(WishlistContext)
 
   const [currentPage, setCurrentPage] = useState(0)
@@ -80,7 +80,7 @@ function Shop() {
     )
   }
 
-  // Check color using context state
+
   function whishlistcolor(productId) {
     return wishlist.some((item) => item.id === productId);
   }

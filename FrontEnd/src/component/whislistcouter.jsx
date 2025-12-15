@@ -11,14 +11,12 @@ export function WhishlistProvider({ children }) {
 
     const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
 
-    // Helper to get access token (CORRECT KEY)
+
     const getAccessToken = () => {
         return localStorage.getItem('access_token');
     };
 
-    // ==============================
-    // Fetch Wishlist
-    // ==============================
+ 
     const fetchWishlist = useCallback(() => {
         const token = getAccessToken();
 
@@ -50,9 +48,7 @@ export function WhishlistProvider({ children }) {
         fetchWishlist();
     }, [fetchWishlist]);
 
-    // ==============================
-    // Add / Remove Wishlist
-    // ==============================
+  
     const WishlistHandleChange = async (product) => {
         const token = getAccessToken();
 
