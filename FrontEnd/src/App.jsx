@@ -35,7 +35,7 @@ function App() {
 
   const ConditonNavbar = () => {
     const location = useLocation()
-    if (location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/admin' || location.pathname === '/admin/users'|| location.pathname === '/admin/products'|| location.pathname === '/admin/orders' || location.pathname === '/otp-verify') {
+    if (location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/admin' || location.pathname === '/admin/users' || location.pathname === '/admin/products' || location.pathname === '/admin/orders' || location.pathname === '/otp-verify') {
       return null
     } else {
       return <Navbar />
@@ -45,58 +45,60 @@ function App() {
   return (
     <>
       <SearchProvider>
-      <WhishlistProvider>
-        <CartProvider>
-          <AuthProvider>
-          <BrowserRouter>
-            <ConditonNavbar />
-            <ToastContainer
-              position="top-right"
-              autoClose={3000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="light"
-            />
-            <Routes>
+        <AuthProvider>
+          <WhishlistProvider>
+            <CartProvider>
 
-              <Route path='/' element={<Home />} />
-              <Route path='/login' element={<Login/>} />
-              <Route path='/signup' element={<Signup/>} />
-              <Route path='/otp-verify' element={<OtpVerify/>}/>
-              <Route path='/shop' element={<Shop />} />
-              <Route path='/cart' element={<Cart />} />
-              <Route path='/profile' element={<Profile />} />
-              <Route path='/checkout' element={<Checkout />} />
-              <Route path='/success' element={<Susscess />} />
-              <Route path='/:id' element={<Detailsproducts />} />
-              <Route path='/whishlist' element={<Whislist />} />
-              <Route path='/myorders' element={<Myorders />} />
-              <Route path='/about' element={<About />} />
+              <BrowserRouter>
+                <ConditonNavbar />
+                <ToastContainer
+                  position="top-right"
+                  autoClose={3000}
+                  hideProgressBar={false}
+                  newestOnTop={false}
+                  closeOnClick
+                  rtl={false}
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover
+                  theme="light"
+                />
+                <Routes>
 
-
-              <Route path='/admin' element={<Adminprotected />}>
-                <Route element={<Sidebar />}>
-                  <Route index element={<Dashbaord />} />
-                  <Route path='users' element={<Users />} />
-                  <Route path='products' element={<Products />} />
-                  <Route path='orders' element={<Orders />} />
-                  
-                </Route>
-              </Route>
+                  <Route path='/' element={<Home />} />
+                  <Route path='/login' element={<Login />} />
+                  <Route path='/signup' element={<Signup />} />
+                  <Route path='/otp-verify' element={<OtpVerify />} />
+                  <Route path='/shop' element={<Shop />} />
+                  <Route path='/cart' element={<Cart />} />
+                  <Route path='/profile' element={<Profile />} />
+                  <Route path='/checkout' element={<Checkout />} />
+                  <Route path='/success' element={<Susscess />} />
+                  <Route path='/:id' element={<Detailsproducts />} />
+                  <Route path='/whishlist' element={<Whislist />} />
+                  <Route path='/myorders' element={<Myorders />} />
+                  <Route path='/about' element={<About />} />
 
 
+                  <Route path='/admin' element={<Adminprotected />}>
+                    <Route element={<Sidebar />}>
+                      <Route index element={<Dashbaord />} />
+                      <Route path='users' element={<Users />} />
+                      <Route path='products' element={<Products />} />
+                      <Route path='orders' element={<Orders />} />
 
-              <Route path='*' element={<Notfound />} />
-            </Routes>
-          </BrowserRouter>
-          </AuthProvider>
-        </CartProvider>
-      </WhishlistProvider>
+                    </Route>
+                  </Route>
+
+
+
+                  <Route path='*' element={<Notfound />} />
+                </Routes>
+              </BrowserRouter>
+
+            </CartProvider>
+          </WhishlistProvider>
+        </AuthProvider>
       </SearchProvider>
     </>
   )
