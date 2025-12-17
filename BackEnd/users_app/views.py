@@ -110,25 +110,20 @@ class GoogleLoginView(APIView):
         if not google_token:
             return Response({'error': 'No token provided'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # --- OPTION A IMPLEMENTATION START ---
-        # We verify the Access Token by asking Google for the user's info
         user_info_req = requests.get(f'https://www.googleapis.com/oauth2/v3/userinfo?access_token={google_token}')
         
         if not user_info_req.ok:
              return Response({'error': 'Invalid Google Token'}, status=status.HTTP_400_BAD_REQUEST)
         
-        # If successful, Google returns the user's email and details
         idinfo = user_info_req.json()
         email = idinfo['email']
         first_name = idinfo.get('given_name', '')
         last_name = idinfo.get('family_name', '')
-        # --- OPTION A IMPLEMENTATION END ---
 
-        # Now we find or create the user in our database
         try:
             user = CustomUser.objects.get(email=email)
         except CustomUser.DoesNotExist:
-            # Create a new user if they don't exist
+          
             random_suffix = ''.join(secrets.choice(string.ascii_lowercase + string.digits) for _ in range(4))
             username = f"{email.split('@')[0]}_{random_suffix}"
             
@@ -137,16 +132,13 @@ class GoogleLoginView(APIView):
                 username=username,
                 first_name=first_name,
                 last_name=last_name,
-                role='user',  # Default role
-                is_active=True # Google verified emails are trusted
+                role='user',  
+                is_active=True
             )
             user.set_unusable_password()
             user.save()
 
-        # Generate your JWT Tokens (Access/Refresh)
         refresh = RefreshToken.for_user(user)
-        
-        # Add your custom claims (role, username)
         refresh['role'] = user.role
         refresh['username'] = user.username
 

@@ -85,38 +85,13 @@ function Login() {
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
-        // 1. We got the code/token from Google. Now send it to backend.
-        // Note: useGoogleLogin by default gives an access_token. 
-        // If you used the <GoogleLogin /> component, it gives a credential (ID token).
-        // Let's assume we want the ID token or we fetch user info to send to backend.
-
-        // OPTION A: If backend expects an ID Token (Recommended for security), 
-        // using <GoogleLogin /> component is often easier, but for a custom button:
-
-        // Let's fetch the userInfo using the access token Google gave us, 
-        // OR simply pass the access token to backend and let backend fetch info.
-
-        // HOWEVER, the simplest flow with the backend code I wrote above 
-        // expects an ID Token (credential). 
-
+      
         console.log("Google Response:", tokenResponse);
-
-        // To keep it simple with your custom UI button, we will use the access_token 
-        // logic or switch to the pre-built component. 
-        // Let's stick to your Custom Button UI:
 
         const userInfo = await axios.get(
           'https://www.googleapis.com/oauth2/v3/userinfo',
           { headers: { Authorization: `Bearer ${tokenResponse.access_token}` } }
         );
-
-        // Now we verify/login with our backend using the email we just got
-        // Note: For higher security, you should pass the ID Token directly, 
-        // but passing the access_token to backend to verify is also valid.
-        // Let's modify the flow to send the ID token if available, or just the email if you trust frontend (Not recommended for prod).
-
-        // BETTER APPROACH: Use the component or 'flow: auth-code'. 
-        // But to make it work strictly with your code:
 
       } catch (error) {
         console.error("Google Login Error", error);
@@ -124,29 +99,14 @@ function Login() {
     },
   });
 
-  // WAIT! A better way for your specific backend setup (id_token verification):
-  // We should use the component or configure the hook to give us an ID token.
-
-  // Revised Google Handler for your custom button:
+  
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: async (response) => {
       try {
-        // Send the access token to backend, Backend will use it to get user info
-        // (Note: You might need to slightly adjust backend to use 'verify_oauth2_token' 
-        // OR just requests.get('https://www.googleapis.com/oauth2/v3/userinfo')
+        const res = await axios.post(`${import.meta.env.VITE_API_URL}/users/google-login/`, {
+        token: response.access_token 
+      });
 
-        // Let's assume we adjusted the backend to accept 'access_token' for simplicity
-        // OR we use the GoogleLogin component which provides the `credential` (ID Token).
-
-        // Let's stick to the cleanest integration: 
-        // We will send the access_token to the backend.
-
-        // CALL BACKEND
-        const res = await axios.post(`${import.meta.env.VITE_API_URL}/google-login/`, {
-          token: response.access_token // Send the token
-        });
-
-        // HANDLE RESPONSE (Same as your normal submit)
         const data = res.data;
         localStorage.setItem('access_token', data.access);
         localStorage.setItem('refresh_token', data.refresh);
