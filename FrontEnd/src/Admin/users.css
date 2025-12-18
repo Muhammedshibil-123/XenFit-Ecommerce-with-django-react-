@@ -8,17 +8,18 @@
   padding: 30px;
   border: 1px solid #eee;
   width: 95%;
-  max-width: 1100px; /* Reduced slightly as requested */
+  max-width: 1100px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
 }
 
+/* --- Top Header & Controls --- */
 .users-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
   border-bottom: 2px solid #111;
   padding-bottom: 20px;
   flex-wrap: wrap;
@@ -44,9 +45,8 @@
   padding: 8px 12px;
   border: 1px solid #ddd;
   font-size: 13px;
-  width: 200px;
+  width: 180px;
   outline: none;
-  transition: all 0.3s ease;
   background-color: #f9f9f9;
 }
 
@@ -62,54 +62,53 @@
   cursor: pointer;
   background-color: #fff;
   outline: none;
-  min-width: 140px;
-}
-
-.filter-box select:focus {
-  border-color: #111;
+  min-width: 130px;
 }
 
 /* --- STRICT GRID ALIGNMENT --- */
-/* Using minmax(0, Xfr) ensures content doesn't break the grid layout */
-.table-header-row, .user-row {
+/* This class is applied to both Header Row and Data Rows to force alignment */
+.users-grid-row {
   display: grid;
-  /* ID | User | Email | Mobile | Status | Action */
-  grid-template-columns: minmax(50px, 0.5fr) minmax(120px, 1.5fr) minmax(200px, 2.5fr) minmax(120px, 1.5fr) minmax(100px, 1fr) minmax(80px, 0.8fr);
+  /* Columns: ID | User | Email | Mobile | Status | Action */
+  grid-template-columns: 0.6fr 1.5fr 2.5fr 1.5fr 1fr 0.8fr;
+  gap: 15px;
   align-items: center;
   padding: 12px 15px;
-  gap: 15px;
-  width: 100%;
-  box-sizing: border-box;
 }
 
-.table-header-row {
+.table-header {
   background: #f4f4f4;
+  border-bottom: 1px solid #ddd;
   font-weight: 700;
   font-size: 11px;
   color: #555;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  border-bottom: 1px solid #ddd;
-  text-align: left;
 }
 
-.users-list {
+.users-list-body {
   display: flex;
   flex-direction: column;
 }
 
-.user-row {
+.user-data-row {
   border-bottom: 1px solid #eee;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s ease;
   font-size: 13px;
   color: #333;
 }
 
-.user-row:hover {
+.user-data-row:hover {
   background-color: #fafafa;
 }
 
-/* --- COLUMN SPECIFICS --- */
+/* --- Column Text Handling --- */
+.u-col {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; /* Prevents text from wrapping and breaking alignment */
+}
+
 .col-id {
   font-weight: 600;
   color: #888;
@@ -117,27 +116,14 @@
 }
 
 .col-user strong {
-  display: block;
-  font-weight: 600;
   color: #111;
 }
 
 .col-email {
   color: #555;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-.col-mobile {
-  color: #111;
-}
-
-.col-status {
-  display: flex;
-  align-items: center;
-}
-
+/* --- Status Pills --- */
 .status-pill {
   padding: 4px 10px;
   border-radius: 4px;
@@ -145,7 +131,7 @@
   font-weight: 700;
   text-transform: uppercase;
   display: inline-block;
-  min-width: 70px;
+  min-width: 60px;
   text-align: center;
 }
 
@@ -161,13 +147,12 @@
   border: 1px solid #ffcccc;
 }
 
+/* --- Toggle Button (Action Column) --- */
 .col-action {
   display: flex;
-  justify-content: flex-start;
-  align-items: center;
+  justify-content: flex-start; /* Aligns button to the left of the column */
 }
 
-/* --- TOGGLE BUTTON --- */
 .toggle-btn {
   width: 40px;
   height: 22px;
@@ -204,12 +189,13 @@
   transform: translateX(0);
 }
 
+/* Mobile Scroll */
 @media (max-width: 900px) {
   .main-users-container {
     overflow-x: auto;
   }
   
-  .table-header-row, .user-row {
-    min-width: 900px;
+  .users-grid-row {
+    min-width: 800px; 
   }
 }

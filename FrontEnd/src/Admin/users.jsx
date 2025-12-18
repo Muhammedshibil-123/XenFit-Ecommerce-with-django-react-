@@ -51,12 +51,13 @@ function Users() {
   return (
     <div className="users-page-wrapper">
       <div className="main-users-container">
+  
         <div className="users-header">
           <h1>Customer Database</h1>
           <div className="controls-container">
             <div className="search-box">
               <input
-                placeholder="Search by name, email, or ID"
+                placeholder="Search..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
               />
@@ -71,38 +72,47 @@ function Users() {
           </div>
         </div>
 
-        <div className="users-list-container">
-          <div className="table-header-row">
-            <div className="col-id">ID</div>
-            <div className="col-user">User</div>
-            <div className="col-email">Email</div>
-            <div className="col-mobile">Mobile</div>
-            <div className="col-status">Status</div>
-            <div className="col-action"></div>
+    
+        <div className="users-table-structure">
+    
+          <div className="users-grid-row table-header">
+            <div className="u-col col-id">ID</div>
+            <div className="u-col col-user">User</div>
+            <div className="u-col col-email">Email</div>
+            <div className="u-col col-mobile">Mobile</div>
+            <div className="u-col col-status">Status</div>
+            <div className="u-col col-action">Action</div>
           </div>
 
-          <div className="users-list">
+     
+          <div className="users-list-body">
             {filteredUsers.map(user => (
-              <div className="user-row" key={user.id}>
-                <div className="col-id">#{user.id}</div>
-                <div className="col-user">
+              <div className="users-grid-row user-data-row" key={user.id}>
+                <div className="u-col col-id">#{user.id}</div>
+                
+                <div className="u-col col-user">
                   <strong>{user.username}</strong>
                 </div>
-                <div className="col-email" title={user.email}>
+                
+                <div className="u-col col-email" title={user.email}>
                   {user.email}
                 </div>
-                <div className="col-mobile">
+                
+                <div className="u-col col-mobile">
                   {user.mobile || 'N/A'}
                 </div>
-                <div className="col-status">
+                
+                <div className="u-col col-status" style={{paddingRight:'135px'}}>
                   <span className={`status-pill ${user.status}`}>
                     {user.status}
                   </span>
                 </div>
-                <div className="col-action">
+                
+                <div className="u-col col-action">
                   <button
                     className={`toggle-btn ${user.status === 'active' ? 'on' : 'off'}`}
                     onClick={() => toggleUserStatus(user.id)}
+                    title="Toggle Status"
                   >
                     <span className="toggle-circle" />
                   </button>
@@ -111,6 +121,7 @@ function Users() {
             ))}
           </div>
         </div>
+
       </div>
     </div>
   )
