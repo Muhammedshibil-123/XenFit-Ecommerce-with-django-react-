@@ -27,3 +27,20 @@ class Wishlist(models.Model):
 
     def __str__(self):
         return f"Wishlist of {self.user.username}"
+    
+
+class Order(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='orders')
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_status = models.CharField(
+        max_length=20, 
+        choices=[('Pending', 'Pending'), ('Success', 'Success'), ('Failed', 'Failed')],
+        default='Pending'
+    )
+    provider_order_id = models.CharField(max_length=100, verbose_name="Razorpay Order ID")
+    payment_id = models.CharField(max_length=100, verbose_name="Razorpay Payment ID", null=True, blank=True)
+    signature_id = models.CharField(max_length=100, verbose_name="Signature ID", null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Order {self.id} - {self.user.username} - {self.payment_status}"
