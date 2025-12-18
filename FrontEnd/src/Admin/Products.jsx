@@ -8,125 +8,185 @@ function Products() {
   const [popAdd, setpopAdd] = useState(false)
   const [popEdit, setpopEdit] = useState(false)
   const [currentProduct, setCurrentProduct] = useState(null)
-  const [search, setSearch] = useState('')
-  const [catSort, setCatSort] = useState('all')
   
-  // EDITED: Updated state to match T-shirt data structure
+  // Search & Filter states
+  const [search, setSearch] = useState('')
+  const [catSort, setCatSort] = useState('all') // Filters by sleeve_type (Category)
+  
+  // State matches Django Product Model
   const [newProduct, setNewProducts] = useState({
     title: '',
+    product_code: '', // Added
+    color: '',        // Added
     brand: '',
-    category: '', // e.g., Oversized, Polo
-    theme: '',    // e.g., Anime, Minimal
-    gender: '',
+    sleeve_type: '',  // Was 'category'
+    theme: '',
     description: '',
     price: '',
     mrp: '',
-    image: '',
     status: 'active'
   })
   
-  const userId = localStorage.getItem('id')
+  // Separate state for the image file
+  const [imageFile, setImageFile] = useState(null)
 
-  // Helper to get API URL
   const getApiUrl = () => {
     try {
-      return import.meta.env.VITE_API_URL || 'http://localhost:3000';
+      return import.meta.env.VITE_API_URL || 'http://localhost:8000'; // Make sure this matches your Django port
     } catch (e) {
-      return 'http://localhost:3000';
+      return 'http://localhost:8000';
     }
   };
   const API_URL = getApiUrl();
 
+  // Fetch Products
   useEffect(() => {
-    axios.get(`${API_URL}/products`)
+    axios.get(`${API_URL}/products/`) // Add trailing slash for Django
       .then((res) => {
         setProducts(res.data)
       })
       .catch((err) => console.log(err))
-  }, [userId])
+  }, [])
 
+  // Handle Text Inputs
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewProducts(prev => ({ ...prev, [name]: value }))
+  }
+
+  // Handle Image File Selection
+  const handleImageChange = (e) => {
+    setImageFile(e.target.files[0])
+  }
+
+  // Submit New Product (POST)
+  function submit(e) {
+    e.preventDefault()
+    
+    // Create FormData to send files + text
+    const formData = new FormData();
+    formData.append('title', newProduct.title);
+    formData.append('product_code', newProduct.product_code);
+    formData.append('color', newProduct.color);
+    formData.append('brand', newProduct.brand);
+    formData.append('sleeve_type', newProduct.sleeve_type);
+    formData.append('theme', newProduct.theme);
+    formData.append('description', newProduct.description);
+    formData.append('price', newProduct.price);
+    if(newProduct.mrp) formData.append('mrp', newProduct.mrp);
+    formData.append('status', newProduct.status);
+    
+    // Only append image if selected
+    if (imageFile) {
+        formData.append('image', imageFile);
+    }
+
+    axios.post(`${API_URL}/products/`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    })
+      .then((res) => {
+        setProducts((prev) => [...prev, res.data])
+        setpopAdd(false)
+        // Reset Form
+        setNewProducts({
+          title: '', product_code: '', color: '', brand: '', 
+          sleeve_type: '', theme: '', description: '', 
+          price: '', mrp: '', status: 'active'
+        })
+        setImageFile(null)
+      })
+      .catch((err) => {
+          console.error(err)
+          alert("Error adding product. Check console for details.")
+      })
+  }
+
+  // Toggle Status
   function toggleProductStatus(id) {
     const product = products.find((p) => p.id === id)
     if (!product) return
 
     const newStatus = product.status === "active" ? "inactive" : "active"
 
-    setProducts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, status: newStatus } : p))
-    )
-
     axios
-      .patch(`${API_URL}/products/${id}`, { status: newStatus })
-      .catch((err) => console.error(err))
-  }
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewProducts(prev => ({ ...prev, [name]: value }))
-  }
-
-  function submit(e) {
-    e.preventDefault()
-    // EDITED: Posting new fashion fields
-    axios.post(`${API_URL}/products`, newProduct)
-      .then((res) => {
-        setProducts((prev) => [...prev, res.data])
-        setpopAdd(false)
-        setNewProducts({
-          title: '', brand: '', category: '', theme: '', gender: '',
-          description: '', price: '', mrp: '', image: '', status: 'active'
-        })
+      .patch(`${API_URL}/products/${id}/`, { status: newStatus })
+      .then(res => {
+        setProducts((prev) =>
+            prev.map((p) => (p.id === id ? { ...p, status: newStatus } : p))
+        )
       })
       .catch((err) => console.error(err))
   }
 
-  const handleInputChangeedit = (e) => {
-    const { name, value } = e.target;
-    setCurrentProduct(prev => ({ ...prev, [name]: value }))
-  }
+  // --- EDIT LOGIC ---
 
   function handleEditClick(product) {
     setCurrentProduct(product)
     setpopEdit(true)
+    setImageFile(null) // Reset image file for edit mode
+  }
+
+  const handleInputChangeEdit = (e) => {
+    const { name, value } = e.target;
+    setCurrentProduct(prev => ({ ...prev, [name]: value }))
   }
 
   function handleUpdate(e) {
     e.preventDefault()
     if (!currentProduct) return;
 
-    axios.patch(`${API_URL}/products/${currentProduct.id}`, currentProduct)
+    const formData = new FormData();
+    formData.append('title', currentProduct.title);
+    formData.append('product_code', currentProduct.product_code);
+    formData.append('color', currentProduct.color);
+    formData.append('brand', currentProduct.brand);
+    formData.append('sleeve_type', currentProduct.sleeve_type);
+    formData.append('theme', currentProduct.theme);
+    formData.append('description', currentProduct.description);
+    formData.append('price', currentProduct.price);
+    if(currentProduct.mrp) formData.append('mrp', currentProduct.mrp);
+    
+    // If a new image is selected, append it. Otherwise Django keeps the old one.
+    if (imageFile) {
+        formData.append('image', imageFile);
+    }
+
+    axios.patch(`${API_URL}/products/${currentProduct.id}/`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+    })
       .then((res) => {
         setProducts((prev) =>
           prev.map((p) => p.id === currentProduct.id ? res.data : p)
         )
         setpopEdit(false)
         setCurrentProduct(null)
+        setImageFile(null)
       })
       .catch((err) => console.error(err))
   }
 
   function removeproduct(id) {
     if(window.confirm("Are you sure you want to delete this product?")) {
-        axios.delete(`${API_URL}/products/${id}`)
-        .then((res) => {
-            const updatedProducts = products.filter((product) => product.id !== id)
-            setProducts(updatedProducts)
+        axios.delete(`${API_URL}/products/${id}/`)
+        .then(() => {
+            setProducts(prev => prev.filter((product) => product.id !== id))
         })
         .catch((err) => console.error(err))
     }
   }
 
-  // Search Logic
+  // Filter Logic
   let filterProducts = products.filter((product) => (
     (product.title?.toLowerCase() || '').includes(search.toLowerCase()) ||
     (product.brand?.toLowerCase() || '').includes(search.toLowerCase()) ||
-    (product.category?.toLowerCase() || '').includes(search.toLowerCase())
+    (product.theme?.toLowerCase() || '').includes(search.toLowerCase())
   ))
 
-  // Category Filter
   if (catSort !== 'all') {
     filterProducts = filterProducts.filter((product) =>
-      product.category && product.category.toLowerCase() === catSort.toLowerCase()
+      product.sleeve_type && product.sleeve_type.toLowerCase() === catSort.toLowerCase()
     )
   }
 
@@ -134,7 +194,7 @@ function Products() {
     <div className='products-page-wrapper'>
       <div className='main-products-container'>
         
-        {/* Header Section */}
+        {/* Header */}
         <div className="products-header">
           <h1>INVENTORY</h1>
           <div className="controls-container">
@@ -147,11 +207,11 @@ function Products() {
             </div>
             <div className="filter-box">
               <select value={catSort} onChange={(e) => setCatSort(e.target.value)}>
-                <option value="all">All Categories</option>
+                <option value="all">All Types</option>
                 <option value="oversized">Oversized</option>
-                <option value="regular fit">Regular Fit</option>
-                <option value="polo">Polos</option>
-                <option value="hoodie">Hoodies</option>
+                <option value="half sleeve">Half Sleeve</option>
+                <option value="full sleeve">Full Sleeve</option>
+                <option value="sleeveless">Sleeveless</option>
               </select>
             </div>
             <button className="add-btn" onClick={() => setpopAdd(true)}>+ NEW DROP</button>
@@ -163,7 +223,7 @@ function Products() {
           <span className='col-id'>ID</span>
           <span className='col-img'>IMAGE</span>
           <span className='col-title'>PRODUCT DETAILS</span>
-          <span className='col-cat'>CATEGORY</span>
+          <span className='col-cat'>THEME</span>
           <span className='col-price'>PRICE</span>
           <span className='col-status'>STATUS</span>
           <span className='col-action'>ACTION</span>
@@ -176,19 +236,23 @@ function Products() {
               <span className='col-id'>#{product.id}</span>
               
               <span className='col-img'>
-                <img src={product.image} alt="" />
+                {/* Check if image exists before rendering */}
+                {product.image ? (
+                    <img src={product.image} alt={product.title} />
+                ) : (
+                    <div className="no-image">No Img</div>
+                )}
               </span>
 
               <span className='col-title'>
                 <strong>{product.title}</strong>
-                <p>{product.brand}</p>
+                <p>{product.brand} | {product.color}</p>
               </span>
 
-              <span className='col-cat'>{product.category || '-'}</span>
+              <span className='col-cat'>{product.theme || '-'}</span>
               
               <span className='col-price'>
                  ₹{product.price}
-                 {product.mrp && <span className="mrp-mini"> ₹{product.mrp}</span>}
               </span>
 
               <span className='col-status'>
@@ -219,8 +283,9 @@ function Products() {
               
               <form onSubmit={submit} className="modal-form">
                 <div className="form-grid">
+                    {/* Updated Fields to match Backend */}
                     <div className="input-group">
-                        <label>Product Title</label>
+                        <label>Title</label>
                         <input type="text" name='title' value={newProduct.title} onChange={handleInputChange} required />
                     </div>
                     <div className="input-group">
@@ -228,28 +293,56 @@ function Products() {
                         <input type="text" name='brand' value={newProduct.brand} onChange={handleInputChange} required />
                     </div>
                     <div className="input-group">
-                        <label>Category (e.g. Oversized)</label>
-                        <input type="text" name='category' value={newProduct.category} onChange={handleInputChange} required />
+                        <label>Product Code</label>
+                        <input type="text" name='product_code' value={newProduct.product_code} onChange={handleInputChange} required placeholder="e.g. ANI-001" />
                     </div>
                     <div className="input-group">
-                        <label>Theme (e.g. Anime)</label>
-                        <input type="text" name='theme' value={newProduct.theme} onChange={handleInputChange} />
+                        <label>Color</label>
+                        <input type="text" name='color' value={newProduct.color} onChange={handleInputChange} required />
+                    </div>
+
+                    {/* Dropdowns for Choice Fields */}
+                    <div className="input-group">
+                        <label>Sleeve Type</label>
+                        <select name='sleeve_type' value={newProduct.sleeve_type} onChange={handleInputChange} required>
+                            <option value="">Select Type</option>
+                            <option value="Half Sleeve">Half Sleeve</option>
+                            <option value="Full Sleeve">Full Sleeve</option>
+                            <option value="Sleeveless">Sleeveless</option>
+                            <option value="Oversized">Oversized</option>
+                        </select>
                     </div>
                     <div className="input-group">
-                        <label>Price (Selling)</label>
+                        <label>Theme</label>
+                        <select name='theme' value={newProduct.theme} onChange={handleInputChange} required>
+                            <option value="">Select Theme</option>
+                            <option value="Anime">Anime</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Movie">Movie</option>
+                            <option value="Motivational">Motivational</option>
+                            <option value="Minimal">Minimal</option>
+                            <option value="Vintage">Vintage</option>
+                        </select>
+                    </div>
+
+                    <div className="input-group">
+                        <label>Price</label>
                         <input type="number" name='price' value={newProduct.price} onChange={handleInputChange} required />
                     </div>
                     <div className="input-group">
-                        <label>MRP (Original)</label>
+                        <label>MRP</label>
                         <input type="number" name='mrp' value={newProduct.mrp} onChange={handleInputChange} />
                     </div>
+                    
+                    {/* File Input for Image */}
                     <div className="input-group full-width">
-                        <label>Image URL</label>
-                        <input type="text" name='image' value={newProduct.image} onChange={handleInputChange} required />
+                        <label>Product Image</label>
+                        <input type="file" accept="image/*" onChange={handleImageChange} required />
                     </div>
+
                     <div className="input-group full-width">
                         <label>Description</label>
-                        <textarea name='description' rows="3" value={newProduct.description} onChange={handleInputChange} required />
+                        <textarea name='description' rows="3" value={newProduct.description} onChange={handleInputChange} />
                     </div>
                 </div>
                 <button type="submit" className="save-btn">PUBLISH PRODUCT</button>
@@ -270,36 +363,62 @@ function Products() {
               <form onSubmit={handleUpdate} className="modal-form">
                 <div className="form-grid">
                     <div className="input-group">
-                        <label>Product Title</label>
-                        <input type="text" name='title' value={currentProduct.title} onChange={handleInputChangeedit} required />
+                        <label>Title</label>
+                        <input type="text" name='title' value={currentProduct.title} onChange={handleInputChangeEdit} required />
                     </div>
                     <div className="input-group">
                         <label>Brand</label>
-                        <input type="text" name='brand' value={currentProduct.brand} onChange={handleInputChangeedit} required />
+                        <input type="text" name='brand' value={currentProduct.brand} onChange={handleInputChangeEdit} required />
                     </div>
                     <div className="input-group">
-                        <label>Category</label>
-                        <input type="text" name='category' value={currentProduct.category} onChange={handleInputChangeedit} required />
+                        <label>Product Code</label>
+                        <input type="text" name='product_code' value={currentProduct.product_code} onChange={handleInputChangeEdit} required />
+                    </div>
+                    <div className="input-group">
+                        <label>Color</label>
+                        <input type="text" name='color' value={currentProduct.color} onChange={handleInputChangeEdit} required />
+                    </div>
+                    <div className="input-group">
+                        <label>Sleeve Type</label>
+                        <select name='sleeve_type' value={currentProduct.sleeve_type} onChange={handleInputChangeEdit} required>
+                            <option value="Half Sleeve">Half Sleeve</option>
+                            <option value="Full Sleeve">Full Sleeve</option>
+                            <option value="Sleeveless">Sleeveless</option>
+                            <option value="Oversized">Oversized</option>
+                        </select>
                     </div>
                     <div className="input-group">
                         <label>Theme</label>
-                        <input type="text" name='theme' value={currentProduct.theme} onChange={handleInputChangeedit} />
+                        <select name='theme' value={currentProduct.theme} onChange={handleInputChangeEdit} required>
+                            <option value="Anime">Anime</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Movie">Movie</option>
+                            <option value="Motivational">Motivational</option>
+                            <option value="Minimal">Minimal</option>
+                            <option value="Vintage">Vintage</option>
+                        </select>
                     </div>
                     <div className="input-group">
                         <label>Price</label>
-                        <input type="number" name='price' value={currentProduct.price} onChange={handleInputChangeedit} required />
+                        <input type="number" name='price' value={currentProduct.price} onChange={handleInputChangeEdit} required />
                     </div>
                     <div className="input-group">
                         <label>MRP</label>
-                        <input type="number" name='mrp' value={currentProduct.mrp} onChange={handleInputChangeedit} />
+                        <input type="number" name='mrp' value={currentProduct.mrp} onChange={handleInputChangeEdit} />
                     </div>
+                    
+                    {/* File Input for Image (Optional in Edit) */}
                     <div className="input-group full-width">
-                        <label>Image URL</label>
-                        <input type="text" name='image' value={currentProduct.image} onChange={handleInputChangeedit} required />
+                        <label>Update Image (Leave empty to keep current)</label>
+                        <input type="file" accept="image/*" onChange={handleImageChange} />
+                        {currentProduct.image && !imageFile && (
+                            <small>Current: {currentProduct.image.split('/').pop()}</small>
+                        )}
                     </div>
+
                     <div className="input-group full-width">
                         <label>Description</label>
-                        <textarea name='description' rows="3" value={currentProduct.description} onChange={handleInputChangeedit} required />
+                        <textarea name='description' rows="3" value={currentProduct.description} onChange={handleInputChangeEdit} />
                     </div>
                 </div>
                 <button type="submit" className="save-btn">UPDATE PRODUCT</button>
