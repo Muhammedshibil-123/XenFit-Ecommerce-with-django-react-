@@ -1,183 +1,121 @@
-// Users.jsx (replace your existing file)
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import './users.css'
 
+const ExpandableCell = ({ text }) => {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <span
+      className={`expandable-cell ${open ? 'expanded' : ''}`}
+      onClick={() => setOpen(!open)}
+    >
+      {text}
+    </span>
+  )
+}
+
 function Users() {
   const [users, setUsers] = useState([])
   const [search, setSearch] = useState('')
-  const [typesort, setTypesort] = useState('types')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [typesort, setTypesort] = useState('all')
 
-  // Try both common storage keys so token mismatch won't silently fail
   const token = localStorage.getItem('access_token') || localStorage.getItem('access')
-
-  const getApiUrl = () => {
-    try {
-      return import.meta.env.VITE_API_URL || 'http://localhost:8000'
-    } catch (e) {
-      return 'http://localhost:8000'
-    }
-  }
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
   useEffect(() => {
-    const API_URL = getApiUrl()
-    if (!token) {
-      setError('No access token found. Please log in.')
-      return
-    }
+    if (!token) return
 
-    setLoading(true)
-    setError(null)
+    axios.get(`${API_URL}/users/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    }).then(res => setUsers(res.data))
+  }, [API_URL, token])
 
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json'
-      }
-    }
-
-    axios
-      .get(`${API_URL}/api/users/`, config)
-      .then((res) => {
-        setUsers(res.data)
-      })
-      .catch((err) => {
-        console.error('Error fetching users:', err)
-        if (err.response) {
-          if (err.response.status === 401) {
-            setError('Unauthorized (401) — your session may have expired. Please log in again.')
-          } else if (err.response.status === 403) {
-            setError('Forbidden (403) — you need admin privileges to view user list.')
-          } else {
-            setError(`Error fetching users: ${err.response.statusText} (${err.response.status})`)
-          }
-        } else {
-          setError('Network or CORS error while fetching users.')
-        }
-      })
-      .finally(() => setLoading(false))
-  }, [token])
-
-  function toggleusersStatus(id) {
-    const user = users.find((p) => p.id === id)
+  const toggleUserStatus = (id) => {
+    const user = users.find(u => u.id === id)
     if (!user) return
 
-    const prevStatus = user.status
-    const newStatus = prevStatus === 'active' ? 'inactive' : 'active'
+    const status = user.status === 'active' ? 'inactive' : 'active'
 
-    // optimistic UI update
-    setUsers((prev) => prev.map((p) => (p.id === id ? { ...p, status: newStatus } : p)))
+    setUsers(prev =>
+      prev.map(u => u.id === id ? { ...u, status } : u)
+    )
 
-    const API_URL = getApiUrl()
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      }
-    }
-
-    axios
-      .patch(`${API_URL}/api/users/${id}/`, { status: newStatus }, config)
-      .catch((err) => {
-        console.error('Error updating status:', err)
-        // rollback UI change
-        setUsers((prev) => prev.map((p) => (p.id === id ? { ...p, status: prevStatus } : p)))
-        if (err.response && (err.response.status === 401 || err.response.status === 403)) {
-          setError('Permission error while updating status. Make sure you are an admin.')
-        } else {
-          setError('Failed to update user status.')
-        }
-      })
+    axios.patch(
+      `${API_URL}/users/${id}/`,
+      { status },
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
   }
 
-  function handleSearch(e) {
-    setSearch(e.target.value)
-  }
-
-  let filterProducts = users.filter((user) => (
-    (user.username?.toLowerCase() || '').includes(search.toLowerCase()) ||
-    (user.email?.toLowerCase() || '').includes(search.toLowerCase()) ||
-    (user.id?.toString().toLowerCase() || '').includes(search.toLowerCase()) ||
-    (user.status?.toLowerCase() || '').includes(search.toLowerCase())
-  ))
-
-  if (typesort === 'active') {
-    filterProducts = filterProducts.filter((product) =>
-      product.status?.toLowerCase() === ('active')
+  let filteredUsers = users.filter(u => {
+    const s = search.toLowerCase()
+    return (
+      u.username?.toLowerCase().includes(s) ||
+      u.email?.toLowerCase().includes(s) ||
+      u.id.toString().includes(s)
     )
-  } else if (typesort === 'inactive') {
-    filterProducts = filterProducts.filter((product) =>
-      product.status?.toLowerCase() === ('inactive')
-    )
+  })
+
+  if (typesort !== 'all') {
+    filteredUsers = filteredUsers.filter(u => u.status === typesort)
   }
 
   return (
-    <div className='users-page-wrapper'>
-      <div className='main-users-container'>
+    <div className="users-page-wrapper">
+      <div className="main-users-container">
         <div className="users-header">
           <h1>CUSTOMER DATABASE</h1>
-          <div className="controls-container">
-            <div className="search-box">
-              <input type="text"
-                onChange={handleSearch}
-                placeholder='Search customers...'
-                value={search}
-              />
-            </div>
-            <div className="filter-box">
-              <select value={typesort} onChange={(e) => setTypesort(e.target.value)}>
-                <option value="types">All Status</option>
-                <option value="active">Active</option>
-                <option value="inactive">Blocked</option>
-              </select>
-            </div>
+          <div className="controls">
+            <input
+              placeholder="Search by name, email, or ID"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+            <select value={typesort} onChange={e => setTypesort(e.target.value)}>
+              <option value="all">All Users</option>
+              <option value="active">Active</option>
+              <option value="inactive">Blocked</option>
+            </select>
           </div>
         </div>
 
-        {loading && <p>Loading users...</p>}
-        {error && <p style={{ color: 'tomato' }}>{error}</p>}
+        <table className="users-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>USER</th>
+              <th>EMAIL</th>
+              <th>MOBILE</th>
+              <th>STATUS</th>
+              <th>ACTION</th>
+            </tr>
+          </thead>
 
-        <div className="table-header-row">
-          <span className='col-id'>ID</span>
-          <span className='col-user'>USER</span>
-          <span className='col-email'>EMAIL</span>
-          <span className='col-mobile'>MOBILE</span>
-          <span className='col-status'>STATUS</span>
-          <span className='col-action'>ACTION</span>
-        </div>
-
-        <div className="users-list">
-          {!loading && filterProducts.length > 0 ? (
-            filterProducts.map((user) => (
-              <div className="user-row" key={user.id}>
-                <span className='col-id'>#{user.id}</span>
-                <span className='col-user'>{user.username}</span>
-                <span className='col-email'>{user.email}</span>
-                <span className='col-mobile'>{user.mobile || 'N/A'}</span>
-                <span className='col-status'>
-                  <span className={`status-badge ${user.status === 'active' ? 'active' : 'inactive'}`}>
+          <tbody>
+            {filteredUsers.map(user => (
+              <tr key={user.id}>
+                <td className="col-id">#{user.id}</td>
+                <td className="col-user"><ExpandableCell text={user.username} /></td>
+                <td className="col-email"><ExpandableCell text={user.email} /></td>
+                <td className="col-mobile">{user.mobile || 'N/A'}</td>
+                <td className="col-status">
+                  <span className={`status-badge ${user.status}`}>
                     {user.status}
                   </span>
-                </span>
-
-                <span className='col-action'>
+                </td>
+                <td className="col-action">
                   <button
-                    onClick={() => toggleusersStatus(user.id)}
-                    className={`toggle-btn ${user.status === "active" ? "on" : "off"}`}
-                    title={user.status === "active" ? "Block User" : "Unblock User"}
+                    className={`toggle-btn ${user.status === 'active' ? 'on' : 'off'}`}
+                    onClick={() => toggleUserStatus(user.id)}
                   >
-                    <div className="toggle-circle"></div>
+                    <span className="toggle-circle" />
                   </button>
-                </span>
-              </div>
-            ))
-          ) : (
-            !loading && <p className="no-data">No users found matching your criteria.</p>
-          )}
-        </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   )

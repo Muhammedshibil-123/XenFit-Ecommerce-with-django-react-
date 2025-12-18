@@ -57,4 +57,4 @@ class VerifyOTPSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'email', 'mobile', 'status', 'role']
+        fields = ['id', 'username', 'email', 'mobile', 'status', 'role', 'is_active']

@@ -15,6 +15,7 @@ from google.auth.transport import requests as google_requests
 import secrets
 import string
 import requests
+from rest_framework import permissions
 
 # Create your views here.
 class CustomTokenjwtView(TokenObtainPairView):
@@ -153,13 +154,18 @@ class GoogleLoginView(APIView):
         }, status=status.HTTP_200_OK)
     
 
+class IsAdminRole(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_authenticated and request.user.role == 'admin')
+    
+
 class UserListView(generics.ListAPIView):
     queryset = CustomUser.objects.all().order_by('id')
     serializer_class = UserSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
 
 
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
