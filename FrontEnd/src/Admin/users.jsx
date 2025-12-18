@@ -1,53 +1,95 @@
+// Users.jsx (replace your existing file)
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import './users.css'
-// EDITED: Importing search icon if you want to use it inside the input wrapper, 
-// otherwise standard input is fine.
 
 function Users() {
   const [users, setUsers] = useState([])
   const [search, setSearch] = useState('')
   const [typesort, setTypesort] = useState('types')
-  const userId = localStorage.getItem('id')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  // Try both common storage keys so token mismatch won't silently fail
+  const token = localStorage.getItem('access_token') || localStorage.getItem('access')
+
+  const getApiUrl = () => {
+    try {
+      return import.meta.env.VITE_API_URL || 'http://localhost:8000'
+    } catch (e) {
+      return 'http://localhost:8000'
+    }
+  }
 
   useEffect(() => {
-    // Using the environment variable correctly
-    const getApiUrl = () => {
-      try {
-        return import.meta.env.VITE_API_URL || 'http://localhost:3000';
-      } catch (e) {
-        return 'http://localhost:3000';
-      }
-    };
-    const API_URL = getApiUrl();
+    const API_URL = getApiUrl()
+    if (!token) {
+      setError('No access token found. Please log in.')
+      return
+    }
 
-    axios.get(`${API_URL}/users`)
-      .then((res) => setUsers(res.data))
-      .catch((err) => console.error(err))
-  }, [userId])
+    setLoading(true)
+    setError(null)
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json'
+      }
+    }
+
+    axios
+      .get(`${API_URL}/api/users/`, config)
+      .then((res) => {
+        setUsers(res.data)
+      })
+      .catch((err) => {
+        console.error('Error fetching users:', err)
+        if (err.response) {
+          if (err.response.status === 401) {
+            setError('Unauthorized (401) — your session may have expired. Please log in again.')
+          } else if (err.response.status === 403) {
+            setError('Forbidden (403) — you need admin privileges to view user list.')
+          } else {
+            setError(`Error fetching users: ${err.response.statusText} (${err.response.status})`)
+          }
+        } else {
+          setError('Network or CORS error while fetching users.')
+        }
+      })
+      .finally(() => setLoading(false))
+  }, [token])
 
   function toggleusersStatus(id) {
     const user = users.find((p) => p.id === id)
     if (!user) return
 
-    const newStatus = user.status === "active" ? "inactive" : "active"
+    const prevStatus = user.status
+    const newStatus = prevStatus === 'active' ? 'inactive' : 'active'
 
-    setUsers((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, status: newStatus } : p))
-    )
-    
-    const getApiUrl = () => {
-      try {
-        return import.meta.env.VITE_API_URL || 'http://localhost:3000';
-      } catch (e) {
-        return 'http://localhost:3000';
+    // optimistic UI update
+    setUsers((prev) => prev.map((p) => (p.id === id ? { ...p, status: newStatus } : p)))
+
+    const API_URL = getApiUrl()
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
       }
-    };
+    }
 
     axios
-      .patch(`${getApiUrl()}/users/${id}`, { status: newStatus })
+      .patch(`${API_URL}/api/users/${id}/`, { status: newStatus }, config)
       .catch((err) => {
-        console.error(err)
+        console.error('Error updating status:', err)
+        // rollback UI change
+        setUsers((prev) => prev.map((p) => (p.id === id ? { ...p, status: prevStatus } : p)))
+        if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+          setError('Permission error while updating status. Make sure you are an admin.')
+        } else {
+          setError('Failed to update user status.')
+        }
       })
   }
 
@@ -62,23 +104,19 @@ function Users() {
     (user.status?.toLowerCase() || '').includes(search.toLowerCase())
   ))
 
-
   if (typesort === 'active') {
     filterProducts = filterProducts.filter((product) =>
-      product.status.toLowerCase() === ('active')
+      product.status?.toLowerCase() === ('active')
     )
   } else if (typesort === 'inactive') {
     filterProducts = filterProducts.filter((product) =>
-      product.status.toLowerCase() === ('inactive')
+      product.status?.toLowerCase() === ('inactive')
     )
   }
 
   return (
-    // EDITED: Removed inline margin-left. The Sidebar layout handles the spacing now.
     <div className='users-page-wrapper'>
       <div className='main-users-container'>
-        
-        {/* Header Section */}
         <div className="users-header">
           <h1>CUSTOMER DATABASE</h1>
           <div className="controls-container">
@@ -90,16 +128,18 @@ function Users() {
               />
             </div>
             <div className="filter-box">
-                <select value={typesort} onChange={(e) => setTypesort(e.target.value)}>
-                  <option value="types">All Status</option>
-                  <option value="active">Active</option>
-                  <option value="inactive">Blocked</option>
-                </select>
+              <select value={typesort} onChange={(e) => setTypesort(e.target.value)}>
+                <option value="types">All Status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Blocked</option>
+              </select>
             </div>
           </div>
         </div>
 
-        {/* Table Header */}
+        {loading && <p>Loading users...</p>}
+        {error && <p style={{ color: 'tomato' }}>{error}</p>}
+
         <div className="table-header-row">
           <span className='col-id'>ID</span>
           <span className='col-user'>USER</span>
@@ -109,16 +149,14 @@ function Users() {
           <span className='col-action'>ACTION</span>
         </div>
 
-        {/* Table Body */}
         <div className="users-list">
-          {filterProducts.length > 0 ? (
-             filterProducts.map((user) => (
+          {!loading && filterProducts.length > 0 ? (
+            filterProducts.map((user) => (
               <div className="user-row" key={user.id}>
                 <span className='col-id'>#{user.id}</span>
                 <span className='col-user'>{user.username}</span>
                 <span className='col-email'>{user.email}</span>
-                <span className='col-mobile'>{user.mobile}</span>
-                
+                <span className='col-mobile'>{user.mobile || 'N/A'}</span>
                 <span className='col-status'>
                   <span className={`status-badge ${user.status === 'active' ? 'active' : 'inactive'}`}>
                     {user.status}
@@ -137,7 +175,7 @@ function Users() {
               </div>
             ))
           ) : (
-            <p className="no-data">No users found matching your criteria.</p>
+            !loading && <p className="no-data">No users found matching your criteria.</p>
           )}
         </div>
       </div>

@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import CustomTokenJwtSerializer,RegisterSerializer,VerifyOTPSerializer
+from .serializers import CustomTokenJwtSerializer,RegisterSerializer,VerifyOTPSerializer,UserSerializer
 from rest_framework import generics,status,views
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny,IsAdminUser, IsAuthenticated
 from .models import CustomUser
 import random
 from rest_framework.response import Response
@@ -151,3 +151,15 @@ class GoogleLoginView(APIView):
             'role': user.role,
             'mobile': user.mobile
         }, status=status.HTTP_200_OK)
+    
+
+class UserListView(generics.ListAPIView):
+    queryset = CustomUser.objects.all().order_by('id')
+    serializer_class = UserSerializer
+    permission_classes = [IsAdminUser]
+
+
+class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAdminUser]
