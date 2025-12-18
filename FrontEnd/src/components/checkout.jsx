@@ -81,9 +81,8 @@ function Checkout() {
       return;
     }
 
-    // 1. Create Order on Backend
     axios.post(`${API_URL}/orders/place-order/`, {
-      total_amount: grandprice, // Sending calculated price
+      total_amount: grandprice, 
       delivery_address: details
     }, {
       headers: { Authorization: `Bearer ${token}` }
@@ -91,16 +90,14 @@ function Checkout() {
       .then((res) => {
         const { order_id, amount, key } = res.data;
 
-        // 2. Configure Razorpay Options
         const options = {
           key: key,
           amount: amount,
           currency: "INR",
           name: "XenFit",
           description: "Purchase Transaction",
-          order_id: order_id, // Razorpay Order ID from backend
+          order_id: order_id, 
           handler: function (response) {
-            // 3. Verify Payment on Backend
             verifyPayment(response);
           },
           prefill: {
@@ -128,7 +125,7 @@ function Checkout() {
     })
       .then((res) => {
         toast.success("Payment Successful!");
-        navigate('/success');
+        navigate('/myorders');
       })
       .catch((err) => {
         console.error(err);
@@ -139,8 +136,6 @@ function Checkout() {
   return (
     <div className="main-checkout-conatainer">
       <div className="checkout-grid">
-
-        {/* --- LEFT SIDE: Shipping Details --- */}
         <div className="checkout-left">
           <div className="header-section">
             <h1>SHIPPING DETAILS</h1>
