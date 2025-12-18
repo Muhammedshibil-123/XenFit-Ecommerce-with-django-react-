@@ -1,167 +1,215 @@
+.users-page-wrapper {
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .main-users-container {
   background: #fff;
-  padding: 16px;
+  padding: 30px;
   border: 1px solid #eee;
-  max-width: 900px;
-  margin: auto;
+  width: 95%;
+  max-width: 1100px; /* Reduced slightly as requested */
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .users-header {
-  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  border-bottom: 2px solid #111;
+  padding-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
 .users-header h1 {
-  font-size: 20px;
-  margin-bottom: 16px;
-  color: #333;
+  font-size: 22px;
+  font-weight: 800;
+  color: #111;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
 }
 
-.controls {
+.controls-container {
   display: flex;
-  gap: 12px;
+  gap: 15px;
+  align-items: center;
 }
 
-.controls input {
-  flex: 1;
+.search-box input {
   padding: 8px 12px;
   border: 1px solid #ddd;
-  border-radius: 4px;
   font-size: 13px;
+  width: 200px;
   outline: none;
-  transition: border-color 0.2s;
+  transition: all 0.3s ease;
+  background-color: #f9f9f9;
 }
 
-.controls input:focus {
-  border-color: #888;
+.search-box input:focus {
+  border-color: #111;
+  background-color: #fff;
 }
 
-.controls select {
+.filter-box select {
   padding: 8px 12px;
   border: 1px solid #ddd;
-  border-radius: 4px;
   font-size: 13px;
-  background: #fff;
   cursor: pointer;
+  background-color: #fff;
   outline: none;
   min-width: 140px;
 }
 
-.controls select:focus {
-  border-color: #888;
+.filter-box select:focus {
+  border-color: #111;
 }
 
-.users-table {
+/* --- STRICT GRID ALIGNMENT --- */
+/* Using minmax(0, Xfr) ensures content doesn't break the grid layout */
+.table-header-row, .user-row {
+  display: grid;
+  /* ID | User | Email | Mobile | Status | Action */
+  grid-template-columns: minmax(50px, 0.5fr) minmax(120px, 1.5fr) minmax(200px, 2.5fr) minmax(120px, 1.5fr) minmax(100px, 1fr) minmax(80px, 0.8fr);
+  align-items: center;
+  padding: 12px 15px;
+  gap: 15px;
   width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
+  box-sizing: border-box;
 }
 
-.users-table th {
+.table-header-row {
   background: #f4f4f4;
-  padding: 7px 10px;
-  font-size: 10px;
-  text-transform: uppercase;
-  text-align: left;
-  color: #555;
-}
-
-.users-table td {
-  padding: 7px 10px;
-  border-bottom: 1px solid #eee;
-  font-size: 12px;
-  vertical-align: middle;
-}
-
-.col-id {
-  width: 50px;
-  color: #888;
-  font-weight: 600;
-}
-
-.col-user {
-  width: 140px;
   font-weight: 700;
+  font-size: 11px;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.users-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-row {
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s;
+  font-size: 13px;
+  color: #333;
+}
+
+.user-row:hover {
+  background-color: #fafafa;
+}
+
+/* --- COLUMN SPECIFICS --- */
+.col-id {
+  font-weight: 600;
+  color: #888;
+  font-size: 12px;
+}
+
+.col-user strong {
+  display: block;
+  font-weight: 600;
+  color: #111;
 }
 
 .col-email {
-  width: 220px;
   color: #555;
-}
-
-.col-mobile {
-  width: 110px;
-}
-
-.col-status {
-  width: 90px;
-}
-
-.col-action {
-  width: 80px;
-}
-
-.expandable-cell {
-  cursor: pointer;
-  display: inline-block;
-  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.expandable-cell.expanded {
-  white-space: normal;
-  word-break: break-word;
+.col-mobile {
+  color: #111;
 }
 
-.status-badge {
-  padding: 3px 8px;
+.col-status {
+  display: flex;
+  align-items: center;
+}
+
+.status-pill {
+  padding: 4px 10px;
   border-radius: 4px;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
   display: inline-block;
+  min-width: 70px;
+  text-align: center;
 }
 
-.status-badge.active {
+.status-pill.active {
   background: #e6ffe6;
   color: #008000;
   border: 1px solid #ccffcc;
 }
 
-.status-badge.inactive {
+.status-pill.inactive {
   background: #ffe6e6;
   color: #cc0000;
   border: 1px solid #ffcccc;
 }
 
+.col-action {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+/* --- TOGGLE BUTTON --- */
 .toggle-btn {
-  width: 36px;
-  height: 18px;
-  border-radius: 18px;
-  border: none;
+  width: 40px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  border-radius: 20px;
   padding: 2px;
+  transition: background-color 0.3s ease;
   cursor: pointer;
-  position: relative;
+  border: none;
 }
 
 .toggle-btn.on {
-  background: #111;
+  background-color: #111;
 }
 
 .toggle-btn.off {
-  background: #ccc;
+  background-color: #ccc;
 }
 
 .toggle-circle {
-  width: 14px;
-  height: 14px;
-  background: #fff;
+  width: 18px;
+  height: 18px;
+  background: white;
   border-radius: 50%;
-  display: block;
-  transition: transform 0.25s ease;
+  transition: transform 0.3s ease;
 }
 
 .toggle-btn.on .toggle-circle {
-  transform: translateX(16px);
+  transform: translateX(18px);
+}
+
+.toggle-btn.off .toggle-circle {
+  transform: translateX(0);
+}
+
+@media (max-width: 900px) {
+  .main-users-container {
+    overflow-x: auto;
+  }
+  
+  .table-header-row, .user-row {
+    min-width: 900px;
+  }
 }

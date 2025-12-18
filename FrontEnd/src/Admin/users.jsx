@@ -2,19 +2,6 @@ import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import './users.css'
 
-const ExpandableCell = ({ text }) => {
-  const [open, setOpen] = useState(false)
-
-  return (
-    <span
-      className={`expandable-cell ${open ? 'expanded' : ''}`}
-      onClick={() => setOpen(!open)}
-    >
-      {text}
-    </span>
-  )
-}
-
 function Users() {
   const [users, setUsers] = useState([])
   const [search, setSearch] = useState('')
@@ -65,57 +52,65 @@ function Users() {
     <div className="users-page-wrapper">
       <div className="main-users-container">
         <div className="users-header">
-          <h1>CUSTOMER DATABASE</h1>
-          <div className="controls">
-            <input
-              placeholder="Search by name, email, or ID"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            />
-            <select value={typesort} onChange={e => setTypesort(e.target.value)}>
-              <option value="all">All Users</option>
-              <option value="active">Active</option>
-              <option value="inactive">Blocked</option>
-            </select>
+          <h1>Customer Database</h1>
+          <div className="controls-container">
+            <div className="search-box">
+              <input
+                placeholder="Search by name, email, or ID"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+              />
+            </div>
+            <div className="filter-box">
+              <select value={typesort} onChange={e => setTypesort(e.target.value)}>
+                <option value="all">All Users</option>
+                <option value="active">Active</option>
+                <option value="inactive">Blocked</option>
+              </select>
+            </div>
           </div>
         </div>
 
-        <table className="users-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>USER</th>
-              <th>EMAIL</th>
-              <th>MOBILE</th>
-              <th>STATUS</th>
-              <th>ACTION</th>
-            </tr>
-          </thead>
+        <div className="users-list-container">
+          <div className="table-header-row">
+            <div className="col-id">ID</div>
+            <div className="col-user">User</div>
+            <div className="col-email">Email</div>
+            <div className="col-mobile">Mobile</div>
+            <div className="col-status">Status</div>
+            <div className="col-action"></div>
+          </div>
 
-          <tbody>
+          <div className="users-list">
             {filteredUsers.map(user => (
-              <tr key={user.id}>
-                <td className="col-id">#{user.id}</td>
-                <td className="col-user"><ExpandableCell text={user.username} /></td>
-                <td className="col-email"><ExpandableCell text={user.email} /></td>
-                <td className="col-mobile">{user.mobile || 'N/A'}</td>
-                <td className="col-status">
-                  <span className={`status-badge ${user.status}`}>
+              <div className="user-row" key={user.id}>
+                <div className="col-id">#{user.id}</div>
+                <div className="col-user">
+                  <strong>{user.username}</strong>
+                </div>
+                <div className="col-email" title={user.email}>
+                  {user.email}
+                </div>
+                <div className="col-mobile">
+                  {user.mobile || 'N/A'}
+                </div>
+                <div className="col-status">
+                  <span className={`status-pill ${user.status}`}>
                     {user.status}
                   </span>
-                </td>
-                <td className="col-action">
+                </div>
+                <div className="col-action">
                   <button
                     className={`toggle-btn ${user.status === 'active' ? 'on' : 'off'}`}
                     onClick={() => toggleUserStatus(user.id)}
                   >
                     <span className="toggle-circle" />
                   </button>
-                </td>
-              </tr>
+                </div>
+              </div>
             ))}
-          </tbody>
-        </table>
+          </div>
+        </div>
       </div>
     </div>
   )
