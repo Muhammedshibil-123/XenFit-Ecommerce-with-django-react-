@@ -123,6 +123,13 @@ class GoogleLoginView(APIView):
 
         try:
             user = CustomUser.objects.get(email=email)
+    
+            if user.status != 'active':
+                return Response(
+                    {'error': 'Your account is blocked or inactive.'}, 
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
         except CustomUser.DoesNotExist:
           
             random_suffix = ''.join(secrets.choice(string.ascii_lowercase + string.digits) for _ in range(4))
@@ -134,7 +141,8 @@ class GoogleLoginView(APIView):
                 first_name=first_name,
                 last_name=last_name,
                 role='user',  
-                is_active=True
+                is_active=True,
+                status='active'
             )
             user.set_unusable_password()
             user.save()
@@ -169,3 +177,11 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
+
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        if instance.status == 'inactive':
+            instance.is_active = False
+        elif instance.status == 'active':
+            instance.is_active = True
+        instance.save()

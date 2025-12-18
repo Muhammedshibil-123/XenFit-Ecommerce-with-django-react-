@@ -21,7 +21,7 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_available_colors(self, obj):
-        variants = Product.objects.filter(product_code=obj.product_code).exclude(id=obj.id)
+        variants = Product.objects.filter(product_code=obj.product_code,status='active').exclude(id=obj.id)
         return [
             {
                 "id": v.id, 

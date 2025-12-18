@@ -72,10 +72,14 @@ function Login() {
 
       } catch (err) {
         console.error("Login Error:", err);
-        if (err.response && err.response.status === 401) {
-          setError('Invalid username or password');
+        
+        if (err.response && err.response.data && err.response.data.detail) {
+            setError(err.response.data.detail); 
+        } 
+        else if (err.response && err.response.status === 401) {
+            setError('Invalid username or password');
         } else {
-          setError('Login failed. Is the server running?');
+            setError('Login failed. Is the server running?');
         }
       }
     }

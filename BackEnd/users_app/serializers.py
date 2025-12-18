@@ -1,19 +1,20 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
 from .models import CustomUser
+from rest_framework.exceptions import AuthenticationFailed
 
 class CustomTokenJwtSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
-        token= super().get_token(user)
-
-        token['role']=user.role
-        token['username']=user.username
+        token = super().get_token(user)
+        token['role'] = user.role
+        token['username'] = user.username
         return token
-    
 
     def validate(self, attrs):
-        data= super().validate(attrs)  
+        data = super().validate(attrs)
+        if self.user.status != 'active':
+            raise AuthenticationFailed('Your account is blocked or inactive.')
 
         data.update({
             'id': self.user.id,
