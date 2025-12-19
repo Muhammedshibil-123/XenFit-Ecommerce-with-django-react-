@@ -15,10 +15,11 @@
 }
 
 .my-orders-container h1 {
-  text-align: center;
-  margin-bottom: 25px;
-  font-size: 28px;
-  color: #333;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    text-transform: uppercase;
+    text-align:  center;
 }
 
 /* --- Order Card --- */
@@ -208,6 +209,15 @@
 .track-step.active span {
   color: #333;
   font-weight: 700;
+}
+
+.total-text{
+     font-size: 14px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    text-transform: uppercase;
+    text-align:  end;
+    padding-top: 20px;
 }
 
 /* Mobile Adjustments */

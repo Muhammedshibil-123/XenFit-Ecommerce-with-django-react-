@@ -37,7 +37,7 @@ function Myorders() {
 
 
    function handleProductClick(productId){
-       navigate(`/product/${productId}`) 
+       navigate(`/${productId}`) 
    }
 
    const getStatusIndex = (status) => {
@@ -113,6 +113,12 @@ function Myorders() {
                                 </div>
                             </div>
                         ))}
+                    </div>
+
+                
+
+                    <div className="total-text">
+                        <span>Grand Total : {order.total_amount}</span>
                     </div>
 
                     <div className="track-progress-wrapper">

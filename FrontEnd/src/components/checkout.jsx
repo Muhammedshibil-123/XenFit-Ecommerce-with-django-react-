@@ -196,12 +196,11 @@ function Checkout() {
           </div>
         </div>
 
-        {/* --- RIGHT SIDE: Order Summary --- */}
         <div className="checkout-right">
           <div className="summary-card">
             <h2>ORDER SUMMARY</h2>
 
-            {/* Product List Scrollable Area */}
+            
             <div className="summary-items">
               {cartItems.length === 0 ? (
                 <p>Your bag is empty</p>
@@ -220,7 +219,6 @@ function Checkout() {
               )}
             </div>
 
-            {/* Price Calculations */}
             <div className="price-breakdown">
               <div className="row">
                 <span>Subtotal</span>
