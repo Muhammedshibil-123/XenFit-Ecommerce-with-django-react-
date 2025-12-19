@@ -2,13 +2,13 @@ from django.shortcuts import render
 from rest_framework import generics, status, views
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import Cart, CartItem,Wishlist,Order
-from .serializers import CartSerializer, CartItemSerializer,WishlistSerializer
+from .models import Cart, CartItem,Wishlist,Order,OrderItem
+from .serializers import CartSerializer, CartItemSerializer,WishlistSerializer,OrderSerializer
 from products.models import Product, ProductSize
 import razorpay
 from django.conf import settings
 from rest_framework.views import APIView
-
+from products.models import Product, ProductSize
 
 # Create your views here.
 class CartView(generics.RetrieveAPIView):
@@ -176,14 +176,85 @@ class VerifyPaymentView(APIView):
                 'razorpay_signature': data['razorpay_signature']
             }
             client.utility.verify_payment_signature(params_dict)
-            
+       
             order = Order.objects.get(provider_order_id=data['razorpay_order_id'])
             order.payment_id = data['razorpay_payment_id']
             order.signature_id = data['razorpay_signature']
             order.payment_status = 'Success'
             order.save()
+   
+            user_cart = Cart.objects.get(user=order.user)
+            cart_items = user_cart.items.all()
+
+            for item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item.product,
+                    quantity=item.quantity,
+                    size=item.size,
+                    price=item.product.price
+                )
+
+                if item.size: 
+                    try:
+                        product_size_obj = ProductSize.objects.get(product=item.product, size=item.size)
+                    
+                        if product_size_obj.stock >= item.quantity:
+                            product_size_obj.stock -= item.quantity
+                            product_size_obj.save()
+                        else:
+                            product_size_obj.stock = 0
+                            product_size_obj.save()
+                            
+                    except ProductSize.DoesNotExist:
+                        pass
+
+            
+            user_cart.items.all().delete()
             
             return Response({"status": "Payment Successful"}, status=status.HTTP_200_OK)
             
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+class OrderListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = OrderSerializer
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user, payment_status='Success').order_by('-created_at')
+
+class CreateOrderView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        amount = request.data.get('total_amount')
+        address_data = request.data.get('delivery_address', {})
+        client = razorpay.Client(auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
+
+        data = {
+            "amount": int(float(amount) * 100), 
+            "currency": "INR", 
+            "payment_capture": "1"
+        }
+        payment_order = client.order.create(data=data)
+        order = Order.objects.create(
+            user=request.user,
+            total_amount=amount,
+            provider_order_id=payment_order['id'],
+            payment_status='Pending',
+  
+            name=address_data.get('name'),
+            mobile=address_data.get('mobile'),
+            address=address_data.get('address'),
+            place=address_data.get('place'),
+            pincode=address_data.get('pincode')
+        )
+        
+        return Response({
+            "order_id": payment_order['id'],
+            "amount": data['amount'],
+            "key": settings.RAZOR_KEY_ID,
+            "internal_order_id": order.id
+        }, status=status.HTTP_201_CREATED)

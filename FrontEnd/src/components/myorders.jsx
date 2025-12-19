@@ -5,51 +5,65 @@ import { useNavigate } from "react-router-dom";
 
 function Myorders() {
   const [orders, setOrders] = useState([])
-  const userId = parseInt(localStorage.getItem("id")) 
+  const token = localStorage.getItem("access_token") 
   const navigate = useNavigate()
 
+  
+  const getApiUrl = () => {
+    try {
+        return import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+    } catch (e) {
+        return 'http://127.0.0.1:8000/api';
+    }
+  };
+  const API_URL = getApiUrl();
+
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_URL}/orders`)
+    if (!token) {
+        navigate('/login'); 
+        return;
+    }
+
+    axios.get(`${API_URL}/orders/my-orders/`, {
+        headers: { Authorization: `Bearer ${token}` }
+    })
       .then((res) => {
-        // Filter orders for the current user and reverse to show newest first
-        const userOrders = res.data.filter(order => Number(order.userid) === Number(userId)).reverse()
-        setOrders(userOrders || [])
+        setOrders(res.data || [])
       })
-      .catch((err) => console.log(err))
-  }, [userId])
+      .catch((err) => {
+          console.log("Error fetching orders:", err);
+      })
+  }, [token, API_URL, navigate])
 
 
    function handleProductClick(productId){
-       navigate(`/${productId}`)
+       navigate(`/product/${productId}`) 
    }
 
-   // 1. Get the index of the current status
    const getStatusIndex = (status) => {
      const steps = ["Order Placed", "Shipped", "Out for Delivery", "Delivered"];
      return steps.indexOf(status);
    };
 
-   // 2. Calculate the Green Line Width (70% logic)
    const getProgressWidth = (status) => {
      const steps = ["Order Placed", "Shipped", "Out for Delivery", "Delivered"];
      const index = steps.indexOf(status);
      
-     if (index === -1) return 0; // Default if status is unknown
-     if (index === 3) return 100; // Delivered = 100% full
+     if (index === -1) return 5; 
+     if (index === 3) return 100; 
 
-     // We have 3 intervals (segments) between 4 dots.
-     // Each segment represents 100 / 3 = 33.33% of the total width.
      const segmentWidth = 100 / 3;
-
-     // Base width is the distance to the current active dot
      const baseWidth = index * segmentWidth;
-
-     // Add 70% of the NEXT segment
-     const extraProgress = segmentWidth * 0.70;
+     const extraProgress = segmentWidth * 0.50; 
 
      return baseWidth + extraProgress;
    };
    
+   const getImageUrl = (img) => {
+        if (!img) return 'https://via.placeholder.com/150';
+        return img.startsWith('http') ? img : `http://127.0.0.1:8000${img}`;
+   };
+
   return (
     <div className="my-orders-page">
       <div className="my-orders-container">
@@ -64,65 +78,57 @@ function Myorders() {
                 
                 return (
                 <div className="track-order-card" key={order.id}>
-                    
-                    {/* Header Info */}
+
                     <div className="track-order-header">
                         <div>
                             <span className="track-order-id">Order ID: #{order.id}</span>
-                            <span className="track-order-date">Placed on: {order.orderDate || 'Recent'}</span>
+                            <span className="track-order-date">Placed on: {order.orderDate}</span>
                         </div>
                         <div className="track-status-text">
                            {order.status}
                         </div>
                     </div>
 
-                    {/* Address Section */}
                     <div className="track-delivery-info">
                         <h4>Delivery Address</h4>
-                        <p><strong>{order.delivery.name}</strong> | {order.delivery.mobile}</p>
-                        <p>{order.delivery.address}, {order.delivery.place} - {order.delivery.pincode}</p>
+                        <p><strong>{order.name}</strong> | {order.mobile}</p>
+                        <p>{order.address}, {order.place} - {order.pincode}</p>
                     </div>
 
-                    {/* Product List */}
                     <div className="track-items-list">
-                        {order.items.map((product) => (
-                            <div className="track-item-row" key={product.productId}
-                                onClick={()=>handleProductClick(product.productId)}
+                        {order.items.map((item, idx) => (
+                            <div className="track-item-row" key={idx}
+                                onClick={()=>handleProductClick(item.product_id)}
+                                style={{cursor: 'pointer'}}
                             >
-                                <img src={product.image} alt={product.title} />
+                                <img src={getImageUrl(item.product_image)} alt={item.product_title} />
                                 <div className="track-item-details">
-                                    <h3>{product.title}</h3>
-                                    <p>Price: ₹{product.price}</p>
-                                    <p>Qty: {product.quantity}</p>
+                                    <h3>{item.product_title}</h3>
+                                    <p className="size-text">Size: {item.size}</p>
+                                    <p>Qty: {item.quantity}</p>
+                                    <p className="price-text">₹{item.price}</p>
                                 </div>
                                 <div className="track-item-total">
-                                    ₹{(product.price * product.quantity)}
+                                    ₹{Number(item.price) * item.quantity}
                                 </div>
                             </div>
                         ))}
                     </div>
 
-                    {/* Progress Bar (Stepper) */}
                     <div className="track-progress-wrapper">
                         <div className="track-progress-bar">
-                            
-                            {/* Background Gray Line */}
                             <div className="track-line-bg"></div>
-                            
-                            {/* Active Green Line (Dynamic Width) */}
                             <div 
                                 className="track-line-fill" 
                                 style={{ width: `${progressWidth}%` }}
                             ></div>
                             
-                            {/* Steps */}
                             {["Order Placed", "Shipped", "Out for Delivery", "Delivered"].map((step, i) => (
                                 <div key={step} className={`track-step ${activeIndex >= i ? 'active' : ''}`}>
                                     <div className="track-dot"></div>
                                     <span>{step}</span>
                                 </div>
                             ))}
-
                         </div>
                     </div>
 

@@ -37,10 +37,34 @@ class Order(models.Model):
         choices=[('Pending', 'Pending'), ('Success', 'Success'), ('Failed', 'Failed')],
         default='Pending'
     )
+    STATUS_CHOICES = [
+        ('Order Placed', 'Order Placed'),
+        ('Shipped', 'Shipped'),
+        ('Out for Delivery', 'Out for Delivery'),
+        ('Delivered', 'Delivered')
+    ]
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Order Placed')
+    name = models.CharField(max_length=100, null=True)
+    mobile = models.CharField(max_length=15, null=True)
+    address = models.TextField(null=True)
+    place = models.CharField(max_length=100, null=True)
+    pincode = models.CharField(max_length=10, null=True)
+
     provider_order_id = models.CharField(max_length=100, verbose_name="Razorpay Order ID")
     payment_id = models.CharField(max_length=100, verbose_name="Razorpay Payment ID", null=True, blank=True)
     signature_id = models.CharField(max_length=100, verbose_name="Signature ID", null=True, blank=True)
+    
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Order {self.id} - {self.user.username} - {self.payment_status}"
+        return f"Order {self.id} - {self.user.username}"
+    
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    size = models.CharField(max_length=10, null=True, blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2) 
+
+    def __str__(self):
+        return f"{self.product.title} - {self.quantity}"

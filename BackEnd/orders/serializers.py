@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Cart, CartItem,Wishlist
+from .models import Cart, CartItem,Wishlist,Order,OrderItem
 from products.models import Product, ProductSize
 from products.serializers import ProductSerializer
 
@@ -35,3 +35,25 @@ class WishlistSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wishlist
         fields = ['id', 'user', 'products']
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    product_title = serializers.CharField(source='product.title', read_only=True)
+    product_image = serializers.ImageField(source='product.image', read_only=True)
+    product_id = serializers.IntegerField(source='product.id', read_only=True)
+
+    class Meta:
+        model = OrderItem
+        fields = ['product_id', 'product_title', 'product_image', 'quantity', 'size', 'price']
+
+class OrderSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(many=True, read_only=True)
+    orderDate = serializers.DateTimeField(source='created_at', format="%Y-%m-%d") 
+
+    class Meta:
+        model = Order
+        fields = [
+            'id', 'status', 'total_amount', 'orderDate', 
+            'name', 'mobile', 'address', 'place', 'pincode',
+            'items'
+        ]

@@ -3,6 +3,8 @@ import { useState, useEffect } from "react"
 import './checkout.css'
 import { useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
+import { useContext } from "react"; 
+import { CartContext } from "../component/cartcouter";
 
 function Checkout() {
   const [cartItems, setCartItems] = useState([])
@@ -23,8 +25,8 @@ function Checkout() {
 
   const navigate = useNavigate()
   const token = localStorage.getItem('access_token')
+  const { updateCartCount } = useContext(CartContext);
 
-  // Helper to get API URL
   const getApiUrl = () => {
     try {
       return import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
@@ -41,7 +43,6 @@ function Checkout() {
     }));
   }
 
-  // Fetch Cart from Backend
   useEffect(() => {
     if (token) {
       axios.get(`${API_URL}/orders/cart/`, {
@@ -59,13 +60,12 @@ function Checkout() {
     }
   }, [token, navigate, API_URL])
 
-  // Helper for Images
+
   const getImageUrl = (img) => {
     if (!img) return 'https://via.placeholder.com/150';
     return img.startsWith('http') ? img : `http://127.0.0.1:8000${img}`;
   };
 
-  // --- Calculations ---
   const totalCart = cartItems.reduce((total, item) => {
     return total + (item.quantity * Number(item.product.price))
   }, 0)
@@ -125,6 +125,7 @@ function Checkout() {
     })
       .then((res) => {
         toast.success("Payment Successful!");
+        updateCartCount()
         navigate('/myorders');
       })
       .catch((err) => {
