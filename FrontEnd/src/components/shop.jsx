@@ -35,7 +35,7 @@ function Shop() {
   const { WishlistHandleChange, wishlist } = useContext(WishlistContext)
 
   const [currentPage, setCurrentPage] = useState(0)
-  const productsPerPage = 16
+  const productsPerPage = 10
 
   useEffect(() => {
     axios
@@ -138,7 +138,7 @@ function Shop() {
 
           const discount = product.mrp ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
 
-          // Ensure image URL is absolute
+          
           const imageUrl = product.image
             ? (product.image.toString().startsWith('http')
               ? product.image
@@ -150,7 +150,7 @@ function Shop() {
 
               <div className="whislist-contaniner"
                 onClick={(e) => {
-                  e.stopPropagation(); // Stop click from triggering NavLink
+                  e.stopPropagation(); 
                   e.preventDefault();
                   WishlistHandleChange(product);
                 }}>

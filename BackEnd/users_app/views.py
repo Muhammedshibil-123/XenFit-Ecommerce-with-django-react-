@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import CustomTokenJwtSerializer,RegisterSerializer,VerifyOTPSerializer,UserSerializer
+from .serializers import CustomTokenJwtSerializer,RegisterSerializer,VerifyOTPSerializer,UserSerializer,ResetPasswordSerializer,VerifyForgotOtpSerializer,ForgotPasswordSerializer
 from rest_framework import generics,status,views
 from rest_framework.permissions import AllowAny,IsAdminUser, IsAuthenticated
 from .models import CustomUser
@@ -185,3 +185,70 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
         elif instance.status == 'active':
             instance.is_active = True
         instance.save()
+
+
+class ForgotPasswordView(APIView):
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        serializer = ForgotPasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data['email']
+            try:
+                user = CustomUser.objects.get(email=email)
+                
+                otp_code = str(random.randint(100000, 999999))
+                user.otp = otp_code
+                user.save()
+               
+                send_mail(
+                    'Reset Your Password - XenFit',
+                    f'Your Password Reset OTP is: {otp_code}',
+                    settings.EMAIL_HOST_USER,
+                    [email],
+                    fail_silently=False,
+                )
+                
+                return Response({'message': 'OTP sent to your email.'}, status=status.HTTP_200_OK)
+                
+            except CustomUser.DoesNotExist:
+                return Response({'error': 'User with this email does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class VerifyForgotPasswordOTPView(APIView):
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        serializer = VerifyForgotOtpSerializer(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data['email']
+            otp = serializer.validated_data['otp']
+            
+            try:
+                user = CustomUser.objects.get(email=email)
+                if user.otp == otp:
+                    return Response({'message': 'OTP Verified.'}, status=status.HTTP_200_OK)
+                else:
+                    return Response({'error': 'Invalid OTP.'}, status=status.HTTP_400_BAD_REQUEST)
+            except CustomUser.DoesNotExist:
+                return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ResetPasswordView(APIView):
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        serializer = ResetPasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data['email']
+            password = serializer.validated_data['new_password']
+            
+            try:
+                user = CustomUser.objects.get(email=email)
+                user.set_password(password)
+                user.otp = None 
+                user.save()
+                return Response({'message': 'Password reset successfully.'}, status=status.HTTP_200_OK)
+            except CustomUser.DoesNotExist:
+                return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

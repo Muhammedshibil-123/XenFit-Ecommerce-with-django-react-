@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import './dashboard.css'
 import { FaUserFriends, FaBoxOpen, FaShoppingBag, FaRupeeSign } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom'
 
 const AnimatedCounter = ({ value, isCurrency = false }) => {
   const [count, setCount] = useState(0)
@@ -46,6 +47,7 @@ function Dashbaord() {
   const [products, setProducts] = useState([])
   const [users, setUsers] = useState([])
   const [orders, setOrders] = useState([])
+  const navigate = useNavigate()
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
   const token = localStorage.getItem('access_token') || localStorage.getItem('access')
@@ -261,7 +263,7 @@ function Dashbaord() {
           </div>
 
           <div className="view-all-btn">
-            <button>View Orders</button>
+            <button onClick={() => navigate('/admin/orders')}> View Orders</button>
           </div>
         </div>
       </div>

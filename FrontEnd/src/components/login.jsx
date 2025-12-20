@@ -72,14 +72,14 @@ function Login() {
 
       } catch (err) {
         console.error("Login Error:", err);
-        
+
         if (err.response && err.response.data && err.response.data.detail) {
-            setError(err.response.data.detail); 
-        } 
+          setError(err.response.data.detail);
+        }
         else if (err.response && err.response.status === 401) {
-            setError('Invalid username or password');
+          setError('Invalid username or password');
         } else {
-            setError('Login failed. Is the server running?');
+          setError('Login failed. Is the server running?');
         }
       }
     }
@@ -89,7 +89,7 @@ function Login() {
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
-      
+
         console.log("Google Response:", tokenResponse);
 
         const userInfo = await axios.get(
@@ -103,13 +103,13 @@ function Login() {
     },
   });
 
-  
+
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: async (response) => {
       try {
         const res = await axios.post(`${import.meta.env.VITE_API_URL}/users/google-login/`, {
-        token: response.access_token 
-      });
+          token: response.access_token
+        });
 
         const data = res.data;
         localStorage.setItem('access_token', data.access);
@@ -172,9 +172,17 @@ function Login() {
                 onChange={handlechange}
               />
               {Validate.password && <span className="error-msg">{Validate.password}</span>}
+
+              <div style={{ textAlign: 'right' }}>
+                <NavLink to="/forgot-password" style={{ color: '#666', fontSize: '13px', textDecoration: 'none' }}>
+                  Forgot Password?
+                </NavLink>
+              </div>
+
             </div>
 
-            <button type="submit" className="submit-btn">LOG IN</button>
+
+            <button style={{marginTop:'-10px'}} type="submit" className="submit-btn">LOG IN</button>
 
             {error && <p className="error-msg" style={{ textAlign: 'center' }}>{error}</p>}
           </form>
@@ -183,7 +191,7 @@ function Login() {
           <div className="divider"><span>OR</span></div>
           <button
             className="google-btn"
-            type="button" 
+            type="button"
             onClick={() => handleGoogleLogin()}
           >
             <FcGoogle size={20} />

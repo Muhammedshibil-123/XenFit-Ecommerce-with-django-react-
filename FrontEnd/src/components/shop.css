@@ -250,21 +250,22 @@
  }
 
  .main-shop-container {
-   grid-template-columns: repeat(2, 1fr);
-   gap: 15px;
-   padding: 15px;
+   /* Change from repeat(2, 1fr) to 1fr for single column */
+   grid-template-columns: 1fr; 
+   gap: 20px; /* Increased gap slightly for better spacing */
+   padding: 20px;
  }
  
  .product-image-box {
-   height: 200px;
+   height: 300px; /* Made image taller since it has more width now */
  }
  
  .shop-container h3 {
-   font-size: 13px;
+   font-size: 16px; /* Increased font size for better readability on mobile */
  }
  
  .shop-container .addtocart {
-   padding: 10px;
-   font-size: 11px;
+   padding: 14px;
+   font-size: 13px;
  }
 }

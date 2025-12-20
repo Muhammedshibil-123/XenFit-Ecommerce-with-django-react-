@@ -28,6 +28,8 @@ import Products from './Admin/Products'
 import { SearchProvider } from './component/searchcontext'
 import OtpVerify from './components/otpverfiy';
 import { AuthProvider } from './component/AuthContext';
+import ForgotPassword from './components/forgotpassword';
+import ResetPassword from './components/resetpassword';
 
 
 function App() {
@@ -35,7 +37,9 @@ function App() {
 
   const ConditonNavbar = () => {
     const location = useLocation()
-    if (location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/admin' || location.pathname === '/admin/users' || location.pathname === '/admin/products' || location.pathname === '/admin/orders' || location.pathname === '/otp-verify') {
+    if (location.pathname === '/login' || location.pathname === '/signup' || 
+        location.pathname === '/forgot-password' || 
+        location.pathname === '/reset-password' || location.pathname === '/admin' || location.pathname === '/admin/users' || location.pathname === '/admin/products' || location.pathname === '/admin/orders' || location.pathname === '/otp-verify') {
       return null
     } else {
       return <Navbar />
@@ -69,6 +73,8 @@ function App() {
                   <Route path='/' element={<Home />} />
                   <Route path='/login' element={<Login />} />
                   <Route path='/signup' element={<Signup />} />
+                  <Route path='/forgot-password' element={<ForgotPassword />} />
+                  <Route path='/reset-password' element={<ResetPassword />} />
                   <Route path='/otp-verify' element={<OtpVerify />} />
                   <Route path='/shop' element={<Shop />} />
                   <Route path='/cart' element={<Cart />} />
