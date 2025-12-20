@@ -4,14 +4,17 @@ from rest_framework.views import APIView
 from .models import Product,ProductSize
 from .serializers import ProductSerializer,ProductSizeSerializer
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 
 # Create your views here.
 class ProductListCreateView(generics.ListCreateAPIView):
     queryset=Product.objects.all()
+    permission_classes=[AllowAny]
     serializer_class=ProductSerializer
 
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
+    permission_classes=[AllowAny]
     serializer_class = ProductSerializer
     lookup_field = 'id'
 

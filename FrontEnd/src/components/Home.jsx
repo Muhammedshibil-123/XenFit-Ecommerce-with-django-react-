@@ -120,7 +120,7 @@ function Home() {
       
       <div className='banner-break'>
          <h2>LEVEL UP YOUR FIT</h2>
-         <p>Use Code <strong>XENFIT20</strong> for 20% Off</p>
+         {/* <p>Use Code <strong>XENFIT20</strong> for 20% Off</p> */}
       </div>
 
       

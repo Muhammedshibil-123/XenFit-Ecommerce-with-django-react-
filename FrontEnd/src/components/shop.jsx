@@ -24,14 +24,14 @@ function Shop() {
 
   const [sortType, setSortType] = useState('default')
   const [themeSort, setThemeSort] = useState('all')
-  const [brandSort, setBrandSort] = useState('all')
+  const [sleeveSort, setSleeveSort] = useState('all')
 
   const navigate = useNavigate()
-  
+
   const { searchTerm } = useContext(SearchContext)
   const { CartHandleChange } = useContext(CartContext)
-  
-  
+
+
   const { WishlistHandleChange, wishlist } = useContext(WishlistContext)
 
   const [currentPage, setCurrentPage] = useState(0)
@@ -52,7 +52,7 @@ function Shop() {
       });
   }, [API_URL]);
 
-  
+
   let filterProducts = products.filter((product) =>
     (product.title?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
     (product.brand?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
@@ -74,9 +74,9 @@ function Shop() {
     )
   }
 
-   if (brandSort !== 'all') {
+  if (sleeveSort !== 'all') {
     filterProducts = filterProducts.filter((product) =>
-      product.brand && product.brand.toLowerCase() === brandSort.toLowerCase()
+      product.sleeve_type && product.sleeve_type.toLowerCase() === sleeveSort.toLowerCase()
     )
   }
 
@@ -120,17 +120,15 @@ function Shop() {
           </select>
         </div>
 
-      
+
         <div className="filter-group">
-          <label>Brand</label>
-          <select value={brandSort} onChange={(e) => setBrandSort(e.target.value)} >
-            <option value="all">All Brands</option>
-            <option value="Otaku Wear">Otaku Wear</option>
-            <option value="Xenfit Originals">Xenfit Originals</option>
-            <option value="Grind Gear">Grind Gear</option>
-            <option value="Xenfit Essentials">Xenfit Essentials</option>
-            <option value="Hoops Nation">Hoops Nation</option>
-            <option value="Cinema Cult">Cinema Cult</option>
+          <label>Sleeve Type</label>
+          <select value={sleeveSort} onChange={(e) => setSleeveSort(e.target.value)}>
+            <option value="all">All Types</option>
+            <option value="Half Sleeve">Half Sleeve</option>
+            <option value="Full Sleeve">Full Sleeve</option>
+            <option value="Sleeveless">Sleeveless</option>
+            <option value="Oversized">Oversized</option>
           </select>
         </div>
       </div>
@@ -141,20 +139,20 @@ function Shop() {
           const discount = product.mrp ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
 
           // Ensure image URL is absolute
-          const imageUrl = product.image 
-            ? (product.image.toString().startsWith('http') 
-                ? product.image 
-                : `http://127.0.0.1:8000${product.image}`)
-            : 'https://via.placeholder.com/300?text=No+Image'; 
-        
+          const imageUrl = product.image
+            ? (product.image.toString().startsWith('http')
+              ? product.image
+              : `http://127.0.0.1:8000${product.image}`)
+            : 'https://via.placeholder.com/300?text=No+Image';
+
           return (
             <div className="shop-container" key={index}>
 
               <div className="whislist-contaniner"
                 onClick={(e) => {
-                    e.stopPropagation(); // Stop click from triggering NavLink
-                    e.preventDefault();
-                    WishlistHandleChange(product);
+                  e.stopPropagation(); // Stop click from triggering NavLink
+                  e.preventDefault();
+                  WishlistHandleChange(product);
                 }}>
                 <FaHeart style={{
                   color: whishlistcolor(product.id) ? '#e63946' : '#ccc',

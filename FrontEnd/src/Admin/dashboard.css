@@ -177,13 +177,45 @@ td {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  white-space: nowrap; /* Ensures text doesn't wrap awkwardly */
 }
 
-.status-badge.order-placed { background: #f0f9ff; color: #0284c7; }
-.status-badge.shipped { background: #fff7ed; color: #ea580c; }
-.status-badge.delivered { background: #f0fdf4; color: #16a34a; }
-.status-badge.cancelled { background: #fef2f2; color: #dc2626; }
+/* 1. Order Placed - Blue */
+.status-badge.order-placed { 
+  background: #f0f9ff; 
+  color: #0284c7; 
+}
 
+/* 2. Shipped - Orange */
+.status-badge.shipped { 
+  background: #fff7ed; 
+  color: #ea580c; 
+}
+
+/* 3. Out for Delivery - Purple (NEW) */
+.status-badge.out-for-delivery { 
+  background: #f3e8ff; 
+  color: #7e22ce; 
+}
+
+/* 4. Delivered - Green */
+.status-badge.delivered { 
+  background: #f0fdf4; 
+  color: #16a34a; 
+}
+
+/* 5. Cancelled/Failed - Red */
+.status-badge.cancelled, 
+.status-badge.failed { 
+  background: #fef2f2; 
+  color: #dc2626; 
+}
+
+/* 6. Pending - Grey (Fallback) */
+.status-badge.pending {
+  background: #f3f4f6;
+  color: #4b5563;
+}
 /* --- Top Products List Styles --- */
 .top-product-item {
   display: flex;
