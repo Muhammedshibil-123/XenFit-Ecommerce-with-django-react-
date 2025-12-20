@@ -6,8 +6,7 @@ import { toast } from "react-toastify";
 function Orders() {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
-
-  // Status options matching your My Orders section
+  const [filterStatus, setFilterStatus] = useState('All') 
   const statusOptions = [
     "Order Placed", 
     "Shipped", 
@@ -16,15 +15,23 @@ function Orders() {
   ];
 
   const fetchOrders = () => {
-    axios.get(`${import.meta.env.VITE_API_URL}/orders`)
+    const token = localStorage.getItem('access_token');
+
+    axios.get(`${import.meta.env.VITE_API_URL}/orders/`, {
+      headers: {
+        "Authorization": `Bearer ${token}` 
+      }
+    })
       .then((res) => {
-        // Sort by ID descending (newest first)
-        const sortedOrders = res.data.reverse(); 
+        const sortedOrders = res.data; 
         setOrders(sortedOrders);
         setLoading(false);
       })
       .catch((err) => {
-        console.error(err);
+        console.error("Error fetching orders:", err);
+        if (err.response && err.response.status === 401) {
+            toast.error("Session expired. Please login again.");
+        }
         setLoading(false);
       })
   }
@@ -33,22 +40,20 @@ function Orders() {
     fetchOrders()
   }, [])
 
-  // Function to handle status change
   const handleStatusChange = async (id, newStatus) => {
+    const token = localStorage.getItem('access_token');
     try {
-      // 1. Optimistic UI update
       const updatedOrders = orders.map(order => 
         order.id === id ? { ...order, status: newStatus } : order
       );
       setOrders(updatedOrders);
 
-      // 2. API Call
-      await axios.patch(`${import.meta.env.VITE_API_URL}/orders/${id}`, {
-        status: newStatus
-      });
+      await axios.patch(`${import.meta.env.VITE_API_URL}/orders/${id}/`, 
+        { status: newStatus },
+        { headers: { "Authorization": `Bearer ${token}` } }
+      );
 
       toast.success(`Order #${id} marked as ${newStatus}`, {
-        position: 'bottom-right',
         theme: "dark",
         autoClose: 2000
       });
@@ -56,9 +61,22 @@ function Orders() {
     } catch (err) {
       console.error("Failed to update status", err);
       toast.error("Failed to update status");
-      fetchOrders(); // Revert on error
+      fetchOrders(); 
     }
   }
+
+  const getImageUrl = (img) => {
+    if (!img) return 'https://via.placeholder.com/150';
+    if (img.startsWith('http')) return img;
+   
+    const baseUrl = import.meta.env.VITE_API_URL.replace(/\/$/, '');
+    const path = img.startsWith('/') ? img : `/${img}`;
+    return `${baseUrl}${path}`;
+  };
+
+  const filteredOrders = filterStatus === 'All' 
+    ? orders 
+    : orders.filter(order => order.status === filterStatus);
 
   const pendingCount = orders.filter(o => o.status !== 'Delivered').length;
 
@@ -70,32 +88,46 @@ function Orders() {
           <h1>Order Management</h1>
           <p>Manage and track customer orders</p>
         </div>
-        <div className="order-stats">
-            <span>Pending Orders: <strong>{pendingCount}</strong></span>
+        
+        <div className="header-actions" style={{display: 'flex', gap: '20px', alignItems: 'center'}}>
+            <div className="filter-container">
+                <select 
+                    value={filterStatus} 
+                    onChange={(e) => setFilterStatus(e.target.value)}
+                    className="filter-select"
+                    style={{padding: '8px', borderRadius: '5px', border: '1px solid #ccc'}}
+                >
+                    <option value="All">All Statuses</option>
+                    {statusOptions.map(status => (
+                        <option key={status} value={status}>{status}</option>
+                    ))}
+                </select>
+            </div>
+
+            <div className="order-stats">
+                <span>Pending Orders: <strong>{pendingCount}</strong></span>
+            </div>
         </div>
       </div>
 
       <div className='orders-table-container'>
         {loading ? (
           <p className="loading-text">Loading orders...</p>
-        ) : orders.length > 0 ? (
+        ) : filteredOrders.length > 0 ? (
           <table className="admin-orders-table">
             <thead>
               <tr>
-                <th style={{width: '80px'}}>ID</th>
-                <th style={{width: '200px'}}>Customer</th>
-                <th>Products Ordered</th> {/* EDITED: Label changed */}
+                <th style={{width: '60px'}}>ID</th>
+                <th style={{width: '220px'}}>Delivery Details</th> 
+                <th>Products Ordered</th>
                 <th>Total</th>
                 <th>Date</th>
-                <th>Status</th>
+                <th style={{paddingLeft:'50px'}}>Status</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {orders.map((order) => {
-                const totalAmount = order.items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-                
-                // Determine class for status badge color
+              {filteredOrders.map((order) => {
                 const statusClass = order.status 
                   ? order.status.toLowerCase().replace(/\s/g, '-') 
                   : 'order-placed';
@@ -103,30 +135,41 @@ function Orders() {
                 return (
                   <tr key={order.id}>
                     <td className="id-col">#{order.id}</td>
-                    
                     <td className="customer-col">
                       <div className="customer-info">
-                        <span className="name">{order.delivery?.name || order.username}</span>
-                        <span className="sub-text">{order.delivery?.mobile}</span>
+                        <span className="name" style={{fontWeight: 'bold', display: 'block'}}>
+                            {order.delivery?.name || order.username}
+                        </span>
+                        <div style={{fontSize: '0.85rem', color: '#555', marginTop: '5px'}}>
+                            <p style={{margin: 0}}>{order.delivery?.address}</p>
+                            <p style={{margin: 0}}>{order.delivery?.place} - {order.delivery?.pincode}</p>
+                        </div>
+                        <span className="sub-text" style={{color: '#007bff', display: 'block', marginTop: '4px'}}>
+                            {order.delivery?.mobile}
+                        </span>
                       </div>
                     </td>
 
-                    {/* EDITED: Full Item List Display */}
                     <td className="items-col">
                       <div className="items-list-detailed">
                         {order.items.map((item, idx) => (
                            <div key={idx} className="item-row-detail">
-                              <img src={item.image} alt={item.title} />
+                              <img 
+                                src={getImageUrl(item.image)} 
+                                alt={item.title} 
+                                onError={(e) => {e.target.src = 'https://via.placeholder.com/50'}}
+                              />
                               <div className="item-text">
                                  <span className="item-title">{item.title}</span>
                                  <span className="item-qty">Qty: {item.quantity}</span>
+                                 <span className="item-qty">Size: {item.size || 'N/A'}</span>
                               </div>
                            </div>
                         ))}
                       </div>
                     </td>
 
-                    <td className="price-col">₹{totalAmount}</td>
+                    <td className="price-col">₹{order.total_amount}</td>
                     
                     <td className="date-col">{order.orderDate || 'N/A'}</td>
 
@@ -155,7 +198,7 @@ function Orders() {
           </table>
         ) : (
           <div className="no-orders">
-             <p>No orders found in the system.</p>
+             <p>No orders found matching the filter.</p>
           </div>
         )}
       </div>

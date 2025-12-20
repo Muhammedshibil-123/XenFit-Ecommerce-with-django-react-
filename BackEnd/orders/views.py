@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from rest_framework import generics, status, views
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from .models import Cart, CartItem,Wishlist,Order,OrderItem
-from .serializers import CartSerializer, CartItemSerializer,WishlistSerializer,OrderSerializer
+from .serializers import CartSerializer, CartItemSerializer,WishlistSerializer,OrderSerializer,AdminOrderSerializer
 from products.models import Product, ProductSize
 import razorpay
 from django.conf import settings
@@ -258,3 +258,19 @@ class CreateOrderView(APIView):
             "key": settings.RAZOR_KEY_ID,
             "internal_order_id": order.id
         }, status=status.HTTP_201_CREATED)
+    
+
+class AdminOrderListView(generics.ListAPIView):
+    permission_classes = [IsAdminUser]
+    serializer_class = AdminOrderSerializer
+    
+    def get_queryset(self):
+        return Order.objects.filter(payment_status='Success').order_by('-created_at')
+
+class AdminOrderUpdateView(generics.RetrieveUpdateAPIView):
+    permission_classes = [IsAdminUser]
+    serializer_class = AdminOrderSerializer
+    queryset = Order.objects.all()
+    
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)

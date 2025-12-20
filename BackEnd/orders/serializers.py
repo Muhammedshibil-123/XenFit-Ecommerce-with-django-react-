@@ -57,3 +57,35 @@ class OrderSerializer(serializers.ModelSerializer):
             'name', 'mobile', 'address', 'place', 'pincode',
             'items'
         ]
+
+
+class AdminOrderItemSerializer(serializers.ModelSerializer):
+    title = serializers.CharField(source='product.title', read_only=True)
+    image = serializers.ImageField(source='product.image', read_only=True)
+    product_id = serializers.IntegerField(source='product.id', read_only=True)
+
+    class Meta:
+        model = OrderItem
+        fields = ['product_id', 'title', 'image', 'quantity', 'size', 'price']
+
+class AdminOrderSerializer(serializers.ModelSerializer):
+    items = AdminOrderItemSerializer(many=True, read_only=True)
+    orderDate = serializers.DateTimeField(source='created_at', format="%Y-%m-%d")
+    username = serializers.CharField(source='user.username', read_only=True)
+    delivery = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Order
+        fields = [
+            'id', 'username', 'status', 'total_amount', 'orderDate', 
+            'delivery', 'items'
+        ]
+
+    def get_delivery(self, obj):
+        return {
+            "name": obj.name,
+            "mobile": obj.mobile,
+            "address": obj.address,
+            "place": obj.place,
+            "pincode": obj.pincode
+        }
