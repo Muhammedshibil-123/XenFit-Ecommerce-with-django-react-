@@ -178,3 +178,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 RAZOR_KEY_ID='rzp_test_RtB2jZWP6x28Ez'
 RAZOR_KEY_SECRET='FVa5j3jCh2LMeLHwk7mfDuEE'
 
+
+

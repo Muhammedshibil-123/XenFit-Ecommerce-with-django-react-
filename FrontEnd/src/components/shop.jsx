@@ -18,6 +18,8 @@ const getApiUrl = () => {
   }
 };
 
+
+
 function Shop() {
   const [products, setProducts] = useState([]);
   const API_URL = getApiUrl();
@@ -25,6 +27,8 @@ function Shop() {
   const [sortType, setSortType] = useState('default')
   const [themeSort, setThemeSort] = useState('all')
   const [sleeveSort, setSleeveSort] = useState('all')
+
+  const BASE_URL = API_URL.replace('/api', '');
 
   const navigate = useNavigate()
 
@@ -138,11 +142,16 @@ function Shop() {
 
           const discount = product.mrp ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
 
-          
+
+          // const imageUrl = product.image
+          //   ? (product.image.toString().startsWith('http')
+          //     ? product.image
+          //     : `http://127.0.0.1:8000${product.image}`)
+          //   : 'https://via.placeholder.com/300?text=No+Image';
           const imageUrl = product.image
             ? (product.image.toString().startsWith('http')
               ? product.image
-              : `http://127.0.0.1:8000${product.image}`)
+              : `${BASE_URL}${product.image}`)
             : 'https://via.placeholder.com/300?text=No+Image';
 
           return (
@@ -150,7 +159,7 @@ function Shop() {
 
               <div className="whislist-contaniner"
                 onClick={(e) => {
-                  e.stopPropagation(); 
+                  e.stopPropagation();
                   e.preventDefault();
                   WishlistHandleChange(product);
                 }}>
