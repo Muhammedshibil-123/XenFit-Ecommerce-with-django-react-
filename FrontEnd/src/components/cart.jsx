@@ -20,7 +20,7 @@ function Cart() {
   };
   const API_URL = getApiUrl();
 
-  // Fetch Cart Data
+
   const fetchCart = () => {
     if(token) {
         axios.get(`${API_URL}/orders/cart/`, {
@@ -37,7 +37,6 @@ function Cart() {
     fetchCart();
   }, [token]);
 
-  // Remove Item
   function removeitem(id) {
     axios.delete(`${API_URL}/orders/cart/item/${id}/`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -50,11 +49,10 @@ function Cart() {
     .catch((err) => console.log(err));
   }
 
-  // Update Quantity
   function updateQuantity(id, newQty, currentSize, maxStock) {
       if (newQty < 1) return;
       
-      // Check stock limit if size is selected
+    
       if (currentSize && maxStock > 0 && newQty > maxStock) {
           toast.warn(`Only ${maxStock} items available in this size`);
           return;
@@ -70,7 +68,7 @@ function Cart() {
       });
   }
 
-  // Update Size
+
   function handleSizeChange(id, newSize) {
       axios.patch(`${API_URL}/orders/cart/item/${id}/`, 
         { size: newSize },
@@ -82,14 +80,12 @@ function Cart() {
       });
   }
 
-  // Calculate Total
+
   const totalCart = cartItems.reduce((total, item) => {
     return total + (item.quantity * Number(item.product.price));
   }, 0);
 
-  // Validate before Checkout
   function orderhandle() {
-    // Check if any item has no size selected
     const unsizedItems = cartItems.filter(item => !item.size);
     
     if (unsizedItems.length > 0) {
@@ -116,7 +112,7 @@ function Cart() {
           <div>
             <div className="cart-header">
                 <span>Product</span>
-                <span>Size</span> {/* Added Size Column */}
+                <span>Size</span> 
                 <span>Price</span>
                 <span>Quantity</span>
                 <span>Total</span>
@@ -140,7 +136,7 @@ function Cart() {
                         </div>
                     </div>
 
-                    {/* Size Selector */}
+                
                     <div className="size-selector">
                         <select 
                             value={item.size || ""} 

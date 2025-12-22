@@ -6,9 +6,7 @@ function About() {
   return (
     <div className="about-page">
       
-      
-
-      {/* Main Content */}
+   
       <div className="about-content">
         <div className="content-section">
           <h2>WHO WE ARE</h2>
@@ -39,7 +37,7 @@ function About() {
           </div>
         </div>
 
-        {/* Contact Section */}
+      
         <div className="contact-section">
           <h2>GET IN TOUCH</h2>
           <p className="contact-intro">Got questions? Need sizing help? Or just want to say what's up? We're here.</p>

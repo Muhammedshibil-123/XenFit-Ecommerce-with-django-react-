@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-r#*8kkh7=sg6+k1z6r)(j$6ky^tj@vu^ac!ds3gy#zob4r+l!!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['13.232.1.31', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -89,8 +89,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'xenfit_db',       
         'USER': 'postgres',        
-        'PASSWORD': '123456',
-        'HOST': 'localhost',      
+        'PASSWORD': 'Dream3112004#',
+        'HOST': 'xenfit-postgres.che2o86ooe7i.ap-south-1.rds.amazonaws.com',      
         'PORT': '5432',          
     }
 }
@@ -131,7 +131,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # CORS Config 
 CORS_ALLOWED_ORIGINS = [
@@ -177,3 +177,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 RAZOR_KEY_ID='rzp_test_RtB2jZWP6x28Ez'
 RAZOR_KEY_SECRET='FVa5j3jCh2LMeLHwk7mfDuEE'
+

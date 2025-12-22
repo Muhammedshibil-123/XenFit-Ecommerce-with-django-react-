@@ -96,7 +96,7 @@ function Detailsproducts() {
             </div>
 
             <div className='details-grid'>
-                {/* Left Column: Images */}
+              
                 <div className='image-section'>
                     <div className="main-image-container">
                         <img src={getImageUrl(activeImg)} alt={product.title} className="active-product-img" />
@@ -125,7 +125,7 @@ function Detailsproducts() {
                     )}
                 </div>
 
-                {/* Right Column: Info */}
+            
                 <div className='info-section'>
                     <h2 className='brand-tag'>{product.brand}</h2>
                     <h1 className='product-title'>{product.title}</h1>
@@ -138,7 +138,7 @@ function Detailsproducts() {
 
                     <div className="divider"></div>
 
-                    {/* Color Variants */}
+                
                     {product.available_colors && product.available_colors.length > 0 && (
                         <div className="variants-section">
                             <h3 className="variants-header">Colors</h3>
@@ -158,7 +158,7 @@ function Detailsproducts() {
                         </div>
                     )}
 
-                    {/* Size Selector */}
+                    
                     <div className="size-section">
                         <div className="size-header">
                             <h3>Select Size</h3>

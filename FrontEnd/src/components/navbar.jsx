@@ -2,13 +2,11 @@ import React, { useState, useContext } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import './navbar.css'
 
-// Importing assets
 import cart from '../assets/cart.png'
 import search from '../assets/serach.png'
 import whishlist from '../assets/whishlist.png'
 import account from '../assets/account.png'
 
-// Importing React Icons for the dropdown menu
 import { FaUser, FaUserShield, FaSignOutAlt } from "react-icons/fa";
 
 import { CartContext } from '../component/cartcouter.jsx'
@@ -25,7 +23,7 @@ function Navbar() {
     const admin = localStorage.getItem('role')
     const [menuOpen, setMenuOpen] = useState(false)
     
-    // State for toggling profile dropdown
+   
     const [showProfileMenu, setShowProfileMenu] = useState(false)
 
     function handleKeyPress(e) {
@@ -46,7 +44,6 @@ function Navbar() {
         navigate('/shop');
     }
 
-    // Logout function
     function handleLogout() {
         localStorage.clear();
         setShowProfileMenu(false);
@@ -58,7 +55,7 @@ function Navbar() {
         <div className='main-navbar-container'>
             <div className='navbar-container'>
                 
-                {/* MOVED: Desktop Brand Name to the start (Left side) */}
+                
                 <div className='brand-desktop'>
                     <NavLink to="/" style={{textDecoration: 'none'}}>
                         Xenfit.
@@ -102,7 +99,7 @@ function Navbar() {
                             <line x1="6" y1="6" x2="18" y2="18"></line>
                         </svg>
 
-                        {/* Mobile Brand Name */}
+                     
                         <div className='brand-mobile'>
                             <NavLink to="/" onClick={() => setMenuOpen(false)} style={{textDecoration: 'none', color: 'inherit'}}>
                                 Xenfit
@@ -160,7 +157,7 @@ function Navbar() {
                                 <img className='account-img' src={account} alt="Account" />
                             </div>
 
-                            {/* Profile Dropdown Menu */}
+                            
                             {showProfileMenu && (
                                 <div className="profile-dropdown-menu">
                                     <NavLink to="/profile" onClick={() => setShowProfileMenu(false)} className="dropdown-item">

@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from "react-toastify";
-import "./login.css"; // Reusing login styles for consistency
+import "./login.css"; 
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
-  const [isOtpSent, setIsOtpSent] = useState(false); // The true/false logic you requested
+  const [isOtpSent, setIsOtpSent] = useState(false); 
   const navigate = useNavigate();
 
-  // Step 1: Send OTP
+  
   const handleSendOtp = async (e) => {
     e.preventDefault();
     if (!email) return toast.error("Please enter your email");
@@ -18,13 +18,13 @@ function ForgotPassword() {
     try {
       await axios.post(`${import.meta.env.VITE_API_URL}/users/forgot-password/`, { email });
       toast.success("OTP sent to your email!");
-      setIsOtpSent(true); // Switch to OTP input view
+      setIsOtpSent(true); 
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to send OTP");
     }
   };
 
-  // Step 2: Verify OTP
+
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     if (!otp) return toast.error("Please enter the OTP");
@@ -32,7 +32,7 @@ function ForgotPassword() {
     try {
       await axios.post(`${import.meta.env.VITE_API_URL}/users/verify-forgot-otp/`, { email, otp });
       toast.success("OTP Verified!");
-      // Go to new password page, passing the email so we know who to reset
+      
       navigate('/reset-password', { state: { email: email } });
     } catch (err) {
       toast.error(err.response?.data?.error || "Invalid OTP");
@@ -50,7 +50,7 @@ function ForgotPassword() {
           </div>
 
           {!isOtpSent ? (
-            // Form 1: Email Input
+            
             <form onSubmit={handleSendOtp}>
               <div className="form-group">
                 <label>Email Address</label>
@@ -64,7 +64,7 @@ function ForgotPassword() {
               <button type="submit" className="submit-btn">SEND OTP</button>
             </form>
           ) : (
-            // Form 2: OTP Input (Shown when isOtpSent is true)
+            
             <form onSubmit={handleVerifyOtp}>
               <div className="form-group">
                 <label>Enter OTP</label>

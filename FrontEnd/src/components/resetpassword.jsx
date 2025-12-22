@@ -12,10 +12,10 @@ function ResetPassword() {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Get the email passed from the previous page
+  
   const email = location.state?.email;
 
-  // If someone tries to access this page directly without an email, redirect them
+  
   if (!email) {
     navigate('/forgot-password');
   }
