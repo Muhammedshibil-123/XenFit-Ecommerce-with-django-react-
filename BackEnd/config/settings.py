@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-r#*8kkh7=sg6+k1z6r)(j$6ky^tj@vu^ac!ds3gy#zob4r+l!!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['13.232.1.31', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['13.232.1.31','127.0.0.1','localhost','api.xenfit.store', 'xenfit.store','www.xenfit.store',]
 
 
 # Application definition
@@ -50,6 +50,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -58,7 +59,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'corsheaders.middleware.CorsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -130,12 +131,23 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # CORS Config 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173", # React Frontend conneting
+    "https://xenfit.store",
+    "https://main.d12el5ss79ql44.amplifyapp.com",
+    "https://www.xenfit.store",
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://main.d12el5ss79ql44.amplifyapp.com",
+    "https://xenfit.store",
+    "https://www.xenfit.store",
 ]
 
 # REST Framework & JWT 
@@ -180,3 +192,4 @@ RAZOR_KEY_SECRET='FVa5j3jCh2LMeLHwk7mfDuEE'
 
 
 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
