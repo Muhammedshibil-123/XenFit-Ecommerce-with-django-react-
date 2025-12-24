@@ -24,12 +24,10 @@ function Detailsproducts() {
     };
     const API_URL = getApiUrl();
 
-    // --- CHANGE 1: Safe Domain Extraction ---
-    // This is the most reliable way to get "https://api.xenfit.store" without typos
     const getBaseUrl = () => {
         try {
             const url = new URL(API_URL);
-            return url.origin; // Returns "https://api.xenfit.store"
+            return url.origin;
         } catch (e) {
             return API_URL.split('/api')[0]; 
         }
@@ -72,19 +70,15 @@ function Detailsproducts() {
 
     const discount = product.mrp ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
 
-    // --- CHANGE 2: Robust Image Link Builder ---
     const getImageUrl = (img) => {
         if (!img) return 'https://via.placeholder.com/300';
         
         const imgStr = img.toString();
-        
-        // If the backend already provided a full URL (starts with http), use it as is
+ 
         if (imgStr.startsWith('http')) return imgStr;
-        
-        // Ensure the path starts with a slash
+   
         const path = imgStr.startsWith('/') ? imgStr : `/${imgStr}`;
-        
-        // Combines https://api.xenfit.store + /media/...
+       
         return `${BASE_URL}${path}`;
     }
 
@@ -121,7 +115,7 @@ function Detailsproducts() {
               
                 <div className='image-section'>
                     <div className="main-image-container">
-                        {/* CHANGE 3: Apply getImageUrl to the main image too just in case */}
+                        
                         <img src={getImageUrl(activeImg)} alt={product.title} className="active-product-img" />
                         {discount > 0 && <span className="discount-tag">-{discount}%</span>}
                         
@@ -173,7 +167,7 @@ function Detailsproducts() {
                                         key={variant.id}
                                         title={variant.color}
                                     >
-                                        {/* CHANGE 4: This will now correctly produce the https:// link for colors */}
+                                        
                                         <img src={getImageUrl(variant.image)} alt={variant.color} />
                                         <span>{variant.color}</span>
                                     </NavLink>
