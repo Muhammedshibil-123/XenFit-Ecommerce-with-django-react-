@@ -23,7 +23,7 @@ function Detailsproducts() {
         }
     };
     const API_URL = getApiUrl();
-    const BASE_URL = API_URL.replace('/api', '').replace(/\/$/, '');
+    const BASE_URL = API_URL.split('/api')[0];
 
     const { CartHandleChange } = useContext(CartContext)
 
@@ -65,11 +65,13 @@ function Detailsproducts() {
         if (!img) return 'https://via.placeholder.com/300';
         
         const imgStr = img.toString();
-        
         if (imgStr.startsWith('http')) return imgStr;
        
-        const path = imgStr.startsWith('/') ? imgStr : `/${imgStr}`;
-        return `${BASE_URL}${path}`;
+        const cleanBase = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
+       
+        const cleanPath = imgStr.startsWith('/') ? imgStr : `/${imgStr}`;
+    
+        return `${cleanBase}${cleanPath}`;
     }
 
     const allImages = [
