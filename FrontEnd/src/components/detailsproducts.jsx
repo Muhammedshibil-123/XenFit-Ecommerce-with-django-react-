@@ -23,6 +23,7 @@ function Detailsproducts() {
         }
     };
     const API_URL = getApiUrl();
+    const BASE_URL = API_URL.replace('/api', '');
 
     const { CartHandleChange } = useContext(CartContext)
 
@@ -63,7 +64,7 @@ function Detailsproducts() {
     const getImageUrl = (img) => {
         if (!img) return 'https://via.placeholder.com/300';
         if (img.toString().startsWith('http')) return img;
-        return `http://127.0.0.1:8000${img}`;
+        return `${BASE_URL}${img}`;
     }
 
     const allImages = [
