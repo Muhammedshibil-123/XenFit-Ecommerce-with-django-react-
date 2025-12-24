@@ -39,7 +39,7 @@ function Shop() {
   const { WishlistHandleChange, wishlist } = useContext(WishlistContext)
 
   const [currentPage, setCurrentPage] = useState(0)
-  const productsPerPage = 10
+  const productsPerPage = 13
 
   useEffect(() => {
     axios
