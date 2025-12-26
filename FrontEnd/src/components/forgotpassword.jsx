@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from "react-toastify";
 import "./login.css"; 
@@ -9,7 +9,10 @@ function ForgotPassword() {
   const [otp, setOtp] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false); 
   const navigate = useNavigate();
-
+  
+  if (localStorage.getItem('access_token')) {
+    return <Navigate to="/" replace />;
+  }
   
   const handleSendOtp = async (e) => {
     e.preventDefault();

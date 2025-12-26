@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation,Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from "react-toastify";
 import "./login.css";
@@ -15,7 +15,10 @@ function ResetPassword() {
   
   const email = location.state?.email;
 
-  
+  if (localStorage.getItem('access_token')) {
+    return <Navigate to="/" replace />;
+  }
+
   if (!email) {
     navigate('/forgot-password');
   }

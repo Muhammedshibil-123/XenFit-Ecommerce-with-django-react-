@@ -1,5 +1,5 @@
 import "./login.css";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate,Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { FcGoogle } from "react-icons/fc";
@@ -15,6 +15,10 @@ function Login() {
   const [fetch, setFetch] = useState([])
   const [error, setError] = useState('')
   const navigate = useNavigate()
+
+  if (localStorage.getItem('access_token')) {
+    return <Navigate to="/" replace />;
+  }
 
   function handlechange(e) {
     setUsers((perv) => ({

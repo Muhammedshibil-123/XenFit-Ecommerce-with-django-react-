@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate,Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from "react-toastify";
 import { useAuth } from '../component/AuthContext'; 
@@ -11,6 +11,10 @@ function OtpVerify() {
   const { login } = useAuth(); 
 
   const email = location.state?.email;
+
+  if (localStorage.getItem('access_token')) {
+    return <Navigate to="/" replace />;
+  }
 
   const handleVerify = async (e) => {
     e.preventDefault();
