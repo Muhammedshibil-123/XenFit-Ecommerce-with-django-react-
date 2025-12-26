@@ -1,5 +1,5 @@
 import "./signup.css";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, Navigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify"; 
