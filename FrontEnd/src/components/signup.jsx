@@ -16,6 +16,12 @@ function Signup() {
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (localStorage.getItem('access_token')) {
+      navigate('/', { replace: true });
+    }
+  }, [navigate]);
+
   function handleChange(e) {
     setFormData(prev => ({
       ...prev,
