@@ -1,7 +1,6 @@
 /* --- Wrapper --- */
 .orders-page-wrapper {
-  width: 100%; /* Full width of the content area */
-  /* Margin is now handled by .admin-content in sidebar.css */
+  width: 100%;
   margin: 0; 
   box-sizing: border-box;
   font-family: 'Poppins', sans-serif;
@@ -58,6 +57,7 @@
 .admin-orders-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: auto; /* Ensures the fixed widths are respected while others adapt */
 }
 
 .admin-orders-table th {
@@ -125,6 +125,18 @@
   padding-top: 25px !important;
 }
 
+/* --- Delivery Details Column Fix --- */
+/* IMPORTANT: Change '5' below to the actual column number of your Delivery Details */
+.admin-orders-table th:nth-child(5),
+.admin-orders-table td:nth-child(5) {
+  width: 250px;
+  min-width: 250px;
+  max-width: 250px;
+  white-space: normal;
+  word-wrap: break-word;
+  line-height: 1.5;
+}
+
 /* --- Item List Styles --- */
 .items-list-detailed {
   display: flex;
@@ -180,7 +192,6 @@
 
 .status-pill.order-placed { background-color: #e0f2fe; color: #0284c7; }
 .status-pill.shipped { background-color: #fff7ed; color: #ea580c; }
-/* ADDED: Purple for Out for Delivery */
 .status-pill.out-for-delivery { background-color: #f3e8ff; color: #7e22ce; } 
 .status-pill.delivered { background-color: #dcfce7; color: #15803d; }
 
