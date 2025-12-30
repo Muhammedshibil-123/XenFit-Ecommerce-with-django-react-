@@ -268,4 +268,26 @@
    padding: 14px;
    font-size: 13px;
  }
+ .shop-products-container, .shop-products, .products-grid { 
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* 2 equal columns */
+    gap: 15px !important;
+    padding: 10px;
+  }
+
+  /* Ensure cards fit the grid column */
+  .shop-card, .product-card {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* Fix for filter sidebar if it exists - hide it or stack it */
+  .shop-filter {
+    display: none; /* Usually hidden on mobile or needs a toggle */
+  }
+  
+  /* If you have a main container wrapping everything */
+  .shop-container {
+    flex-direction: column;
+  }
 }

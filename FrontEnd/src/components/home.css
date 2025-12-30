@@ -396,4 +396,28 @@
   .features-grid {
     grid-template-columns: 1fr 1fr;
   }
+
+  .products-container, .products { 
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important; 
+    gap: 10px !important; 
+    justify-content: center;
+    padding: 10px;
+  }
+
+  /* Ensure product cards don't overflow or stretch weirdly */
+  .product-card, .product-item {
+    width: 100% !important;
+    margin: 0 !important; /* Remove old margins */
+    height: auto; /* Let height adjust naturally */
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Optional: Make images fill the card width */
+  .product-card img, .product-item img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
 }
