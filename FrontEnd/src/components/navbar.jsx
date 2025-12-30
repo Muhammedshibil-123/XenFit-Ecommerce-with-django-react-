@@ -7,7 +7,7 @@ import search from '../assets/serach.png'
 import whishlist from '../assets/whishlist.png'
 import account from '../assets/account.png'
 
-import { FaUser, FaUserShield, FaSignOutAlt } from "react-icons/fa";
+import { FaUser, FaUserShield, FaSignOutAlt,FaMapMarkerAlt } from "react-icons/fa";
 
 import { CartContext } from '../component/cartcouter.jsx'
 import { WishlistContext } from '../component/whislistcouter.jsx'
@@ -22,8 +22,8 @@ function Navbar() {
     const { setSearchTerm } = useContext(SearchContext)
     const admin = localStorage.getItem('role')
     const [menuOpen, setMenuOpen] = useState(false)
-    
-   
+
+
     const [showProfileMenu, setShowProfileMenu] = useState(false)
 
     function handleKeyPress(e) {
@@ -48,32 +48,32 @@ function Navbar() {
         localStorage.clear();
         setShowProfileMenu(false);
         navigate('/login');
-        window.location.reload(); 
+        window.location.reload();
     }
 
     return (
         <div className='main-navbar-container'>
             <div className='navbar-container'>
-                
-                
+
+
                 <div className='brand-desktop'>
-                    <NavLink to="/" style={{textDecoration: 'none'}}>
+                    <NavLink to="/" style={{ textDecoration: 'none' }}>
                         Xenfit.
                     </NavLink>
                 </div>
 
                 <div className="hambarg">
-                    <svg 
-                        className="burger" 
+                    <svg
+                        className="burger"
                         onClick={() => setMenuOpen(!menuOpen)}
-                        xmlns="http://www.w3.org/2000/svg" 
-                        width="24" 
-                        height="24" 
-                        viewBox="0 0 24 24" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        strokeWidth="2" 
-                        strokeLinecap="round" 
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
                         strokeLinejoin="round"
                     >
                         <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -82,30 +82,30 @@ function Navbar() {
                     </svg>
 
                     <div className={`left-navbar ${menuOpen ? 'open' : ''}`}>
-                        <svg 
+                        <svg
                             className="burger inside-burger"
                             onClick={() => setMenuOpen(false)}
-                            xmlns="http://www.w3.org/2000/svg" 
-                            width="24" 
-                            height="24" 
-                            viewBox="0 0 24 24" 
-                            fill="none" 
-                            stroke="currentColor" 
-                            strokeWidth="2" 
-                            strokeLinecap="round" 
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
                             strokeLinejoin="round"
                         >
                             <line x1="18" y1="6" x2="6" y2="18"></line>
                             <line x1="6" y1="6" x2="18" y2="18"></line>
                         </svg>
 
-                     
+
                         <div className='brand-mobile'>
-                            <NavLink to="/" onClick={() => setMenuOpen(false)} style={{textDecoration: 'none', color: 'inherit'}}>
+                            <NavLink to="/" onClick={() => setMenuOpen(false)} style={{ textDecoration: 'none', color: 'inherit' }}>
                                 Xenfit
                             </NavLink>
                         </div>
-                        
+
                         <div className='shop'>
                             <NavLink to={'/shop'} onClick={() => { shopRefresh(); setMenuOpen(false); }}>Shop</NavLink>
                         </div>
@@ -147,29 +147,33 @@ function Navbar() {
 
                     {
                         userId &&
-                        <div className="account" style={{position: 'relative'}}>
-                            <div 
-                                className="account-btn" 
+                        <div className="account" style={{ position: 'relative' }}>
+                            <div
+                                className="account-btn"
                                 onClick={() => setShowProfileMenu(!showProfileMenu)}
-                                style={{cursor: 'pointer'}}
+                                style={{ cursor: 'pointer' }}
                             >
                                 <button className='btn'><span>Hi, {userId} </span></button>
                                 <img className='account-img' src={account} alt="Account" />
                             </div>
 
-                            
+
                             {showProfileMenu && (
                                 <div className="profile-dropdown-menu">
                                     <NavLink to="/profile" onClick={() => setShowProfileMenu(false)} className="dropdown-item">
                                         <FaUser className="dropdown-icon" /> Profile
                                     </NavLink>
-                                    
+
+                                    <NavLink to="/addresses" onClick={() => setShowProfileMenu(false)} className="dropdown-item">
+                                        <FaMapMarkerAlt className="dropdown-icon" /> Addresses
+                                    </NavLink>
+
                                     {admin === 'admin' && (
                                         <NavLink to="/admin" onClick={() => setShowProfileMenu(false)} className="dropdown-item">
                                             <FaUserShield className="dropdown-icon" /> Admin
                                         </NavLink>
                                     )}
-                                    
+
                                     <div onClick={handleLogout} className="dropdown-item logout">
                                         <FaSignOutAlt className="dropdown-icon" /> Logout
                                     </div>

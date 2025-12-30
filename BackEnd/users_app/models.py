@@ -36,3 +36,25 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
+    
+class Address(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='addresses')
+    name = models.CharField(max_length=100)
+    mobile = models.CharField(max_length=15)
+    pincode = models.CharField(max_length=10)
+    address = models.TextField(verbose_name="Address")
+    landmark = models.CharField(max_length=100, null=True, blank=True)
+    address_type = models.CharField(
+        max_length=20, 
+        choices=[('Home', 'Home'), ('Work', 'Work') ,('Other', 'Other')], 
+        default='Home'
+    )
+    is_default = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if self.is_default:
+            Address.objects.filter(user=self.user, is_default=True).update(is_default=False)
+        super(Address, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.name} - {self.name}"

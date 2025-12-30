@@ -30,6 +30,7 @@ import OtpVerify from './components/otpverfiy';
 import { AuthProvider } from './component/AuthContext';
 import ForgotPassword from './components/forgotpassword';
 import ResetPassword from './components/resetpassword';
+import AddressManagement from './components/AddressManagement';
 
 
 function App() {
@@ -85,6 +86,7 @@ function App() {
                   <Route path='/whishlist' element={<Whislist />} />
                   <Route path='/myorders' element={<Myorders />} />
                   <Route path='/about' element={<About />} />
+                  <Route path="/addresses" element={<AddressManagement />} />
 
 
                   <Route path='/admin' element={<Adminprotected />}>

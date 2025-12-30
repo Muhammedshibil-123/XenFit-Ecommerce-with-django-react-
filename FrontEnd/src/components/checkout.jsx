@@ -1,95 +1,89 @@
-import axios from "axios"
-import { useState, useEffect } from "react"
-import './checkout.css'
-import { useNavigate } from "react-router-dom"
-import { toast } from "react-toastify"
-import { useContext } from "react"; 
+import axios from "axios";
+import { useState, useEffect, useContext } from "react";
+import './checkout.css';
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { CartContext } from "../component/cartcouter";
 
 function Checkout() {
-  const [cartItems, setCartItems] = useState([])
-  const [user, setUser] = useState({
-    username: localStorage.getItem('username') || "",
-    email: localStorage.getItem('email') || "",
-    mobile: localStorage.getItem('mobile') || "",
-    id: localStorage.getItem('id') || ""
-  })
-
-  const [details, setdetails] = useState({
-    name: localStorage.getItem('username') || "",
-    mobile: localStorage.getItem('mobile') || "",
-    address: "",
-    place: "",
-    pincode: "",
-  });
-
-  const navigate = useNavigate()
-  const token = localStorage.getItem('access_token')
+  const [cartItems, setCartItems] = useState([]);
+  const [addresses, setAddresses] = useState([]); // Store fetched addresses
+  const [selectedAddressId, setSelectedAddressId] = useState(null); // Track selected
+  
+  const navigate = useNavigate();
+  const token = localStorage.getItem('access_token');
   const { updateCartCount } = useContext(CartContext);
 
-  const getApiUrl = () => {
-    try {
-      return import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
-    } catch (e) {
-      return 'http://127.0.0.1:8000/api';
-    }
-  };
-  const API_URL = getApiUrl();
+  const API_URL = import.meta.env.VITE_API_URL;
 
-  function handlechange(e) {
-    setdetails((perv) => ({
-      ...perv,
-      [e.target.name]: e.target.value,
-    }));
-  }
-
+  // 1. Fetch Cart & Addresses
   useEffect(() => {
-    if (token) {
-      axios.get(`${API_URL}/orders/cart/`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-        .then((res) => {
-          setCartItems(res.data.items || []);
-        })
-        .catch((err) => {
-          console.log(err);
-          toast.error("Failed to load checkout details");
-        });
-    } else {
+    if (!token) {
       navigate('/login');
+      return;
     }
-  }, [token, navigate, API_URL])
 
+    // Fetch Cart
+    axios.get(`${API_URL}/orders/cart/`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => setCartItems(res.data.items || []))
+      .catch((err) => console.error(err));
+
+    // Fetch Addresses
+    axios.get(`${API_URL}/users/addresses/`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => {
+        setAddresses(res.data);
+        // Auto-select default address if exists
+        const defaultAddr = res.data.find(addr => addr.is_default);
+        if (defaultAddr) {
+          setSelectedAddressId(defaultAddr.id);
+        } else if (res.data.length > 0) {
+          setSelectedAddressId(res.data[0].id); // Select first if no default
+        }
+      })
+      .catch((err) => console.error(err));
+
+  }, [token, navigate, API_URL]);
 
   const getImageUrl = (img) => {
     if (!img) return 'https://via.placeholder.com/150';
-    return img.startsWith('http') ? img : `http://127.0.0.1:8000${img}`;
+    return img.startsWith('http') ? img : `${API_URL.replace('/api', '')}${img}`;
   };
 
-  const totalCart = cartItems.reduce((total, item) => {
-    return total + (item.quantity * Number(item.product.price))
-  }, 0)
-
+  // Calculations
+  const totalCart = cartItems.reduce((total, item) => total + (item.quantity * Number(item.product.price)), 0);
   const discount = totalCart * 0.10;
   const discountedPrice = totalCart - discount;
   const gst = discountedPrice * 0.18;
   const grandprice = discountedPrice + gst;
 
+  // 2. Handle Order Placement
   function orderhandle() {
-    if (!details.name || !details.address || !details.pincode || !details.mobile || !details.place) {
-      toast.warn('Please fill all delivery details');
+    if (!selectedAddressId) {
+      toast.warn('Please select a delivery address');
       return;
     }
 
+    // Find the full address object to send to backend
+    const selectedAddrObject = addresses.find(addr => addr.id === selectedAddressId);
+    
+    // Prepare data for backend (Map fields to what CreateOrderView expects)
+    const deliveryData = {
+        name: selectedAddrObject.name,
+        mobile: selectedAddrObject.mobile,
+        pincode: selectedAddrObject.pincode,
+        address: selectedAddrObject.address,
+        place: selectedAddrObject.city, // Mapping city to place
+        landmark: selectedAddrObject.landmark
+    };
+
     axios.post(`${API_URL}/orders/place-order/`, {
       total_amount: grandprice, 
-      delivery_address: details
+      delivery_address: deliveryData // Send full object
     }, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then((res) => {
         const { order_id, amount, key } = res.data;
-
         const options = {
           key: key,
           amount: amount,
@@ -101,15 +95,11 @@ function Checkout() {
             verifyPayment(response);
           },
           prefill: {
-            name: details.name,
-            email: user.email,
-            contact: details.mobile
+            name: deliveryData.name,
+            contact: deliveryData.mobile
           },
-          theme: {
-            color: "#3399cc"
-          }
+          theme: { color: "#3399cc" }
         };
-
         const rzp1 = new window.Razorpay(options);
         rzp1.open();
       })
@@ -125,7 +115,7 @@ function Checkout() {
     })
       .then((res) => {
         toast.success("Payment Successful!");
-        updateCartCount()
+        updateCartCount();
         navigate('/myorders');
       })
       .catch((err) => {
@@ -137,69 +127,57 @@ function Checkout() {
   return (
     <div className="main-checkout-conatainer">
       <div className="checkout-grid">
+        
+        {/* LEFT SIDE: ADDRESS SELECTION */}
         <div className="checkout-left">
           <div className="header-section">
-            <h1>SHIPPING DETAILS</h1>
+            <h1>SELECT DELIVERY ADDRESS</h1>
             <div className="underline"></div>
           </div>
 
-          <div className="user-details-form">
-            <div className="form-row">
-              <div className="input-group">
-                <label>Full Name</label>
-                <input type="text"
-                  value={details.name}
-                  name="name"
-                  placeholder="e.g. John Doe"
-                  onChange={handlechange}
-                />
-              </div>
-              <div className="input-group">
-                <label>Mobile Number</label>
-                <input type="tel"
-                  value={details.mobile}
-                  name="mobile"
-                  placeholder="10-digit number"
-                  onChange={handlechange}
-                />
-              </div>
-            </div>
+          <div className="address-selection-list">
+            {addresses.length === 0 ? (
+                <div className="no-address-warning">
+                    <p>No addresses found.</p>
+                </div>
+            ) : (
+                addresses.map((addr) => (
+                    <div 
+                        key={addr.id} 
+                        className={`checkout-address-card ${selectedAddressId === addr.id ? 'selected' : ''}`}
+                        onClick={() => setSelectedAddressId(addr.id)}
+                    >
+                        <div className="radio-container">
+                            <input 
+                                type="radio" 
+                                name="address" 
+                                checked={selectedAddressId === addr.id}
+                                onChange={() => setSelectedAddressId(addr.id)}
+                            />
+                        </div>
+                        <div className="address-info">
+                            <div className="addr-header">
+                                <h3>{addr.name}</h3>
+                                <span className="addr-type">{addr.address_type}</span>
+                            </div>
+                            <p className="addr-text">{addr.address}, {addr.city}</p>
+                            <p className="addr-pin">Pincode: <strong>{addr.pincode}</strong></p>
+                            <p className="addr-mobile">Mobile: {addr.mobile}</p>
+                        </div>
+                    </div>
+                ))
+            )}
 
-            <div className="input-group">
-              <label>Address</label>
-              <input type="text"
-                value={details.address}
-                name="address"
-                placeholder="House No, Street, Landmark"
-                onChange={handlechange}
-              />
-            </div>
-
-            <div className="form-row">
-              <div className="input-group">
-                <label>City / District</label>
-                <input type="text"
-                  value={details.place}
-                  name="place"
-                  onChange={handlechange}
-                />
-              </div>
-              <div className="input-group">
-                <label>Pincode</label>
-                <input type="tel"
-                  value={details.pincode}
-                  name="pincode"
-                  onChange={handlechange}
-                />
-              </div>
-            </div>
+            <button className="add-addr-btn" onClick={() => navigate('/addresses')}>
+                + ADD / EDIT ADDRESSES
+            </button>
           </div>
         </div>
 
+        {/* RIGHT SIDE: SUMMARY */}
         <div className="checkout-right">
           <div className="summary-card">
             <h2>ORDER SUMMARY</h2>
-
             
             <div className="summary-items">
               {cartItems.length === 0 ? (
@@ -239,7 +217,13 @@ function Checkout() {
               </div>
             </div>
 
-            <button className="place-order-btn" onClick={orderhandle}>PLACE ORDER</button>
+            <button 
+                className="place-order-btn" 
+                onClick={orderhandle}
+                disabled={addresses.length === 0}
+            >
+                PLACE ORDER
+            </button>
           </div>
         </div>
 
@@ -248,4 +232,4 @@ function Checkout() {
   );
 }
 
-export default Checkout
+export default Checkout;

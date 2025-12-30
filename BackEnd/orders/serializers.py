@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Cart, CartItem,Wishlist,Order,OrderItem
+from .models import Cart, CartItem,Wishlist,Order,OrderItem,OrderAddress
 from products.models import Product, ProductSize
 from products.serializers import ProductSerializer
 
@@ -37,6 +37,11 @@ class WishlistSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'products']
 
 
+class OrderAddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderAddress
+        fields = ['name', 'mobile', 'pincode', 'address', 'place', 'landmark']
+
 class OrderItemSerializer(serializers.ModelSerializer):
     product_title = serializers.CharField(source='product.title', read_only=True)
     product_image = serializers.ImageField(source='product.image', read_only=True)
@@ -48,44 +53,25 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)
+    delivery_address = OrderAddressSerializer(read_only=True) 
     orderDate = serializers.DateTimeField(source='created_at', format="%Y-%m-%d") 
 
     class Meta:
         model = Order
         fields = [
             'id', 'status', 'total_amount', 'orderDate', 
-            'name', 'mobile', 'address', 'place', 'pincode',
-            'items'
+            'delivery_address', 'payment_status', 'items'
         ]
 
-
-class AdminOrderItemSerializer(serializers.ModelSerializer):
-    title = serializers.CharField(source='product.title', read_only=True)
-    image = serializers.ImageField(source='product.image', read_only=True)
-    product_id = serializers.IntegerField(source='product.id', read_only=True)
-
-    class Meta:
-        model = OrderItem
-        fields = ['product_id', 'title', 'image', 'quantity', 'size', 'price']
-
 class AdminOrderSerializer(serializers.ModelSerializer):
-    items = AdminOrderItemSerializer(many=True, read_only=True)
+    items = OrderItemSerializer(many=True, read_only=True) 
+    delivery_address = OrderAddressSerializer(read_only=True)
     orderDate = serializers.DateTimeField(source='created_at', format="%Y-%m-%d")
     username = serializers.CharField(source='user.username', read_only=True)
-    delivery = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
         fields = [
             'id', 'username', 'status', 'total_amount', 'orderDate', 
-            'delivery', 'items'
+            'delivery_address', 'items'
         ]
-
-    def get_delivery(self, obj):
-        return {
-            "name": obj.name,
-            "mobile": obj.mobile,
-            "address": obj.address,
-            "place": obj.place,
-            "pincode": obj.pincode
-        }

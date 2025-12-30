@@ -28,9 +28,23 @@ class Wishlist(models.Model):
     def __str__(self):
         return f"Wishlist of {self.user.username}"
     
+class OrderAddress(models.Model):
+    name = models.CharField(max_length=100)
+    mobile = models.CharField(max_length=15)
+    pincode = models.CharField(max_length=10)
+    address = models.TextField()
+    place = models.CharField(max_length=100) # City/District
+    landmark = models.CharField(max_length=100, null=True, blank=True)
+    
+    def __str__(self):
+        return f"Address for {self.name}"
+    
 
 class Order(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='orders')
+    
+    delivery_address = models.OneToOneField(OrderAddress, on_delete=models.CASCADE, related_name='order')
+    
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_status = models.CharField(
         max_length=20, 
@@ -41,14 +55,10 @@ class Order(models.Model):
         ('Order Placed', 'Order Placed'),
         ('Shipped', 'Shipped'),
         ('Out for Delivery', 'Out for Delivery'),
-        ('Delivered', 'Delivered')
+        ('Delivered', 'Delivered'),
+        ('Cancelled', 'Cancelled')
     ]
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Order Placed')
-    name = models.CharField(max_length=100, null=True)
-    mobile = models.CharField(max_length=15, null=True)
-    address = models.TextField(null=True)
-    place = models.CharField(max_length=100, null=True)
-    pincode = models.CharField(max_length=10, null=True)
 
     provider_order_id = models.CharField(max_length=100, verbose_name="Razorpay Order ID")
     payment_id = models.CharField(max_length=100, verbose_name="Razorpay Payment ID", null=True, blank=True)

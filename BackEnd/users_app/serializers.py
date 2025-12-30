@@ -1,6 +1,6 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
-from .models import CustomUser
+from .models import CustomUser,Address
 from rest_framework.exceptions import AuthenticationFailed
 
 class CustomTokenJwtSerializer(TokenObtainPairSerializer):
@@ -78,3 +78,9 @@ class ResetPasswordSerializer(serializers.Serializer):
         if data['new_password'] != data['confirm_password']:
             raise serializers.ValidationError("Passwords do not match.")
         return data
+    
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        fields = ['id', 'user', 'name', 'mobile', 'pincode', 'address', 'landmark', 'address_type', 'is_default']
+        read_only_fields = ['user']

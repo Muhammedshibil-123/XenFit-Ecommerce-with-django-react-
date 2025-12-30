@@ -193,3 +193,8 @@ RAZOR_KEY_SECRET='FVa5j3jCh2LMeLHwk7mfDuEE'
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+try:
+    from .local_settings import *
+except ImportError:
+    pass

@@ -63,6 +63,17 @@ export function CartProvider({ children }) {
             updateCartCount()
         } catch (err) {
             console.error(err)
+
+            
+            if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+                toast.error("Your account is blocked or session expired.", {
+                    position: 'top-right',
+                    autoClose: 2000,
+                    theme: "dark",
+                });
+                return;
+            }
+
             toast.error("Failed to add to cart")
         }
     }

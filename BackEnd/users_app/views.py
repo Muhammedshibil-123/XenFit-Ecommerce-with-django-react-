@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import CustomTokenJwtSerializer,RegisterSerializer,VerifyOTPSerializer,UserSerializer,ResetPasswordSerializer,VerifyForgotOtpSerializer,ForgotPasswordSerializer
-from rest_framework import generics,status,views
+from .serializers import CustomTokenJwtSerializer,RegisterSerializer,VerifyOTPSerializer,UserSerializer,ResetPasswordSerializer,VerifyForgotOtpSerializer,ForgotPasswordSerializer,AddressSerializer
+from rest_framework import generics,status,views,viewsets
 from rest_framework.permissions import AllowAny,IsAdminUser, IsAuthenticated
-from .models import CustomUser
+from .models import CustomUser,Address
 import random
 from rest_framework.response import Response
 from django.core.mail import send_mail
@@ -252,3 +252,13 @@ class ResetPasswordView(APIView):
             except CustomUser.DoesNotExist:
                 return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class AddressViewSet(viewsets.ModelViewSet):
+    serializer_class = AddressSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Address.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

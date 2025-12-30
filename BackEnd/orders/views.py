@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics, status, views
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated,IsAdminUser
-from .models import Cart, CartItem,Wishlist,Order,OrderItem
+from .models import Cart, CartItem,Wishlist,Order,OrderItem,OrderAddress
 from .serializers import CartSerializer, CartItemSerializer,WishlistSerializer,OrderSerializer,AdminOrderSerializer
 from products.models import Product, ProductSize
 import razorpay
@@ -139,10 +139,11 @@ class CreateOrderView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        amount = request.data.get('total_amount') 
+        amount = request.data.get('total_amount')
+        address_data = request.data.get('delivery_address', {}) 
+        
 
         client = razorpay.Client(auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
-
         data = {
             "amount": int(float(amount) * 100), 
             "currency": "INR", 
@@ -150,11 +151,21 @@ class CreateOrderView(APIView):
         }
         payment_order = client.order.create(data=data)
         
+        order_address = OrderAddress.objects.create(
+            name=address_data.get('name'),
+            mobile=address_data.get('mobile'),
+            pincode=address_data.get('pincode'),
+            address=address_data.get('address'),
+            place=address_data.get('place', address_data.get('city', '')), 
+            landmark=address_data.get('landmark', '')
+        )
+
         order = Order.objects.create(
             user=request.user,
             total_amount=amount,
             provider_order_id=payment_order['id'],
-            payment_status='Pending'
+            payment_status='Pending',
+            delivery_address=order_address 
         )
         
         return Response({

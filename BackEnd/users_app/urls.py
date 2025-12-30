@@ -1,5 +1,9 @@
-from django.urls import path
-from .views import RegisterView,VerifyOTPView,GoogleLoginView,UserListView,UserDetailView,ForgotPasswordView,VerifyForgotPasswordOTPView,ResetPasswordView
+from django.urls import path,include
+from rest_framework.routers import DefaultRouter
+from .views import RegisterView,VerifyOTPView,GoogleLoginView,UserListView,UserDetailView,ForgotPasswordView,VerifyForgotPasswordOTPView,ResetPasswordView,AddressViewSet
+
+router = DefaultRouter()
+router.register(r'addresses', AddressViewSet, basename='user-addresses')
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='auth_register'),
@@ -11,5 +15,7 @@ urlpatterns = [
     path('reset-password/', ResetPasswordView.as_view(), name='reset-password'),
 
     path('', UserListView.as_view(), name='user-list'),         
-    path('<int:pk>/', UserDetailView.as_view(), name='user-detail')
+    path('<int:pk>/', UserDetailView.as_view(), name='user-detail'),
+
+    path('', include(router.urls)),
 ]
