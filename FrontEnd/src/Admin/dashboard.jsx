@@ -65,9 +65,9 @@ function Dashbaord() {
           axios.get(`${API_URL}/orders/`, authConfig)
         ])
 
-        setProducts(prodRes.data)
-        setUsers(userRes.data)
-        setOrders(orderRes.data)
+        setProducts(prodRes.data || [])
+        setUsers(userRes.data || [])
+        setOrders(orderRes.data || [])
       } catch (err) {
         console.error('Error fetching dashboard data:', err)
       }
@@ -84,6 +84,7 @@ function Dashbaord() {
 
   const recentOrders = [...orders].slice(0, 5)
 
+  
   const topProducts = orders
     .reduce((acc, order) => {
       order.items.forEach((item) => {
@@ -96,8 +97,8 @@ function Dashbaord() {
 
           acc.push({
             product_id: item.product_id,
-            title: item.title,
-            image: item.image,
+            title: item.product_title, 
+            image: item.product_image,
             price: item.price,
             sales: item.quantity,
             category: originalProduct?.theme || 'General'
@@ -112,9 +113,8 @@ function Dashbaord() {
   const getImageUrl = (img) => {
     if (!img) return 'https://via.placeholder.com/150'
     if (img.startsWith('http')) return img
-    const baseUrl =
-      import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:8000'
-    return `${baseUrl}${img}`
+ 
+    return `http://127.0.0.1:8000${img}`
   }
 
   return (
@@ -200,7 +200,8 @@ function Dashbaord() {
                     <tr key={order.id}>
                       <td className="order-id">#{order.id}</td>
                       <td className="customer-name">
-                        {order.delivery?.name || order.username}
+                        
+                        {order.delivery_address?.name || order.username}
                       </td>
                       <td>{order.items.length} Items</td>
                       <td className="amount">₹{order.total_amount}</td>

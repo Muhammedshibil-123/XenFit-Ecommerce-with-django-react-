@@ -23,8 +23,7 @@ function Orders() {
       }
     })
       .then((res) => {
-        const sortedOrders = res.data; 
-        setOrders(sortedOrders);
+        setOrders(res.data || []);
         setLoading(false);
       })
       .catch((err) => {
@@ -67,11 +66,7 @@ function Orders() {
 
   const getImageUrl = (img) => {
     if (!img) return 'https://via.placeholder.com/150';
-    if (img.startsWith('http')) return img;
-   
-    const baseUrl = import.meta.env.VITE_API_URL.replace(/\/$/, '');
-    const path = img.startsWith('/') ? img : `/${img}`;
-    return `${baseUrl}${path}`;
+    return img.startsWith('http') ? img : `http://127.0.0.1:8000${img}`;
   };
 
   const filteredOrders = filterStatus === 'All' 
@@ -131,6 +126,9 @@ function Orders() {
                 const statusClass = order.status 
                   ? order.status.toLowerCase().replace(/\s/g, '-') 
                   : 'order-placed';
+                
+        
+                const address = order.delivery_address || {};
 
                 return (
                   <tr key={order.id}>
@@ -138,29 +136,30 @@ function Orders() {
                     <td className="customer-col">
                       <div className="customer-info">
                         <span className="name" style={{fontWeight: 'bold', display: 'block'}}>
-                            {order.delivery?.name || order.username}
+                            {address.name || order.username}
                         </span>
                         <div style={{fontSize: '0.85rem', color: '#555', marginTop: '5px'}}>
-                            <p style={{margin: 0}}>{order.delivery?.address}</p>
-                            <p style={{margin: 0}}>{order.delivery?.place} - {order.delivery?.pincode}</p>
+                            <p style={{margin: 0}}>{address.address}</p>
+                            <p style={{margin: 0}}>{address.landmark}</p>
+                            <p style={{margin: 0}}>{address.pincode}</p>
                         </div>
                         <span className="sub-text" style={{color: '#007bff', display: 'block', marginTop: '4px'}}>
-                            {order.delivery?.mobile}
+                            {address.mobile}
                         </span>
                       </div>
                     </td>
 
                     <td className="items-col">
                       <div className="items-list-detailed">
-                        {order.items.map((item, idx) => (
+                        {order.items && order.items.map((item, idx) => (
                            <div key={idx} className="item-row-detail">
                               <img 
-                                src={getImageUrl(item.image)} 
-                                alt={item.title} 
+                                src={getImageUrl(item.product_image)} 
+                                alt={item.product_title} 
                                 onError={(e) => {e.target.src = 'https://via.placeholder.com/50'}}
                               />
                               <div className="item-text">
-                                 <span className="item-title">{item.title}</span>
+                                 <span className="item-title">{item.product_title}</span>
                                  <span className="item-qty">Qty: {item.quantity}</span>
                                  <span className="item-qty">Size: {item.size || 'N/A'}</span>
                               </div>
@@ -185,7 +184,6 @@ function Orders() {
                         value={order.status || "Order Placed"}
                         onChange={(e) => handleStatusChange(order.id, e.target.value)}
                       >
-                        {!order.status && <option value="Order Placed">Order Placed</option>}
                         {statusOptions.map((status) => (
                           <option key={status} value={status}>{status}</option>
                         ))}
@@ -206,4 +204,4 @@ function Orders() {
   );
 }
 
-export default Orders
+export default Orders;

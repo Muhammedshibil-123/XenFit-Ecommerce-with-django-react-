@@ -9,6 +9,7 @@ import razorpay
 from django.conf import settings
 from rest_framework.views import APIView
 from products.models import Product, ProductSize
+from django.db.models import Q
 
 # Create your views here.
 class CartView(generics.RetrieveAPIView):
@@ -284,7 +285,9 @@ class AdminOrderListView(generics.ListAPIView):
     serializer_class = AdminOrderSerializer
     
     def get_queryset(self):
-        return Order.objects.filter(payment_status='Success').order_by('-created_at')
+        return Order.objects.filter(
+            Q(payment_status='Success') | Q(provider_order_id='COD')
+        ).order_by('-created_at')
 
 class AdminOrderUpdateView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAdminUser]
