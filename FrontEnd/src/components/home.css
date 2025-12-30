@@ -1,8 +1,9 @@
 /* --- Hero Section --- */
 .hero-section {
   width: 100%;
-  height: 85vh; 
-  background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=2070&auto=format&fit=crop');
+  height: 85vh;
+  background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)),
+    url("https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=2070&auto=format&fit=crop");
   background-size: cover;
   background-position: center;
   display: flex;
@@ -42,7 +43,7 @@
 }
 
 .hero-btn:hover {
-  background-color: #e63946; 
+  background-color: #e63946;
   color: white;
   transform: translateY(-3px);
 }
@@ -64,17 +65,17 @@
   position: relative;
   cursor: pointer;
   transition: transform 0.3s ease;
-  background-image: url('https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=1887&auto=format&fit=crop');
+  background-image: url("https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=1887&auto=format&fit=crop");
   display: block;
   text-decoration: none;
 }
 
 .cat-polo {
-  background-image: url('https://images.unsplash.com/photo-1617137968427-85924c800a22?q=80&w=1887&auto=format&fit=crop');
+  background-image: url("https://images.unsplash.com/photo-1617137968427-85924c800a22?q=80&w=1887&auto=format&fit=crop");
 }
 
 .cat-women {
-  background-image: url('https://images.unsplash.com/photo-1503342394128-c104d54dba01?q=80&w=1887&auto=format&fit=crop');
+  background-image: url("https://images.unsplash.com/photo-1503342394128-c104d54dba01?q=80&w=1887&auto=format&fit=crop");
 }
 
 .cat-card:hover {
@@ -87,7 +88,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.2);
+  background: rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -95,7 +96,7 @@
 }
 
 .cat-card:hover .overlay {
-  background: rgba(0,0,0,0.4);
+  background: rgba(0, 0, 0, 0.4);
 }
 
 .cat-card h2 {
@@ -148,7 +149,7 @@
 }
 
 .product-card:hover {
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
 .image-wrapper {
@@ -160,7 +161,7 @@
 .image-wrapper img {
   width: 100%;
   height: 100%;
-  object-fit: cover; 
+  object-fit: cover;
   transition: transform 0.5s ease;
 }
 
@@ -358,66 +359,85 @@
 
 /* --- Mobile Responsiveness --- */
 @media (max-width: 768px) {
-  .hero-content h1 {
-    font-size: 2.5rem;
+  .section-title {
+    margin: 40px 0 20px;
   }
-  
-  .category-section {
-    grid-template-columns: 1fr;
-  }
-  
+
   .main-shop-container {
-    grid-template-columns: repeat(2, 1fr); 
-    padding: 0 10px;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 0 12px;
   }
-  
+
+  .product-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .image-wrapper {
+    height: 220px;
+  }
+
+  .image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
   .product-details {
     padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-grow: 1;
   }
-  
-  .image-wrapper {
-    height: 250px;
+
+  .product-details h3 {
+    font-size: 14px;
+    line-height: 1.3;
+    height: 36px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
   }
-  
+  .brand-name {
+    font-size: 11px;
+  }
+
+  .price-row {
+    margin-top: auto;
+  }
+
+  .add-btn {
+    margin-top: auto;
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  .category-section {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+
+  .cat-card {
+    height: 260px;
+  }
+
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 30px 20px;
+  }
+
   .footer-content {
     grid-template-columns: 1fr;
     text-align: center;
   }
-  
-  .footer-brand p {
-    margin: 0 auto;
-  }
-  
+
   .socials {
     justify-content: center;
-  }
-  
-  .features-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .products-container, .products { 
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important; 
-    gap: 10px !important; 
-    justify-content: center;
-    padding: 10px;
-  }
-
-  /* Ensure product cards don't overflow or stretch weirdly */
-  .product-card, .product-item {
-    width: 100% !important;
-    margin: 0 !important; /* Remove old margins */
-    height: auto; /* Let height adjust naturally */
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* Optional: Make images fill the card width */
-  .product-card img, .product-item img {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
   }
 }

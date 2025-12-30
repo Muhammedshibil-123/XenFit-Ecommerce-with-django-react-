@@ -236,58 +236,86 @@
 
 /* --- Mobile Responsiveness --- */
 @media (max-width: 768px) {
- .filters-container {
-  flex-direction: column;
-  align-items: stretch;
- } 
- 
- .filter-group {
-   width: 100%;
- }
- 
- .filters-container select {
-   width: 100%;
- }
-
- .main-shop-container {
-   /* Change from repeat(2, 1fr) to 1fr for single column */
-   grid-template-columns: 1fr; 
-   gap: 20px; /* Increased gap slightly for better spacing */
-   padding: 20px;
- }
- 
- .product-image-box {
-   height: 300px; /* Made image taller since it has more width now */
- }
- 
- .shop-container h3 {
-   font-size: 16px; /* Increased font size for better readability on mobile */
- }
- 
- .shop-container .addtocart {
-   padding: 14px;
-   font-size: 13px;
- }
- .shop-products-container, .shop-products, .products-grid { 
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important; /* 2 equal columns */
-    gap: 15px !important;
-    padding: 10px;
+  .filters-container {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    padding: 8px 8px;
+    align-items: end;
+    box-sizing: border-box;
+    width: 100%;
+    overflow: hidden;
   }
 
-  /* Ensure cards fit the grid column */
-  .shop-card, .product-card {
-    width: 100% !important;
-    margin: 0 !important;
+  .filter-group {
+    width: 100%;
+    margin: 0;
   }
 
-  /* Fix for filter sidebar if it exists - hide it or stack it */
-  .shop-filter {
-    display: none; /* Usually hidden on mobile or needs a toggle */
+  .filter-group label {
+    font-size: 9px;
+    margin: 0 0 4px 2px;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-  
-  /* If you have a main container wrapping everything */
+
+  .filters-container select {
+    width: 100%;
+    min-width: 0 !important;
+    padding: 6px 8px;
+    height: 32px;
+    font-size: 11px;
+    box-sizing: border-box;
+  }
+
+  /* reduce borders/padding that can cause wrapping */
+  .filters-container select,
+  .filter-group {
+    border-radius: 2px;
+  }
+
+  /* layout for product list */
+  .main-shop-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 12px;
+  }
+
   .shop-container {
+    display: flex;
     flex-direction: column;
+    height: 100%;
+    box-sizing: border-box;
   }
+
+  .product-image-box { height: 240px; }
+
+  .product-info-box {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 6px;
+  }
+
+  .shop-container h3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+
+  line-clamp: 2;
+
+  overflow: hidden;
+}
+
+  .shop-container .addtocart {
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  .whislist-contaniner { width: 24px; height: 24px; top: 8px; right: 8px; }
+  .discount-badge { font-size: 9px; padding: 2px 5px; }
 }
