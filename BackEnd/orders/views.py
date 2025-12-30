@@ -149,7 +149,6 @@ class CreateOrderView(APIView):
             mobile=address_data.get('mobile'),
             pincode=address_data.get('pincode'),
             address=address_data.get('address'),
-            place=address_data.get('place', address_data.get('city', '')),
             landmark=address_data.get('landmark', '')
         )
 
@@ -276,7 +275,7 @@ class OrderListView(generics.ListAPIView):
     serializer_class = OrderSerializer
 
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user, payment_status='Success').order_by('-created_at')
+        return Order.objects.filter(user=self.request.user).order_by('-created_at')
 
     
 

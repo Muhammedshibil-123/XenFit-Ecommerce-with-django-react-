@@ -245,3 +245,35 @@
     align-self: flex-end;
   }
 }
+
+.payment-status-badge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  margin-right: 10px;
+  display: inline-block;
+  line-height: 1;
+}
+
+/* Paid Online */
+.payment-status-badge.paid {
+  background-color: #e6f7ec;
+  color: #28a745;
+  border: 1px solid #28a745;
+}
+
+/* Cash on Delivery */
+.payment-status-badge.cod {
+  background-color: #fff4e5;
+  color: #ff9800;
+  border: 1px solid #ff9800;
+}
+
+/* Position badge above progress bar (Order Placed) */
+.track-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

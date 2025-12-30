@@ -7,7 +7,6 @@ function Myorders() {
   const [orders, setOrders] = useState([])
   const token = localStorage.getItem("access_token") 
   const navigate = useNavigate()
-
   
   const getApiUrl = () => {
     try {
@@ -35,9 +34,8 @@ function Myorders() {
       })
   }, [token, API_URL, navigate])
 
-
    function handleProductClick(productId){
-       navigate(`/${productId}`) 
+       navigate(`/product/${productId}`) 
    }
 
    const getStatusIndex = (status) => {
@@ -63,6 +61,11 @@ function Myorders() {
         if (!img) return 'https://via.placeholder.com/150';
         return img.startsWith('http') ? img : `http://127.0.0.1:8000${img}`;
    };
+   const getPaymentLabel = (status) => {
+       if (status === 'COD' || status === 'Paid Online') return status;
+
+       return status === 'Pending' ? 'COD' : 'Paid Online';
+   };
 
   return (
     <div className="my-orders-page">
@@ -75,33 +78,45 @@ function Myorders() {
             {orders.map((order) => {
                 const activeIndex = getStatusIndex(order.status || "Order Placed");
                 const progressWidth = getProgressWidth(order.status || "Order Placed");
+                const address = order.delivery_address || {};
+                const paymentLabel = getPaymentLabel(order.payment_status);
                 
                 return (
                 <div className="track-order-card" key={order.id}>
 
                     <div className="track-order-header">
-                        <div>
+                        <div className="track-header-left">
                             <span className="track-order-id">Order ID: #{order.id}</span>
                             <span className="track-order-date">Placed on: {order.orderDate}</span>
                         </div>
-                        <div className="track-status-text">
-                           {order.status}
+                        <div className="track-header-right">
+                            <span className={`payment-status-badge ${paymentLabel === 'COD' ? 'cod' : 'paid'}`}>
+                                {paymentLabel}
+                            </span>
+                            {/* <span className="track-status-text">
+                                {order.status}
+                            </span> */}
                         </div>
                     </div>
 
                     <div className="track-delivery-info">
                         <h4>Delivery Address</h4>
-                        <p><strong>{order.name}</strong> | {order.mobile}</p>
-                        <p>{order.address}, {order.place} - {order.pincode}</p>
+                        <p><strong>{address.name}</strong> | {address.mobile}</p>
+                        <p>
+                            {address.address}
+                            {address.landmark && <span>, {address.landmark}</span>}
+                            {address.pincode && <span> - {address.pincode}</span>}
+                        </p>
                     </div>
 
                     <div className="track-items-list">
-                        {order.items.map((item, idx) => (
+                        {order.items && order.items.map((item, idx) => (
                             <div className="track-item-row" key={idx}
                                 onClick={()=>handleProductClick(item.product_id)}
-                                style={{cursor: 'pointer'}}
                             >
-                                <img src={getImageUrl(item.product_image)} alt={item.product_title} />
+                                <div className="track-item-image">
+                                     <img src={getImageUrl(item.product_image)} alt={item.product_title} />
+                                </div>
                                 <div className="track-item-details">
                                     <h3>{item.product_title}</h3>
                                     <p className="size-text">Size: {item.size}</p>
@@ -109,16 +124,14 @@ function Myorders() {
                                     <p className="price-text">₹{item.price}</p>
                                 </div>
                                 <div className="track-item-total">
-                                    ₹{Number(item.price) * item.quantity}
+                                    <span>Subtotal:</span> ₹{Number(item.price) * item.quantity}
                                 </div>
                             </div>
                         ))}
                     </div>
 
-                
-
                     <div className="total-text">
-                        <span>Grand Total : {order.total_amount}</span>
+                        <span>Grand Total : ₹{order.total_amount}</span>
                     </div>
 
                     <div className="track-progress-wrapper">

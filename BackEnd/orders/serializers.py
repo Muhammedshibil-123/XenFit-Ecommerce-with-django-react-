@@ -40,7 +40,7 @@ class WishlistSerializer(serializers.ModelSerializer):
 class OrderAddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderAddress
-        fields = ['name', 'mobile', 'pincode', 'address', 'place', 'landmark']
+        fields = ['name', 'mobile', 'pincode', 'address', 'landmark']
 
 class OrderItemSerializer(serializers.ModelSerializer):
     product_title = serializers.CharField(source='product.title', read_only=True)
@@ -52,16 +52,21 @@ class OrderItemSerializer(serializers.ModelSerializer):
         fields = ['product_id', 'product_title', 'product_image', 'quantity', 'size', 'price']
 
 class OrderSerializer(serializers.ModelSerializer):
-    items = OrderItemSerializer(many=True, read_only=True)
+    items = OrderItemSerializer(many=True, read_only=True) 
     delivery_address = OrderAddressSerializer(read_only=True) 
-    orderDate = serializers.DateTimeField(source='created_at', format="%Y-%m-%d") 
+    orderDate = serializers.DateTimeField(source='created_at', format="%Y-%m-%d")
+
+    payment_status = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
-        fields = [
-            'id', 'status', 'total_amount', 'orderDate', 
-            'delivery_address', 'payment_status', 'items'
-        ]
+        fields = ['id', 'user', 'total_amount', 'payment_status', 'status', 'provider_order_id', 'delivery_address', 'items', 'orderDate']
+
+    def get_payment_status(self, obj):
+        if obj.payment_status == 'Pending':
+            return "COD"
+        else:
+            return "Paid Online"
 
 class AdminOrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True) 
