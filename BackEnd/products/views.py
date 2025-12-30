@@ -1,22 +1,37 @@
 from django.shortcuts import render
 from rest_framework import generics,status
 from rest_framework.views import APIView
-from .models import Product,ProductSize
+from .models import Product,ProductSize,ProductImage
 from .serializers import ProductSerializer,ProductSizeSerializer
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 
 # Create your views here.
 class ProductListCreateView(generics.ListCreateAPIView):
-    queryset=Product.objects.all()
-    permission_classes=[AllowAny]
-    serializer_class=ProductSerializer
+    queryset = Product.objects.all()
+    permission_classes = [AllowAny]
+    serializer_class = ProductSerializer
+
+    def perform_create(self, serializer):
+        product = serializer.save()
+       
+        gallery_images = self.request.FILES.getlist('gallery')
+        for img in gallery_images:
+            ProductImage.objects.create(product=product, image=img)
 
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
-    permission_classes=[AllowAny]
+    permission_classes = [AllowAny]
     serializer_class = ProductSerializer
     lookup_field = 'id'
+
+    def perform_update(self, serializer):
+        product = serializer.save()
+        
+        
+        gallery_images = self.request.FILES.getlist('gallery')
+        for img in gallery_images:
+            ProductImage.objects.create(product=product, image=img)
 
 class ProductStockView(APIView):
     def get(self, request, id):

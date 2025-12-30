@@ -22,6 +22,7 @@ function Products() {
   })
   
   const [imageFile, setImageFile] = useState(null)
+  const [galleryFiles, setGalleryFiles] = useState([])
 
   const getApiUrl = () => {
     try {
@@ -38,7 +39,7 @@ function Products() {
         setProducts(res.data)
       })
       .catch((err) => console.log(err))
-  }, [])
+  }, [API_URL])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -47,6 +48,21 @@ function Products() {
 
   const handleImageChange = (e) => {
     setImageFile(e.target.files[0])
+  }
+
+  const handleGalleryChange = (index, file) => {
+    const updated = [...galleryFiles]
+    updated[index] = file
+    setGalleryFiles(updated)
+  }
+
+  const addGalleryField = () => {
+    setGalleryFiles([...galleryFiles, null])
+  }
+
+  const removeGalleryField = (index) => {
+    const updated = galleryFiles.filter((_, i) => i !== index)
+    setGalleryFiles(updated)
   }
 
   const handleStockClick = (product) => {
@@ -94,6 +110,10 @@ function Products() {
         if(newProduct[key]) formData.append(key, newProduct[key]);
     });
     if (imageFile) formData.append('image', imageFile);
+    
+    galleryFiles.forEach((file) => {
+        if (file) formData.append('gallery', file);
+    });
 
     axios.post(`${API_URL}/products/`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
@@ -107,6 +127,7 @@ function Products() {
           price: '', mrp: '', status: 'active'
         })
         setImageFile(null)
+        setGalleryFiles([])
       })
       .catch((err) => alert("Error adding product."))
   }
@@ -127,6 +148,7 @@ function Products() {
     setCurrentProduct(product)
     setpopEdit(true)
     setImageFile(null)
+    setGalleryFiles([])
   }
 
   const handleInputChangeEdit = (e) => {
@@ -149,6 +171,10 @@ function Products() {
     if(currentProduct.mrp) formData.append('mrp', currentProduct.mrp);
     if (imageFile) formData.append('image', imageFile);
 
+    galleryFiles.forEach((file) => {
+        if (file) formData.append('gallery', file);
+    });
+
     axios.patch(`${API_URL}/products/${currentProduct.id}/`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
     })
@@ -157,6 +183,7 @@ function Products() {
         setpopEdit(false)
         setCurrentProduct(null)
         setImageFile(null)
+        setGalleryFiles([])
       })
       .catch((err) => console.error(err))
   }
@@ -282,7 +309,17 @@ function Products() {
                     <div className="input-group"><label>Theme</label><select name='theme' value={newProduct.theme} onChange={handleInputChange} required><option value="">Select</option><option value="Anime">Anime</option><option value="Sports">Sports</option><option value="Movie">Movie</option><option value="Motivational">Motivational</option><option value="Minimal">Minimal</option><option value="Vintage">Vintage</option></select></div>
                     <div className="input-group"><label>Price</label><input type="number" name='price' value={newProduct.price} onChange={handleInputChange} required /></div>
                     <div className="input-group"><label>MRP</label><input type="number" name='mrp' value={newProduct.mrp} onChange={handleInputChange} /></div>
-                    <div className="input-group full-width"><label>Image</label><input type="file" accept="image/*" onChange={handleImageChange} required /></div>
+                    <div className="input-group full-width"><label>Main Image</label><input type="file" accept="image/*" onChange={handleImageChange} required /></div>
+                    <div className="input-group full-width">
+                        <label>Product Gallery</label>
+                        {galleryFiles.map((_, index) => (
+                            <div key={index} className="gallery-input-row">
+                                <input type="file" accept="image/*" onChange={(e) => handleGalleryChange(index, e.target.files[0])} />
+                                <button type="button" className="remove-gallery-btn" onClick={() => removeGalleryField(index)}>Remove</button>
+                            </div>
+                        ))}
+                        <button type="button" className="add-gallery-btn" onClick={addGalleryField}>+ Add Gallery Image</button>
+                    </div>
                     <div className="input-group full-width"><label>Description</label><textarea name='description' rows="3" value={newProduct.description} onChange={handleInputChange} /></div>
                 </div>
                 <button type="submit" className="save-btn">PUBLISH</button>
@@ -308,7 +345,17 @@ function Products() {
                      <div className="input-group"><label>Theme</label><select name='theme' value={currentProduct.theme} onChange={handleInputChangeEdit} required><option value="Anime">Anime</option><option value="Sports">Sports</option><option value="Movie">Movie</option><option value="Motivational">Motivational</option><option value="Minimal">Minimal</option><option value="Vintage">Vintage</option></select></div>
                      <div className="input-group"><label>Price</label><input type="number" name='price' value={currentProduct.price} onChange={handleInputChangeEdit} required /></div>
                      <div className="input-group"><label>MRP</label><input type="number" name='mrp' value={currentProduct.mrp} onChange={handleInputChangeEdit} /></div>
-                     <div className="input-group full-width"><label>Update Image</label><input type="file" accept="image/*" onChange={handleImageChange} /></div>
+                     <div className="input-group full-width"><label>Update Main Image</label><input type="file" accept="image/*" onChange={handleImageChange} /></div>
+                     <div className="input-group full-width">
+                        <label>Add New Gallery Images</label>
+                        {galleryFiles.map((_, index) => (
+                            <div key={index} className="gallery-input-row">
+                                <input type="file" accept="image/*" onChange={(e) => handleGalleryChange(index, e.target.files[0])} />
+                                <button type="button" className="remove-gallery-btn" onClick={() => removeGalleryField(index)}>Remove</button>
+                            </div>
+                        ))}
+                        <button type="button" className="add-gallery-btn" onClick={addGalleryField}>+ Add Gallery Image</button>
+                    </div>
                      <div className="input-group full-width"><label>Description</label><textarea name='description' rows="3" value={currentProduct.description} onChange={handleInputChangeEdit} /></div>
                  </div>
                  <button type="submit" className="save-btn">UPDATE</button>
