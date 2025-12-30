@@ -236,47 +236,20 @@
 
 /* --- Mobile Responsiveness --- */
 @media (max-width: 768px) {
+
   .filters-container {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 6px;
-    padding: 8px 8px;
-    align-items: end;
-    box-sizing: border-box;
-    width: 100%;
-    overflow: hidden;
-  }
-
-  .filter-group {
-    width: 100%;
-    margin: 0;
-  }
-
-  .filter-group label {
-    font-size: 9px;
-    margin: 0 0 4px 2px;
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    padding: 8px;
   }
 
   .filters-container select {
-    width: 100%;
-    min-width: 0 !important;
-    padding: 6px 8px;
-    height: 32px;
-    font-size: 11px;
-    box-sizing: border-box;
+    height: 28px;
+    font-size: 10px;
+    padding: 4px 6px;
   }
 
-  /* reduce borders/padding that can cause wrapping */
-  .filters-container select,
-  .filter-group {
-    border-radius: 2px;
-  }
-
-  /* layout for product list */
   .main-shop-container {
     display: grid;
     grid-template-columns: 1fr;
@@ -287,35 +260,43 @@
   .shop-container {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    box-sizing: border-box;
   }
 
-  .product-image-box { height: 240px; }
+  .product-image-box {
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+  }
+
+  .product-image-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 
   .product-info-box {
     padding: 10px;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    gap: 6px;
   }
 
   .shop-container h3 {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-
-  line-clamp: 2;
-
-  overflow: hidden;
-}
-
-  .shop-container .addtocart {
-    padding: 10px;
-    font-size: 12px;
+    font-size: 13px;
+    line-height: 1.3;
+    height: 34px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-clamp: 2;
   }
 
-  .whislist-contaniner { width: 24px; height: 24px; top: 8px; right: 8px; }
-  .discount-badge { font-size: 9px; padding: 2px 5px; }
+  .price-row {
+    margin-top: auto;
+  }
+
+  .shop-container .addtocart {
+    height: 40px;
+    font-size: 12px;
+  }
 }
