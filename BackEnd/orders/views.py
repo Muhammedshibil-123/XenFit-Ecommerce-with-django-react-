@@ -139,41 +139,83 @@ class CreateOrderView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        user = request.user
         amount = request.data.get('total_amount')
-        address_data = request.data.get('delivery_address', {}) 
-        
+        address_data = request.data.get('delivery_address', {})
+        payment_method = request.data.get('payment_method', 'online') 
 
-        client = razorpay.Client(auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
-        data = {
-            "amount": int(float(amount) * 100), 
-            "currency": "INR", 
-            "payment_capture": "1"
-        }
-        payment_order = client.order.create(data=data)
-        
         order_address = OrderAddress.objects.create(
             name=address_data.get('name'),
             mobile=address_data.get('mobile'),
             pincode=address_data.get('pincode'),
             address=address_data.get('address'),
-            place=address_data.get('place', address_data.get('city', '')), 
+            place=address_data.get('place', address_data.get('city', '')),
             landmark=address_data.get('landmark', '')
         )
 
-        order = Order.objects.create(
-            user=request.user,
-            total_amount=amount,
-            provider_order_id=payment_order['id'],
-            payment_status='Pending',
-            delivery_address=order_address 
-        )
-        
-        return Response({
-            "order_id": payment_order['id'],
-            "amount": data['amount'],
-            "key": settings.RAZOR_KEY_ID,
-            "internal_order_id": order.id
-        }, status=status.HTTP_201_CREATED)
+        if payment_method == 'cod':
+            order = Order.objects.create(
+                user=user,
+                total_amount=amount,
+                delivery_address=order_address,
+                provider_order_id="COD", 
+                payment_status='Pending',
+                status='Order Placed'
+            )
+
+            cart = Cart.objects.get(user=user)
+            cart_items = cart.items.all()
+
+            for item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item.product,
+                    quantity=item.quantity,
+                    size=item.size,
+                    price=item.product.price
+                )
+               
+                if item.size:
+                    try:
+                        p_size = ProductSize.objects.get(product=item.product, size=item.size)
+                        if p_size.stock >= item.quantity:
+                            p_size.stock -= item.quantity
+                            p_size.save()
+                    except ProductSize.DoesNotExist:
+                        pass
+            
+            cart.items.all().delete()
+
+            return Response({
+                "message": "Order Placed Successfully",
+                "payment_method": "cod",
+                "internal_order_id": order.id
+            }, status=status.HTTP_201_CREATED)
+
+        else:
+            client = razorpay.Client(auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
+            data = {
+                "amount": int(float(amount) * 100),
+                "currency": "INR",
+                "payment_capture": "1"
+            }
+            payment_order = client.order.create(data=data)
+
+            order = Order.objects.create(
+                user=user,
+                total_amount=amount,
+                provider_order_id=payment_order['id'],
+                payment_status='Pending',
+                delivery_address=order_address
+            )
+
+            return Response({
+                "order_id": payment_order['id'],
+                "amount": data['amount'],
+                "key": settings.RAZOR_KEY_ID,
+                "internal_order_id": order.id,
+                "payment_method": "online"
+            }, status=status.HTTP_201_CREATED)
 
 class VerifyPaymentView(APIView):
     def post(self, request):
@@ -236,39 +278,6 @@ class OrderListView(generics.ListAPIView):
     def get_queryset(self):
         return Order.objects.filter(user=self.request.user, payment_status='Success').order_by('-created_at')
 
-class CreateOrderView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        amount = request.data.get('total_amount')
-        address_data = request.data.get('delivery_address', {})
-        client = razorpay.Client(auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
-
-        data = {
-            "amount": int(float(amount) * 100), 
-            "currency": "INR", 
-            "payment_capture": "1"
-        }
-        payment_order = client.order.create(data=data)
-        order = Order.objects.create(
-            user=request.user,
-            total_amount=amount,
-            provider_order_id=payment_order['id'],
-            payment_status='Pending',
-  
-            name=address_data.get('name'),
-            mobile=address_data.get('mobile'),
-            address=address_data.get('address'),
-            place=address_data.get('place'),
-            pincode=address_data.get('pincode')
-        )
-        
-        return Response({
-            "order_id": payment_order['id'],
-            "amount": data['amount'],
-            "key": settings.RAZOR_KEY_ID,
-            "internal_order_id": order.id
-        }, status=status.HTTP_201_CREATED)
     
 
 class AdminOrderListView(generics.ListAPIView):

@@ -328,3 +328,51 @@
     position: static; /* Remove sticky on mobile */
   }
 }
+
+
+.payment-method-section {
+  margin: 25px 0;
+}
+
+.payment-method-section h3 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #333;
+  text-transform: uppercase;
+}
+
+.payment-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  transition: all 0.2s ease;
+}
+
+.payment-option:hover {
+  border-color: #999;
+}
+
+.payment-option.selected {
+  border-color: #111; /* Highlight selected option */
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+.payment-option input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #111;
+  cursor: pointer;
+}
+
+.payment-option span {
+  font-size: 14px;
+  color: #111;
+}

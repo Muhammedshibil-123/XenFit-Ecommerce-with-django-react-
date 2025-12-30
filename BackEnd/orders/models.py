@@ -33,7 +33,6 @@ class OrderAddress(models.Model):
     mobile = models.CharField(max_length=15)
     pincode = models.CharField(max_length=10)
     address = models.TextField()
-    place = models.CharField(max_length=100) # City/District
     landmark = models.CharField(max_length=100, null=True, blank=True)
     
     def __str__(self):

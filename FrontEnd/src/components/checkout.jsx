@@ -7,8 +7,9 @@ import { CartContext } from "../component/cartcouter";
 
 function Checkout() {
   const [cartItems, setCartItems] = useState([]);
-  const [addresses, setAddresses] = useState([]); // Store fetched addresses
-  const [selectedAddressId, setSelectedAddressId] = useState(null); // Track selected
+  const [addresses, setAddresses] = useState([]); 
+  const [selectedAddressId, setSelectedAddressId] = useState(null); 
+  const [paymentMethod, setPaymentMethod] = useState('online'); // New State for Payment Method
   
   const navigate = useNavigate();
   const token = localStorage.getItem('access_token');
@@ -32,12 +33,11 @@ function Checkout() {
     axios.get(`${API_URL}/users/addresses/`, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => {
         setAddresses(res.data);
-        // Auto-select default address if exists
         const defaultAddr = res.data.find(addr => addr.is_default);
         if (defaultAddr) {
           setSelectedAddressId(defaultAddr.id);
         } else if (res.data.length > 0) {
-          setSelectedAddressId(res.data[0].id); // Select first if no default
+          setSelectedAddressId(res.data[0].id); 
         }
       })
       .catch((err) => console.error(err));
@@ -63,45 +63,56 @@ function Checkout() {
       return;
     }
 
-    // Find the full address object to send to backend
     const selectedAddrObject = addresses.find(addr => addr.id === selectedAddressId);
     
-    // Prepare data for backend (Map fields to what CreateOrderView expects)
     const deliveryData = {
         name: selectedAddrObject.name,
         mobile: selectedAddrObject.mobile,
         pincode: selectedAddrObject.pincode,
         address: selectedAddrObject.address,
-        place: selectedAddrObject.city, // Mapping city to place
+        place: selectedAddrObject.city,
         landmark: selectedAddrObject.landmark
     };
 
     axios.post(`${API_URL}/orders/place-order/`, {
       total_amount: grandprice, 
-      delivery_address: deliveryData // Send full object
+      delivery_address: deliveryData,
+      payment_method: paymentMethod // Send 'online' or 'cod'
     }, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then((res) => {
-        const { order_id, amount, key } = res.data;
-        const options = {
-          key: key,
-          amount: amount,
-          currency: "INR",
-          name: "XenFit",
-          description: "Purchase Transaction",
-          order_id: order_id, 
-          handler: function (response) {
-            verifyPayment(response);
-          },
-          prefill: {
-            name: deliveryData.name,
-            contact: deliveryData.mobile
-          },
-          theme: { color: "#3399cc" }
-        };
-        const rzp1 = new window.Razorpay(options);
-        rzp1.open();
+        // --- CASE 1: CASH ON DELIVERY ---
+        if (res.data.payment_method === 'cod') {
+            toast.success("Order Placed Successfully!");
+            updateCartCount();
+            navigate('/myorders');
+        } 
+        // --- CASE 2: ONLINE PAYMENT (Razorpay) ---
+        else {
+            const { order_id, amount, key } = res.data;
+            const options = {
+              key: key,
+              amount: amount,
+              currency: "INR",
+              name: "XenFit",
+              description: "Purchase Transaction",
+              order_id: order_id, 
+              handler: function (response) {
+                verifyPayment(response);
+              },
+              prefill: {
+                name: deliveryData.name,
+                contact: deliveryData.mobile
+              },
+              theme: { color: "#3399cc" }
+            };
+            const rzp1 = new window.Razorpay(options);
+            rzp1.on('payment.failed', function (response){
+                toast.error(response.error.description);
+            });
+            rzp1.open();
+        }
       })
       .catch((err) => {
         console.error(err);
@@ -215,6 +226,37 @@ function Checkout() {
                 <span>Grand Total</span>
                 <span>₹{Math.round(grandprice)}</span>
               </div>
+            </div>
+
+            {/* --- NEW PAYMENT METHOD SECTION --- */}
+            <div className="payment-method-section">
+                <h3>PAYMENT METHOD</h3>
+                
+                <div 
+                    className={`payment-option ${paymentMethod === 'online' ? 'selected' : ''}`}
+                    onClick={() => setPaymentMethod('online')}
+                >
+                    <input 
+                        type="radio" 
+                        name="payment" 
+                        checked={paymentMethod === 'online'} 
+                        onChange={() => setPaymentMethod('online')} 
+                    />
+                    <span>Online Payment (Razorpay)</span>
+                </div>
+
+                <div 
+                    className={`payment-option ${paymentMethod === 'cod' ? 'selected' : ''}`}
+                    onClick={() => setPaymentMethod('cod')}
+                >
+                    <input 
+                        type="radio" 
+                        name="payment" 
+                        checked={paymentMethod === 'cod'} 
+                        onChange={() => setPaymentMethod('cod')} 
+                    />
+                    <span>Cash on Delivery</span>
+                </div>
             </div>
 
             <button 
