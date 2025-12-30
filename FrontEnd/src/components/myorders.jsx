@@ -35,7 +35,7 @@ function Myorders() {
   }, [token, API_URL, navigate])
 
    function handleProductClick(productId){
-       navigate(`/product/${productId}`) 
+       navigate(`/${productId}`) 
    }
 
    const getStatusIndex = (status) => {
